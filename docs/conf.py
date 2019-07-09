@@ -82,7 +82,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'rca'
-copyright = u'2019, Joseph C. Hardin'
+copyright = u'2019, Alexis Hunzinger'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -233,7 +233,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'user_guide.tex', u'rca Documentation',
-   u'Joseph C. Hardin', 'manual'),
+   u'Alexis Hunzinger', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
