@@ -5,7 +5,8 @@ import pyart
 import os
 import glob
 from netCDF4 import Dataset 
-from create_clutter_flag_hsrhi import create_clutter_flag_hsrhi
+from create_masks import create_clutter_flag_hsrhi
+from file_to_radar_object import file_to_radar_object
 
 if __name__ == "__main__":
     if len(sys.argv) < 6:

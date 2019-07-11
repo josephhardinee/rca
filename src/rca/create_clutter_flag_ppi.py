@@ -1,46 +1,66 @@
 import numpy as np
 import pyart
-from create_az_mask_ppi import create_az_mask_ppi
+from create_masks import create_az_mask_ppi
 
-def create_clutter_flag_ppi(filename,inst,range_limit,range_shape,z_thresh):
-    '''Creates a clutter flag array (precip-free day) to be used for the clutter map creation for PPIs
-    and returns the date and time of the file and the clutter flag arrays for Zh and/or Zv'''
+def create_clutter_flag_ppi(radar,polarization,range_limit,z_thresh):
+    """
+    create_clutter_flag_ppi creates a clutter flag array for a particular PPI radar file (using a precipitation-free day) that will be used for
+    clutter map creation. It returns the datetime of the file and the clutter flag arrays for reflectivity in the chosen polarizations (H and V or just H)
+    Parameters:
+    --------------
+    radar: object (PyART)
+            radar object contains all variables from the radar file
+    polarization: string
+            specifies for which polarization user wants to create clutter flag array
+            'dual': calculate for both H and V
+            'horizontal': calculate only for H
+    range_limit: integer
+            value of desired radar gate range limit
+    z_thresh: float
+            reflectivity threshold for clutter cut off
+            i.e. gate reflectivity must be greater than z_thresh to be considered clutter
+    Returns:
+    --------------
+    date_time: string
+                date and time of the file
+    clutter_flag_h: array
+                    array of shape (azimuth, elevation, range) noting elements where clutter is flagged in the H polarization
+                    clutter present: 1
+                    no clutter present: 0
+    clutter_flag_v: array
+                    array of shape (azimuth, elevation, range) noting elements where clutter is flagged in the V polarization
+                    clutter present: 1
+                    no clutter present: 0
+
+    """
+    ###############################
+    # NEED TO CORRECT/ADD
+    # 1) how to make variable names generic, or specify them elsewhere based on the file type (this should be able to happen in file_to_radar_object ?)
+    # reflectivity_h = 'UZh' or 'reflectivity' or 'uncorrected_reflectivity_h'
+    # reflectivity_v = 'UZv' or 'uncorrected_reflectivity_v'
+    # diff_reflectivity = differential_reflectivity' <---- this only here or used if Zv variable is not readily available
+
+    # 2) specify Z thresh at some point (in config file?)
+    ###############################
     
-    ext = filename[-3:]
-    if inst == 'kasacr':
-        if ext == '.h5':
-            radar = pyart.aux_io.read_gamic(filename, file_field_names=True) 
-            date_time = radar.time['units'].replace('seconds since ', '')
-            r_start_idx = 0
-            r_stop_idx = np.where(radar.range['data'] > range_limit)[0][0]
-            # Using lowest elevation angle of PPI (0.5 deg)
-            sweep_start_idx = radar.sweep_start_ray_index['data'][0]
-            sweep_stop_idx = radar.sweep_end_ray_index['data'][0]+1
-            r = radar.range['data'][r_start_idx:r_stop_idx]
-            theta = radar.azimuth['data'][sweep_start_idx:sweep_stop_idx]
-            zh = radar.fields['UZh']['data'][sweep_start_idx:sweep_stop_idx,r_start_idx:r_stop_idx]
-
-        else:
-        #elif ext == '.nc':
-            radar = pyart.io.cfradial.read_cfradial(filename,delay_field_loading=True)
-            date_time = radar.time['units'].replace('seconds since ', '')
-            r_start_idx = 0
-            r_stop_idx = np.where(radar.range['data'] > range_limit)[0][0]
-            # Using lowest elevation angle of PPI (0.5 deg)
-            sweep_start_idx = radar.sweep_start_ray_index['data'][0]
-            sweep_stop_idx = radar.sweep_end_ray_index['data'][0]+1
-            r = radar.range['data'][r_start_idx:r_stop_idx]
-            theta = radar.azimuth['data'][sweep_start_idx:sweep_stop_idx]
-            zh = radar.fields['reflectivity']['data'][sweep_start_idx:sweep_stop_idx,r_start_idx:r_stop_idx]
-
-        print(zh.shape)
-        print(theta.shape, r.shape)
-        print(theta)
-        print(r)
-        theta_list = np.arange(360)
-        r_list = np.arange(range_shape)
-        clutter_flag_h = np.zeros((len(theta_list),len(r_list)))
-
+    theta_list = np.arange(360)
+    range_shape = range_limit/1000
+    r_list = np.arange(range_shape)+1
+    clutter_flag_h = np.zeros((len(theta_list),len(r_list)))
+    clutter_flag_v = np.zeros((len(theta_list),len(r_list)))
+    
+    
+    if polarization == 'horizontal':
+        date_time = radar.time['units'].replace('seconds since ', '')
+        r_start_idx = 0
+        r_stop_idx = np.where(radar.range['data'] > range_limit)[0][0]
+        # Using lowest elevation angle of PPI (0.5 deg)
+        sweep_start_idx = radar.sweep_start_ray_index['data'][0]
+        sweep_stop_idx = radar.sweep_end_ray_index['data'][0]+1
+        r = radar.range['data'][r_start_idx:r_stop_idx]
+        theta = radar.azimuth['data'][sweep_start_idx:sweep_stop_idx]
+        zh = radar.fields['UZh']['data'][sweep_start_idx:sweep_stop_idx,r_start_idx:r_stop_idx]
+        
         # H POLARIZATION
         for idx_az, az in enumerate(theta_list):        #loop thru each azimuth in list
             az_mask = create_az_mask_ppi(az,theta)              #create mask for desired azimuths
@@ -57,51 +77,19 @@ def create_clutter_flag_ppi(filename,inst,range_limit,range_shape,z_thresh):
     
         return date_time, clutter_flag_h
 
-    else:
-        if ext == '.h5':
-            radar = pyart.aux_io.read_gamic(filename, file_field_names=True) 
-            date_time = radar.time['units'].replace('seconds since ', '')
-            r_start_idx = 0
-            r_stop_idx = np.where(radar.range['data'] > range_limit)[0][0]
-            # Using lowest elevation angle of PPI (0.5 deg)
-            sweep_start_idx = radar.sweep_start_ray_index['data'][0]
-            sweep_stop_idx = radar.sweep_end_ray_index['data'][0]+1
-            r = radar.range['data'][r_start_idx:r_stop_idx]
-            theta = radar.azimuth['data'][sweep_start_idx:sweep_stop_idx]
-            zh = radar.fields['UZh']['data'][sweep_start_idx:sweep_stop_idx,r_start_idx:r_stop_idx]
-            zv = radar.fields['UZv']['data'][sweep_start_idx:sweep_stop_idx,r_start_idx:r_stop_idx]
-
-        elif ext == '.nc':
-            radar = pyart.io.cfradial.read_cfradial(filename,delay_field_loading=True)
-            date_time = radar.time['units'].replace('seconds since ', '')
-            r_start_idx = 0
-            r_stop_idx = np.where(radar.range['data'] > range_limit)[0][0]
-            # Using lowest elevation angle of PPI (0.5 deg)
-            sweep_start_idx = radar.sweep_start_ray_index['data'][0]
-            sweep_stop_idx = radar.sweep_end_ray_index['data'][0]+1
-            r = radar.range['data'][r_start_idx:r_stop_idx]
-            theta = radar.azimuth['data'][sweep_start_idx:sweep_stop_idx]
-            zh = radar.fields['uncorrected_reflectivity_h']['data'][sweep_start_idx:sweep_stop_idx,r_start_idx:r_stop_idx]
-            zv = radar.fields['uncorrected_reflectivity_v']['data'][sweep_start_idx:sweep_stop_idx,r_start_idx:r_stop_idx]
-            
-        elif inst == 'xsaprI4' or inst == 'xsaprI5':
-            radar = pyart.io.read(filename)
-            date_time = radar.time['units'].replace('seconds since ', '')
-            r_start_idx = 0
-            r_stop_idx = np.where(radar.range['data'] > range_limit)[0][0]
-            # Using lowest elevation angle of PPI (0.5 deg)
-            sweep_start_idx = radar.sweep_start_ray_index['data'][0]
-            sweep_stop_idx = radar.sweep_end_ray_index['data'][0]+1
-            r = radar.range['data'][r_start_idx:r_stop_idx]
-            theta = radar.azimuth['data'][sweep_start_idx:sweep_stop_idx]
-            zh = radar.fields['reflectivity']['data'][sweep_start_idx:sweep_stop_idx,r_start_idx:r_stop_idx]
-            zdr = radar.fields['differential_reflectivity']['data'][sweep_start_idx:sweep_stop_idx,r_start_idx:r_stop_idx]
-            zv = 10*np.log10((10**(zh/10))/(zdr))
-
-        theta_list = np.arange(360)
-        r_list = np.arange(range_shape)
-        clutter_flag_h = np.zeros((len(theta_list),len(r_list)))
-        clutter_flag_v = np.zeros((len(theta_list),len(r_list)))
+    elif polarization == 'dual':
+        date_time = radar.time['units'].replace('seconds since ', '')
+        r_start_idx = 0
+        r_stop_idx = np.where(radar.range['data'] > range_limit)[0][0]
+        # Using lowest elevation angle of PPI (0.5 deg)
+        sweep_start_idx = radar.sweep_start_ray_index['data'][0]
+        sweep_stop_idx = radar.sweep_end_ray_index['data'][0]+1
+        r = radar.range['data'][r_start_idx:r_stop_idx]
+        theta = radar.azimuth['data'][sweep_start_idx:sweep_stop_idx]
+        zh = radar.fields['reflectivity']['data'][sweep_start_idx:sweep_stop_idx,r_start_idx:r_stop_idx]
+        zdr = radar.fields['differential_reflectivity']['data'][sweep_start_idx:sweep_stop_idx,r_start_idx:r_stop_idx]
+        zv = radar.fields['uncorrected_reflectivity_v']['data'][sweep_start_idx:sweep_stop_idx,r_start_idx:r_stop_idx]
+        zv = 10*np.log10((10**(zh/10))/(zdr))
 
         # H POLARIZATION
         for idx_az, az in enumerate(theta_list):        #loop thru each azimuth in list
