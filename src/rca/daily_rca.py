@@ -5,6 +5,7 @@ import os
 import glob
 import json
 from netCDF4 import Dataset
+import pandas as pd
 from file_to_radar_object import file_to_radar_object
 from calculate_dbz95 import calculate_dbz95_ppi, calculate_dbz95_hsrhi
 
@@ -15,49 +16,38 @@ computes the RCA value using the established baseline 95h percentile clutter are
 and saves the daily median RCA value to a CSV file.
 """
 
-if __name__ == "__main__":
-    if len(sys.argv) < 8:
-        print(
-            """ERROR: Arguments are radar file directory path, clutter map netCDF path (include filename), 
-            baseline netCDF path (include filename), daily CSV file directory path, desired baseline date (YYYYMMDD), 
-            scan type (ppi or rhi), polarization (horizontal or dual)
-            """
-        )
-        sys.exit(0)
+# Get variables from JSON configuration file
+date = ' ' # DEAL WITH THIS will be used for looping......
+radar_config_file = './kaband_ppi.json'
+config_vars = json.load(open(radar_config_file))
+datadir = config_vars["data_directory"]
+extension = config_vars["file_extension"]
+cluttermap = config_vars["cluttermap_path"]
+baseline = config_vars["baseline_path"]
+dailycsvdir = config_vars["daily_csv_dir"]
+scantype = config_vars["scan_type"]
+polarization = config_vars["polarization"]
+site = config_vars["site_abbrev"]
+inst = config_vars["instrument_abbrev"]
+range_limit = config_vars["range_limit"]
 
-    datadir = sys.argv[1]
-    cluttermap = sys.argv[2]
-    baseline = sys.argv[3]
-    dailycsvdir = sys.argv[4]
-    date = sys.argv[5]
-    scantype = sys.argv[6]
-    polarization = sys.argv[7]
-    print(datadir, cluttermap, baseline, dailycsvdir, date, scantype, polarization)
-
-##############################################
-# VARIABLES THAT SHOULD GO IN CONFIG/JSON FILE?
-range_limit = 10 000
-site = ''
-inst = ''
-    # could break these into a few recommended defaults for different radar bands and scan types
-
-##############################################
+daily_csv_fullpath = dailycsvdir + "daily_rca_" + scantype + site + inst + ".csv"
 
 # Read in clutter map netCDF and baseline value netCDF
 dataset = Dataset(cluttermap)
 dataset_b = Dataset(baseline)
 if scantype == 'ppi':
     clutter_map_mask_h = dataset.variables["clutter_map_mask_zh"][:, :]
-    baseline_dbz95_h = dataset1.variables["baseline_dbz95_zh"][:]
+    baseline_dbz95_h = dataset_b.variables["baseline_dbz95_zh"][:]
 elif scantype == 'rhi':
     clutter_map_mask_h = dataset.variables["clutter_map_mask_zh"][:, :, :]
-    baseline_dbz95_h = dataset1.variables["baseline_dbz95_zh"][:]
+    baseline_dbz95_h = dataset_b.variables["baseline_dbz95_zh"][:]
 if polarization == 'dual' and scantype == 'ppi':
     clutter_map_mask_v = dataset.variables["clutter_map_mask_zv"][:, :]
-    baseline_dbz95_v = dataset1.variables["baseline_dbz95_zv"][:]
+    baseline_dbz95_v = dataset_b.variables["baseline_dbz95_zv"][:]
 elif polarization == 'dual' and scantype == 'rhi':
     clutter_map_mask_v = dataset.variables["clutter_map_mask_zv"][:, :, :]
-    baseline_dbz95_v = dataset1.variables["baseline_dbz95_zv"][:]
+    baseline_dbz95_v = dataset_b.variables["baseline_dbz95_zv"][:]
 dataset.close()
 dataset_b.close()
 
@@ -85,7 +75,7 @@ for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):
             dbz95_h.append(d95_h)
             stats_h.append(s_h)
         elif scantype == 'rhi':
-            dt, d95_h, s_h = calculate_dbz95_rhi(
+            dt, d95_h, s_h = calculate_dbz95_hsrhi(
                                 radar,
                                 polarization,
                                 range_limit,
@@ -108,7 +98,7 @@ for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):
         rca_dict = {"DATE": date, "RCA_H": rca_h, "RCA_V": np.nan, "BASELINE": base}
         csv_frame = csv_frame.append(rca_dict, ignore_index=True)
         csv_frame.set_index("DATE")
-        csv_frame.to_csv(csv_filepath, index=False)
+        csv_frame.to_csv(daily_csv_fullpath, index=False)
 
     elif polarization == 'dual':
         if scantype == 'ppi':
@@ -151,4 +141,4 @@ for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):
         rca_dict = {"DATE": date, "RCA_H": rca_h, "RCA_V": rca_v, "BASELINE": base}
         csv_frame = csv_frame.append(rca_dict, ignore_index=True)
         csv_frame.set_index("DATE")
-        csv_frame.to_csv(csv_filepath, index=False)
+        csv_frame.to_csv(daily_csv_fullpath, index=False)

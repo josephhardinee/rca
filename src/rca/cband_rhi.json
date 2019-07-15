@@ -1,0 +1,16 @@
+{
+    "config": "cband_rhi",
+    "scan_type": "rhi",
+    "polarization": "dual",
+    "data_directory": "",
+    "file_extension": ".nc",
+    "cluttermap_path": "",
+    "cluttermap_date": "2018-11-05",
+    "baseline_path": "",
+    "baseline_date": "",
+    "daily_csv_dir": "",
+    "site_abbrev": "cor",
+    "instrument_abbrev": "csapr2",
+    "range_limit": 40000,
+    "z_threshold": 45
+}

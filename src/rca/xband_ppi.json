@@ -1,0 +1,16 @@
+{
+    "config": "xband_ppi",
+    "scan_type": "ppi",
+    "polarization": "dual",
+    "data_directory": "",
+    "file_extension": ".nc",
+    "cluttermap_path": "",
+    "cluttermap_date": "2018-11-05",
+    "baseline_path": "",
+    "baseline_date": "",
+    "daily_csv_dir": "",
+    "site_abbrev": "ena",
+    "instrument_abbrev": "xsapr2",
+    "range_limit": 10000,
+    "z_threshold": 40
+}
