@@ -14,35 +14,24 @@ calculates the median daily 95th percentile clutter area reflectivity,
 and saves the value to a netcdf as the baseline 95th percentile clutter area reflectivity
 """
 
-if __name__ == "__main__":
-    if len(sys.argv) < 7:
-        print(
-            """ERROR: Arguments are radar file directory path, clutter map netCDF path (include filename), 
-            baseline netCDF output directory path, desired baseline date (YYYYMMDD), scan type (ppi or rhi),
-            polarization (horizontal or dual)
-            """
-        )
-        sys.exit(0)
+# Get variables from JSON configuration file
 
-    datadir = sys.argv[1]
-    cluttermap = sys.argv[2]
-    baselinedir = sys.argv[3]
-    date = sys.argv[4]
-    scantype = sys.argv[5]
-    polarization = sys.argv[6]
-    print(datadir, cluttermap, baselinedir, date, scantype, polarization)
+radar_config_file = './kaband_ppi.json' # change this for for desired JSON file 
 
-##############################################
-# VARIABLES THAT SHOULD GO IN CONFIG/JSON FILE?
-range_limit = 10 000
-site = ''
-inst = ''
-    # could break these into a few recommended defaults for different radar bands and scan types
-
-##############################################
+config_vars = json.load(open(radar_config_file))
+datadir = config_vars["data_directory"]
+extension = config_vars["file_extension"]
+cluttermap_dir = config_vars["cluttermap_directory"]
+baseline_dir = config_vars["baseline_directory"]
+baseline_date = config_vars["baseline_date"]
+scantype = config_vars["scan_type"]
+polarization = config_vars["polarization"]
+site = config_vars["site_abbrev"]
+inst = config_vars["instrument_abbrev"]
+range_limit = config_vars["range_limit"]
 
 # Read in clutter map netCDF
-dataset = Dataset(cluttermap)
+dataset = Dataset(cluttermap_dir + "cluttermap_" + scantype + "_" + site + inst + "_" + "composite" + ".nc")
 if scantype == 'ppi':
     clutter_map_mask_h = dataset.variables["clutter_map_mask_zh"][:, :]
 elif scantype == 'rhi':
@@ -62,7 +51,7 @@ stats_v = []  # dictionary of statistics in V
 
 # Read in each radar file and turn into radar object and use function to
 # calculate 95th percentile clutter area reflectivity
-for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):
+for f in glob.glob(os.path.join(datadir, "*" + baseline_date + "*")):
     print(f)
     radar = file_to_radar_object(f,extension)
     if polarization == 'horizontal':
@@ -77,7 +66,7 @@ for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):
             dbz95_h.append(d95_h)
             stats_h.append(s_h)
         elif scantype == 'rhi':
-            dt, d95_h, s_h = calculate_dbz95_rhi(
+            dt, d95_h, s_h = calculate_dbz95_hsrhi(
                                 radar,
                                 polarization,
                                 range_limit,
@@ -95,7 +84,7 @@ for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):
         total_num_pts_h = np.sum(total_num_pts_h)
         # Write baseline 95th reflectivity values to a netCDF file
         d = Dataset(
-            baselinedir + "baseline_" + scantype + "_" + site + inst + "_" + date + ".nc",
+            baseline_dir + "baseline_" + scantype + "_" + site + inst + "_" + baseline_date + ".nc",
             "w",
             format="NETCDF4_CLASSIC",
         )
@@ -144,7 +133,7 @@ for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):
         total_num_pts_v = np.sum(total_num_pts_v)
         # Write baseline 95th reflectivity values to a netCDF file
         d = Dataset(
-            baselinedir + "baseline_" + scantype + "_" + site + inst + "_" + date + ".nc",
+            baseline_dir + "baseline_" + scantype + "_" + site + inst + "_" + baseline_date + ".nc",
             "w",
             format="NETCDF4_CLASSIC",
         )

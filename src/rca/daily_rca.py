@@ -17,13 +17,16 @@ and saves the daily median RCA value to a CSV file.
 """
 
 # Get variables from JSON configuration file
+
 date = ' ' # DEAL WITH THIS will be used for looping......
-radar_config_file = './kaband_ppi.json'
+radar_config_file = './kaband_ppi.json' # change this for for desired JSON file 
+
 config_vars = json.load(open(radar_config_file))
 datadir = config_vars["data_directory"]
 extension = config_vars["file_extension"]
-cluttermap = config_vars["cluttermap_path"]
-baseline = config_vars["baseline_path"]
+cluttermap_dir = config_vars["cluttermap_directory"]
+baseline_dir = config_vars["baseline_directory"]
+baseline_date = config_vars["baseline_date"]
 dailycsvdir = config_vars["daily_csv_dir"]
 scantype = config_vars["scan_type"]
 polarization = config_vars["polarization"]
@@ -31,11 +34,11 @@ site = config_vars["site_abbrev"]
 inst = config_vars["instrument_abbrev"]
 range_limit = config_vars["range_limit"]
 
-daily_csv_fullpath = dailycsvdir + "daily_rca_" + scantype + site + inst + ".csv"
+daily_csv_fullpath = dailycsvdir + "daily_rca_" + scantype + "_" + site + inst + ".csv"
 
 # Read in clutter map netCDF and baseline value netCDF
-dataset = Dataset(cluttermap)
-dataset_b = Dataset(baseline)
+dataset = Dataset(cluttermap_dir + "cluttermap_" + scantype + "_" + site + inst + "_" + "composite" + ".nc")
+dataset_b = Dataset(baseline_dir + "baseline_" + scantype + "_" + site + "_" + inst + "_" + baseline_date + ".nc")
 if scantype == 'ppi':
     clutter_map_mask_h = dataset.variables["clutter_map_mask_zh"][:, :]
     baseline_dbz95_h = dataset_b.variables["baseline_dbz95_zh"][:]
@@ -137,7 +140,7 @@ for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):
         base = 0  # set to 0 for daily RCA, set to 1 when calculating for baseline
         date = yr + "-" + mon + "-" + day
         # Create dictionary and dataframe
-        csv_frame = pd.read_csv(dailycsvdir + "daily_rca_" + scantype + "_" + site + "_" + inst + ".csv")
+        csv_frame = pd.read_csv(daily_csv_fullpath)
         rca_dict = {"DATE": date, "RCA_H": rca_h, "RCA_V": rca_v, "BASELINE": base}
         csv_frame = csv_frame.append(rca_dict, ignore_index=True)
         csv_frame.set_index("DATE")
