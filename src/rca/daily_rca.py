@@ -63,10 +63,10 @@ stats_v = []  # dictionary of statistics in V
 
 # Read in each radar file and turn into radar object and use function to
 # calculate 95th percentile clutter area reflectivity
-for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):
-    print(f)
-    radar = file_to_radar_object(f,extension)
-    if polarization == 'horizontal':
+if polarization == 'horizontal':
+    for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):
+        print(f)
+        radar = file_to_radar_object(f,extension)
         if scantype == 'ppi':
             dt, d95_h, s_h = calculate_dbz95_ppi(
                                 radar,
@@ -74,9 +74,6 @@ for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):
                                 range_limit,
                                 clutter_map_mask_h,
                                 clutter_mask_v=None)
-            date_time.append(dt)
-            dbz95_h.append(d95_h)
-            stats_h.append(s_h)
         elif scantype == 'rhi':
             dt, d95_h, s_h = calculate_dbz95_hsrhi(
                                 radar,
@@ -84,26 +81,30 @@ for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):
                                 range_limit,
                                 clutter_map_mask_h,
                                 clutter_mask_v=None)
-            date_time.append(dt)
-            dbz95_h.append(d95_h)
-            stats_h.append(s_h)
-        # Calculate median 95th percentile clutter area reflecitivty from all times in day
-        dbz95_h_mean = np.nanmedian(dbz95_h)
-        # Calculate RCA
-        rca_h = baseline_dbz95_h[0] - dbz95_h_mean
-        yr = date[0:4]
-        mon = date[4:6]
-        day = date[6:]
-        base = 0  # set to 0 for daily RCA, set to 1 when calculating for baseline
-        date = yr + "-" + mon + "-" + day
-        # Create dictionary and dataframe
-        csv_frame = pd.read_csv(dailycsvdir + "daily_rca_" + scantype + "_" + site + "_" + inst + ".csv")
-        rca_dict = {"DATE": date, "RCA_H": rca_h, "RCA_V": np.nan, "BASELINE": base}
-        csv_frame = csv_frame.append(rca_dict, ignore_index=True)
-        csv_frame.set_index("DATE")
-        csv_frame.to_csv(daily_csv_fullpath, index=False)
+        date_time.append(dt)
+        dbz95_h.append(d95_h)
+        stats_h.append(s_h)
+    # Calculate median 95th percentile clutter area reflecitivty from all times in day
+    dbz95_h_mean = np.nanmedian(dbz95_h)
+    # Calculate RCA
+    rca_h = baseline_dbz95_h[0] - dbz95_h_mean
+    yr = date[0:4]
+    mon = date[4:6]
+    day = date[6:]
+    base = 0  # set to 0 for daily RCA, set to 1 when calculating for baseline
+    date = yr + "-" + mon + "-" + day
+    # Create dictionary and dataframe
+    csv_frame = pd.read_csv(dailycsvdir + "daily_rca_" + scantype + "_" + site + "_" + inst + ".csv")
+    rca_dict = {"DATE": date, "RCA_H": rca_h, "RCA_V": np.nan, "BASELINE": base}
+    csv_frame = csv_frame.append(rca_dict, ignore_index=True)
+    csv_frame.set_index("DATE")
+    csv_frame.to_csv(daily_csv_fullpath, index=False)
 
-    elif polarization == 'dual':
+
+elif polarization == 'dual':
+    for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):
+        print(f)
+        radar = file_to_radar_object(f,extension)
         if scantype == 'ppi':
             dt, d95_h, d95_v, s_h, s_v = calculate_dbz95_ppi(
                                             radar,
@@ -111,11 +112,6 @@ for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):
                                             range_limit,
                                             clutter_map_mask_h,
                                             clutter_mask_v=clutter_map_mask_v)
-            date_time.append(dt)
-            dbz95_h.append(d95_h)
-            stats_h.append(s_h)
-            dbz95_v.append(d95_v)
-            stats_v.append(s_v)
         elif scantype == 'rhi':
             dt, d95_h, d95_v, s_h, s_v = calculate_dbz95_hsrhi(
                                             radar,
@@ -123,25 +119,26 @@ for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):
                                             range_limit,
                                             clutter_map_mask_h,
                                             clutter_mask_v=clutter_map_mask_v)
-            date_time.append(dt)
-            dbz95_h.append(d95_h)
-            stats_h.append(s_h)
-            dbz95_v.append(d95_v)
-            stats_v.append(s_v)
-        # Calculate median 95th percentile clutter area reflecitivty from all times in day
-        dbz95_h_mean = np.nanmedian(dbz95_h)
-        dbz95_v_mean = np.nanmedian(dbz95_v)
-        # Calculate RCA
-        rca_h = baseline_dbz95_h[0] - dbz95_h_mean
-        rca_v = baseline_dbz95_v[0] - dbz95_v_mean
-        yr = date[0:4]
-        mon = date[4:6]
-        day = date[6:]
-        base = 0  # set to 0 for daily RCA, set to 1 when calculating for baseline
-        date = yr + "-" + mon + "-" + day
-        # Create dictionary and dataframe
-        csv_frame = pd.read_csv(daily_csv_fullpath)
-        rca_dict = {"DATE": date, "RCA_H": rca_h, "RCA_V": rca_v, "BASELINE": base}
-        csv_frame = csv_frame.append(rca_dict, ignore_index=True)
-        csv_frame.set_index("DATE")
-        csv_frame.to_csv(daily_csv_fullpath, index=False)
+        date_time.append(dt)
+        dbz95_h.append(d95_h)
+        stats_h.append(s_h)
+        dbz95_v.append(d95_v)
+        stats_v.append(s_v)
+
+    # Calculate median 95th percentile clutter area reflecitivty from all times in day
+    dbz95_h_mean = np.nanmedian(dbz95_h)
+    dbz95_v_mean = np.nanmedian(dbz95_v)
+    # Calculate RCA
+    rca_h = baseline_dbz95_h[0] - dbz95_h_mean
+    rca_v = baseline_dbz95_v[0] - dbz95_v_mean
+    yr = date[0:4]
+    mon = date[4:6]
+    day = date[6:]
+    base = 0  # set to 0 for daily RCA, set to 1 when calculating for baseline
+    date = yr + "-" + mon + "-" + day
+    # Create dictionary and dataframe
+    csv_frame = pd.read_csv(daily_csv_fullpath)
+    rca_dict = {"DATE": date, "RCA_H": rca_h, "RCA_V": rca_v, "BASELINE": base}
+    csv_frame = csv_frame.append(rca_dict, ignore_index=True)
+    csv_frame.set_index("DATE")
+    csv_frame.to_csv(daily_csv_fullpath, index=False)

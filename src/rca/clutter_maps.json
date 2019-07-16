@@ -1,0 +1,10 @@
+{
+    "config": "clutter_maps",
+    "scan_type": "rhi",
+    "polarization": "horizontal",
+    "data_directory": "",
+    "file_extension": ".nc",
+    "cluttermap_directory": "",
+    "site_abbrev": "cor",
+    "instrument_abbrev": "kasacr"
+}

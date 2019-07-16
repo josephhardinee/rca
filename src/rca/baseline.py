@@ -51,50 +51,51 @@ stats_v = []  # dictionary of statistics in V
 
 # Read in each radar file and turn into radar object and use function to
 # calculate 95th percentile clutter area reflectivity
-for f in glob.glob(os.path.join(datadir, "*" + baseline_date + "*")):
-    print(f)
-    radar = file_to_radar_object(f,extension)
-    if polarization == 'horizontal':
+if polarization == 'horizontal':
+    for f in glob.glob(os.path.join(datadir, "*" + baseline_date + "*")):
+        print(f)
+        radar = file_to_radar_object(f,extension)
         if scantype == 'ppi':
             dt, d95_h, s_h = calculate_dbz95_ppi(
-                                radar,
-                                polarization,
-                                range_limit,
-                                clutter_map_mask_h,
-                                clutter_mask_v=None)
-            date_time.append(dt)
-            dbz95_h.append(d95_h)
-            stats_h.append(s_h)
+                                    radar,
+                                    polarization,
+                                    range_limit,
+                                    clutter_map_mask_h,
+                                    clutter_mask_v=None)
         elif scantype == 'rhi':
             dt, d95_h, s_h = calculate_dbz95_hsrhi(
-                                radar,
-                                polarization,
-                                range_limit,
-                                clutter_map_mask_h,
-                                clutter_mask_v=None)
-            date_time.append(dt)
-            dbz95_h.append(d95_h)
-            stats_h.append(s_h)
-        # Calculate median 95th percentile clutter area reflecitivty from all times in day
-        dbz95_h_baseline = np.nanmedian(dbz95_h)
-        # Calculate total number of radar gates used in calculation
-        total_num_pts_h = []
-        for i in range(0, len(stats_h)):
-            total_num_pts_h.append(stats_h[i]["num_points"])
-        total_num_pts_h = np.sum(total_num_pts_h)
-        # Write baseline 95th reflectivity values to a netCDF file
-        d = Dataset(
-            baseline_dir + "baseline_" + scantype + "_" + site + inst + "_" + baseline_date + ".nc",
-            "w",
-            format="NETCDF4_CLASSIC",
-        )
-        value = d.createDimension("value", 1)
-        dbz95_h_base = d.createVariable("baseline_dbz95_zh", np.float64, ("value",))
-        dbz95_h_base.long_name = "Baseline 95th percentile reflectivity (H)"
-        dbz95_h_base[:] = dbz95_h_baseline
-        d.close()
+                                    radar,
+                                    polarization,
+                                    range_limit,
+                                    clutter_map_mask_h,
+                                    clutter_mask_v=None)
+        date_time.append(dt)
+        dbz95_h.append(d95_h)
+        stats_h.append(s_h)
+    # Calculate median 95th percentile clutter area reflecitivty from all times in day
+    dbz95_h_baseline = np.nanmedian(dbz95_h)
+    # Calculate total number of radar gates used in calculation
+    total_num_pts_h = []
+    for i in range(0, len(stats_h)):
+        total_num_pts_h.append(stats_h[i]["num_points"])
+    total_num_pts_h = np.sum(total_num_pts_h)
+    # Write baseline 95th reflectivity values to a netCDF file
+    d = Dataset(
+        baseline_dir + "baseline_" + scantype + "_" + site + inst + "_" + baseline_date + ".nc",
+        "w",
+        format="NETCDF4_CLASSIC",
+    )
+    value = d.createDimension("value", 1)
+    dbz95_h_base = d.createVariable("baseline_dbz95_zh", np.float64, ("value",))
+    dbz95_h_base.long_name = "Baseline 95th percentile reflectivity (H)"
+    dbz95_h_base[:] = dbz95_h_baseline
+    d.close()
 
-    elif polarization == 'dual':
+
+elif polarization == 'dual':
+    for f in glob.glob(os.path.join(datadir, "*" + baseline_date + "*")):
+        print(f)
+        radar = file_to_radar_object(f,extension)
         if scantype == 'ppi':
             dt, d95_h, d95_v, s_h, s_v = calculate_dbz95_ppi(
                                             radar,
@@ -102,11 +103,6 @@ for f in glob.glob(os.path.join(datadir, "*" + baseline_date + "*")):
                                             range_limit,
                                             clutter_map_mask_h,
                                             clutter_mask_v=clutter_map_mask_v)
-            date_time.append(dt)
-            dbz95_h.append(d95_h)
-            stats_h.append(s_h)
-            dbz95_v.append(d95_v)
-            stats_v.append(s_v)
         elif scantype == 'rhi':
             dt, d95_h, d95_v, s_h, s_v = calculate_dbz95_hsrhi(
                                             radar,
@@ -114,37 +110,38 @@ for f in glob.glob(os.path.join(datadir, "*" + baseline_date + "*")):
                                             range_limit,
                                             clutter_map_mask_h,
                                             clutter_mask_v=clutter_map_mask_v)
-            date_time.append(dt)
-            dbz95_h.append(d95_h)
-            stats_h.append(s_h)
-            dbz95_v.append(d95_v)
-            stats_v.append(s_v)
-        # Calculate median 95th percentile clutter area reflecitivty from all times in day
-        dbz95_h_baseline = np.nanmedian(dbz95_h)
-        dbz95_v_baseline = np.nanmedian(dbz95_v)
-        # Calculate total number of radar gates used in calculation
-        total_num_pts_h = []
-        for i in range(0, len(stats_h)):
-            total_num_pts_h.append(stats_h[i]["num_points"])
-        total_num_pts_h = np.sum(total_num_pts_h)
-        total_num_pts_v = []
-        for i in range(0, len(stats_v)):
-            total_num_pts_v.append(stats_v[i]["num_points"])
-        total_num_pts_v = np.sum(total_num_pts_v)
-        # Write baseline 95th reflectivity values to a netCDF file
-        d = Dataset(
-            baseline_dir + "baseline_" + scantype + "_" + site + inst + "_" + baseline_date + ".nc",
-            "w",
-            format="NETCDF4_CLASSIC",
-        )
-        value = d.createDimension("value", 1)
-        dbz95_h_base = d.createVariable("baseline_dbz95_zh", np.float64, ("value",))
-        dbz95_v_base = d.createVariable("baseline_dbz95_zv", np.float64, ("value",))
-        dbz95_h_base.long_name = "Baseline 95th percentile reflectivity (H)"
-        dbz95_v_base.long_name = "Baseline 95th percentile reflectivity (V)"
-        dbz95_h_base[:] = dbz95_h_baseline
-        dbz95_v_base[:] = dbz95_v_baseline
-        d.close()
+        date_time.append(dt)
+        dbz95_h.append(d95_h)
+        stats_h.append(s_h)
+        dbz95_v.append(d95_v)
+        stats_v.append(s_v)
+    
+    # Calculate median 95th percentile clutter area reflecitivty from all times in day
+    dbz95_h_baseline = np.nanmedian(dbz95_h)
+    dbz95_v_baseline = np.nanmedian(dbz95_v)
+    # Calculate total number of radar gates used in calculation
+    total_num_pts_h = []
+    for i in range(0, len(stats_h)):
+        total_num_pts_h.append(stats_h[i]["num_points"])
+    total_num_pts_h = np.sum(total_num_pts_h)
+    total_num_pts_v = []
+    for i in range(0, len(stats_v)):
+        total_num_pts_v.append(stats_v[i]["num_points"])
+    total_num_pts_v = np.sum(total_num_pts_v)
+    # Write baseline 95th reflectivity values to a netCDF file
+    d = Dataset(
+        baseline_dir + "baseline_" + scantype + "_" + site + inst + "_" + baseline_date + ".nc",
+        "w",
+        format="NETCDF4_CLASSIC",
+    )
+    value = d.createDimension("value", 1)
+    dbz95_h_base = d.createVariable("baseline_dbz95_zh", np.float64, ("value",))
+    dbz95_v_base = d.createVariable("baseline_dbz95_zv", np.float64, ("value",))
+    dbz95_h_base.long_name = "Baseline 95th percentile reflectivity (H)"
+    dbz95_v_base.long_name = "Baseline 95th percentile reflectivity (V)"
+    dbz95_h_base[:] = dbz95_h_baseline
+    dbz95_v_base[:] = dbz95_v_baseline
+    d.close()
     
 
 
