@@ -5,6 +5,7 @@ from netCDF4 import Dataset
 # 1) get_pct_on_clutter_map_ppi: extracts clutter flag/mask for a PPI clutter map
 # 2) get_pct_on_clutter_map_hsrhi: creates extracts clutter flag/mask for an HSRHI clutter map
 
+
 def get_pct_on_clutter_map_ppi(filename, polarization):
     "Grabbing clutter maps percentages and clutter map masks from files"
     """
@@ -34,21 +35,26 @@ def get_pct_on_clutter_map_ppi(filename, polarization):
                     array of shape (azimuth, range) percentage occurrence values of clutter map elements in the V polarization
     """
     d = Dataset(filename)
-    if polarization == 'horizontal':
-        clutter_map_mask_h = d.variables['clutter_map_mask_zh'][:,:]
-        clutter_map_pcts_h = d.variables['clutter_gate_pcts_zh'][:,:]
-        d.close()
-        
-        return clutter_map_mask_h, clutter_map_pcts_h
-    
-    elif polarization == 'dual':   
-        clutter_map_mask_h = d.variables['clutter_map_mask_zh'][:,:]
-        clutter_map_mask_v = d.variables['clutter_map_mask_zv'][:,:]
-        clutter_map_pcts_h = d.variables['clutter_gate_pcts_zh'][:,:]
-        clutter_map_pcts_v = d.variables['clutter_gate_pcts_zv'][:,:]
+    if polarization == "horizontal":
+        clutter_map_mask_h = d.variables["clutter_map_mask_zh"][:, :]
+        clutter_map_pcts_h = d.variables["clutter_gate_pcts_zh"][:, :]
         d.close()
 
-        return clutter_map_mask_h, clutter_map_mask_v, clutter_map_pcts_h, clutter_map_pcts_v
+        return clutter_map_mask_h, clutter_map_pcts_h
+
+    elif polarization == "dual":
+        clutter_map_mask_h = d.variables["clutter_map_mask_zh"][:, :]
+        clutter_map_mask_v = d.variables["clutter_map_mask_zv"][:, :]
+        clutter_map_pcts_h = d.variables["clutter_gate_pcts_zh"][:, :]
+        clutter_map_pcts_v = d.variables["clutter_gate_pcts_zv"][:, :]
+        d.close()
+
+        return (
+            clutter_map_mask_h,
+            clutter_map_mask_v,
+            clutter_map_pcts_h,
+            clutter_map_pcts_v,
+        )
 
 
 def get_pct_on_clutter_map_hsri(filename, polarization):
@@ -80,19 +86,23 @@ def get_pct_on_clutter_map_hsri(filename, polarization):
                     array of shape (azimuth, elevation, range) percentage occurrence values of clutter map elements in the V polarization
     """
     d = Dataset(filename)
-    if polarization == 'horizontal':
-        clutter_map_mask_h = d.variables['clutter_map_mask_zh'][:,:]
-        clutter_map_pcts_h = d.variables['clutter_gate_pcts_zh'][:,:]
-        d.close()
-        
-        return clutter_map_mask_h, clutter_map_pcts_h
-    
-    elif polarization == 'dual':   
-        clutter_map_mask_h = d.variables['clutter_map_mask_zh'][:,:]
-        clutter_map_mask_v = d.variables['clutter_map_mask_zv'][:,:]
-        clutter_map_pcts_h = d.variables['clutter_gate_pcts_zh'][:,:]
-        clutter_map_pcts_v = d.variables['clutter_gate_pcts_zv'][:,:]
+    if polarization == "horizontal":
+        clutter_map_mask_h = d.variables["clutter_map_mask_zh"][:, :]
+        clutter_map_pcts_h = d.variables["clutter_gate_pcts_zh"][:, :]
         d.close()
 
-        return clutter_map_mask_h, clutter_map_mask_v, clutter_map_pcts_h, clutter_map_pcts_v
-     
+        return clutter_map_mask_h, clutter_map_pcts_h
+
+    elif polarization == "dual":
+        clutter_map_mask_h = d.variables["clutter_map_mask_zh"][:, :]
+        clutter_map_mask_v = d.variables["clutter_map_mask_zv"][:, :]
+        clutter_map_pcts_h = d.variables["clutter_gate_pcts_zh"][:, :]
+        clutter_map_pcts_v = d.variables["clutter_gate_pcts_zv"][:, :]
+        d.close()
+
+        return (
+            clutter_map_mask_h,
+            clutter_map_mask_v,
+            clutter_map_pcts_h,
+            clutter_map_pcts_v,
+        )

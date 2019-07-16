@@ -16,7 +16,7 @@ and saves the value to a netcdf as the baseline 95th percentile clutter area ref
 
 # Get variables from JSON configuration file
 
-radar_config_file = './kaband_ppi.json' # change this for for desired JSON file 
+radar_config_file = "./kaband_ppi.json"  # change this for for desired JSON file
 
 config_vars = json.load(open(radar_config_file))
 datadir = config_vars["data_directory"]
@@ -31,14 +31,24 @@ inst = config_vars["instrument_abbrev"]
 range_limit = config_vars["range_limit"]
 
 # Read in clutter map netCDF
-dataset = Dataset(cluttermap_dir + "cluttermap_" + scantype + "_" + site + inst + "_" + "composite" + ".nc")
-if scantype == 'ppi':
+dataset = Dataset(
+    cluttermap_dir
+    + "cluttermap_"
+    + scantype
+    + "_"
+    + site
+    + inst
+    + "_"
+    + "composite"
+    + ".nc"
+)
+if scantype == "ppi":
     clutter_map_mask_h = dataset.variables["clutter_map_mask_zh"][:, :]
-elif scantype == 'rhi':
+elif scantype == "rhi":
     clutter_map_mask_h = dataset.variables["clutter_map_mask_zh"][:, :, :]
-if polarization == 'dual' and scantype == 'ppi':
+if polarization == "dual" and scantype == "ppi":
     clutter_map_mask_v = dataset.variables["clutter_map_mask_zv"][:, :]
-elif polarization == 'dual' and scantype == 'rhi':
+elif polarization == "dual" and scantype == "rhi":
     clutter_map_mask_v = dataset.variables["clutter_map_mask_zv"][:, :, :]
 dataset.close()
 
@@ -51,24 +61,26 @@ stats_v = []  # dictionary of statistics in V
 
 # Read in each radar file and turn into radar object and use function to
 # calculate 95th percentile clutter area reflectivity
-if polarization == 'horizontal':
+if polarization == "horizontal":
     for f in glob.glob(os.path.join(datadir, "*" + baseline_date + "*")):
         print(f)
-        radar = file_to_radar_object(f,extension)
-        if scantype == 'ppi':
+        radar = file_to_radar_object(f, extension)
+        if scantype == "ppi":
             dt, d95_h, s_h = calculate_dbz95_ppi(
-                                    radar,
-                                    polarization,
-                                    range_limit,
-                                    clutter_map_mask_h,
-                                    clutter_mask_v=None)
-        elif scantype == 'rhi':
+                radar,
+                polarization,
+                range_limit,
+                clutter_map_mask_h,
+                clutter_mask_v=None,
+            )
+        elif scantype == "rhi":
             dt, d95_h, s_h = calculate_dbz95_hsrhi(
-                                    radar,
-                                    polarization,
-                                    range_limit,
-                                    clutter_map_mask_h,
-                                    clutter_mask_v=None)
+                radar,
+                polarization,
+                range_limit,
+                clutter_map_mask_h,
+                clutter_mask_v=None,
+            )
         date_time.append(dt)
         dbz95_h.append(d95_h)
         stats_h.append(s_h)
@@ -81,7 +93,15 @@ if polarization == 'horizontal':
     total_num_pts_h = np.sum(total_num_pts_h)
     # Write baseline 95th reflectivity values to a netCDF file
     d = Dataset(
-        baseline_dir + "baseline_" + scantype + "_" + site + inst + "_" + baseline_date + ".nc",
+        baseline_dir
+        + "baseline_"
+        + scantype
+        + "_"
+        + site
+        + inst
+        + "_"
+        + baseline_date
+        + ".nc",
         "w",
         format="NETCDF4_CLASSIC",
     )
@@ -92,30 +112,32 @@ if polarization == 'horizontal':
     d.close()
 
 
-elif polarization == 'dual':
+elif polarization == "dual":
     for f in glob.glob(os.path.join(datadir, "*" + baseline_date + "*")):
         print(f)
-        radar = file_to_radar_object(f,extension)
-        if scantype == 'ppi':
+        radar = file_to_radar_object(f, extension)
+        if scantype == "ppi":
             dt, d95_h, d95_v, s_h, s_v = calculate_dbz95_ppi(
-                                            radar,
-                                            polarization,
-                                            range_limit,
-                                            clutter_map_mask_h,
-                                            clutter_mask_v=clutter_map_mask_v)
-        elif scantype == 'rhi':
+                radar,
+                polarization,
+                range_limit,
+                clutter_map_mask_h,
+                clutter_mask_v=clutter_map_mask_v,
+            )
+        elif scantype == "rhi":
             dt, d95_h, d95_v, s_h, s_v = calculate_dbz95_hsrhi(
-                                            radar,
-                                            polarization,
-                                            range_limit,
-                                            clutter_map_mask_h,
-                                            clutter_mask_v=clutter_map_mask_v)
+                radar,
+                polarization,
+                range_limit,
+                clutter_map_mask_h,
+                clutter_mask_v=clutter_map_mask_v,
+            )
         date_time.append(dt)
         dbz95_h.append(d95_h)
         stats_h.append(s_h)
         dbz95_v.append(d95_v)
         stats_v.append(s_v)
-    
+
     # Calculate median 95th percentile clutter area reflecitivty from all times in day
     dbz95_h_baseline = np.nanmedian(dbz95_h)
     dbz95_v_baseline = np.nanmedian(dbz95_v)
@@ -130,7 +152,15 @@ elif polarization == 'dual':
     total_num_pts_v = np.sum(total_num_pts_v)
     # Write baseline 95th reflectivity values to a netCDF file
     d = Dataset(
-        baseline_dir + "baseline_" + scantype + "_" + site + inst + "_" + baseline_date + ".nc",
+        baseline_dir
+        + "baseline_"
+        + scantype
+        + "_"
+        + site
+        + inst
+        + "_"
+        + baseline_date
+        + ".nc",
         "w",
         format="NETCDF4_CLASSIC",
     )
@@ -142,6 +172,3 @@ elif polarization == 'dual':
     dbz95_h_base[:] = dbz95_h_baseline
     dbz95_v_base[:] = dbz95_v_baseline
     d.close()
-    
-
-

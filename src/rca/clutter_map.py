@@ -11,7 +11,7 @@ from file_to_radar_object import file_to_radar_object
 
 # Get variables from JSON configuration file
 
-radar_config_file = './kaband_ppi.json' # change this for for desired JSON file 
+radar_config_file = "./kaband_ppi.json"  # change this for for desired JSON file
 
 config_vars = json.load(open(radar_config_file))
 datadir = config_vars["data_directory"]
@@ -30,15 +30,13 @@ clutter_flag_h = []
 clutter_flag_v = []
 date_time = []  # date and time, string
 
-if polarization == 'horizontal' and scantype == 'ppi':
+if polarization == "horizontal" and scantype == "ppi":
     for f in glob.glob(os.path.join(datadir, "*" + cluttermap_date + "*.??")):
         print(f)
-        radar = file_to_radar_object(f,extension)
+        radar = file_to_radar_object(f, extension)
         dt, cflag_h = create_clutter_flag_ppi(
-                                radar,
-                                polarization,
-                                range_limit,
-                                z_thresh)
+            radar, polarization, range_limit, z_thresh
+        )
         clutter_flag_h.append(cflag_h)
         date_time.append(dt)
     # Calculate percentage of "clutter ON" for each grid box in clutter map grid
@@ -48,7 +46,15 @@ if polarization == 'horizontal' and scantype == 'ppi':
     clutter_map_h_mask = pct_h > 0.5
     # Write clutter map arrays to netCDF file
     dataset = Dataset(
-        cluttermap_dir + "cluttermap_" + scantype + "_" + site + inst + "_" + cluttermap_date + ".nc",
+        cluttermap_dir
+        + "cluttermap_"
+        + scantype
+        + "_"
+        + site
+        + inst
+        + "_"
+        + cluttermap_date
+        + ".nc",
         "w",
         format="NETCDF4_CLASSIC",
     )
@@ -65,15 +71,13 @@ if polarization == 'horizontal' and scantype == 'ppi':
     HMASK[:, :] = clutter_map_h_mask
     dataset.close()
 
-elif polarization == 'horizontal' and scantype == 'rhi':
+elif polarization == "horizontal" and scantype == "rhi":
     for f in glob.glob(os.path.join(datadir, "*" + cluttermap_date + "*.??")):
         print(f)
-        radar = file_to_radar_object(f,extension)
+        radar = file_to_radar_object(f, extension)
         dt, cflag_h = create_clutter_flag_hsrhi(
-                            radar,
-                            polarization,
-                            range_limit,
-                            z_thresh)
+            radar, polarization, range_limit, z_thresh
+        )
         clutter_flag_h.append(cflag_h)
         date_time.append(dt)
     # Calculate percentage of "clutter ON" for each grid box in clutter map grid
@@ -83,7 +87,15 @@ elif polarization == 'horizontal' and scantype == 'rhi':
     clutter_map_h_mask = pct_h > 0.5
     # Write clutter map arrays to netCDF file
     dataset = Dataset(
-        cluttermap_dir + "cluttermap_" + scantype + "_" + site + inst + "_" + cluttermap_date + ".nc",
+        cluttermap_dir
+        + "cluttermap_"
+        + scantype
+        + "_"
+        + site
+        + inst
+        + "_"
+        + cluttermap_date
+        + ".nc",
         "w",
         format="NETCDF4_CLASSIC",
     )
@@ -94,24 +106,20 @@ elif polarization == 'horizontal' and scantype == 'rhi':
     HPCT_ON = dataset.createVariable(
         "clutter_gate_pcts_zh", np.float64, ("azi", "ele", "rang")
     )
-    HMASK = dataset.createVariable(
-        "clutter_map_mask_zh", "i1", ("azi", "ele", "rang")
-    )
+    HMASK = dataset.createVariable("clutter_map_mask_zh", "i1", ("azi", "ele", "rang"))
     HPCT_ON.long_name = "Clutter grid gate percentages (Zh)"
     HMASK.long_name = "Clutter map mask (Zh)"
     HPCT_ON[:, :, :] = pct_h
     HMASK[:, :, :] = clutter_map_h_mask
     dataset.close()
-    
-elif polarization == 'dual' and scantype == 'ppi':
+
+elif polarization == "dual" and scantype == "ppi":
     for f in glob.glob(os.path.join(datadir, "*" + cluttermap_date + "*.??")):
         print(f)
-        radar = file_to_radar_object(f,extension)
+        radar = file_to_radar_object(f, extension)
         dt, cflag_h, cflag_v = create_clutter_flag_ppi(
-                                    radar,
-                                    polarization,
-                                    range_limit,
-                                    z_thresh)
+            radar, polarization, range_limit, z_thresh
+        )
         clutter_flag_h.append(cflag_h)
         clutter_flag_v.append(cflag_v)
         date_time.append(dt)
@@ -125,7 +133,15 @@ elif polarization == 'dual' and scantype == 'ppi':
     clutter_map_v_mask = pct_v > 0.5
     # Write clutter map arrays to netCDF file
     dataset = Dataset(
-        cluttermap_dir + "cluttermap_" + scantype + "_" + site + inst + "_" + cluttermap_date + ".nc",
+        cluttermap_dir
+        + "cluttermap_"
+        + scantype
+        + "_"
+        + site
+        + inst
+        + "_"
+        + cluttermap_date
+        + ".nc",
         "w",
         format="NETCDF4_CLASSIC",
     )
@@ -136,8 +152,8 @@ elif polarization == 'dual' and scantype == 'ppi':
         "clutter_gate_pcts_zh", np.float64, ("azi", "rang")
     )
     VPCT_ON = dataset.createVariable(
-            "clutter_gate_pcts_zv", np.float64, ("azi", "rang")
-        )
+        "clutter_gate_pcts_zv", np.float64, ("azi", "rang")
+    )
     HMASK = dataset.createVariable("clutter_map_mask_zh", "i1", ("azi", "rang"))
     VMASK = dataset.createVariable("clutter_map_mask_zv", "i1", ("azi", "rang"))
     HPCT_ON.long_name = "Clutter grid gate percentages (Zh)"
@@ -150,15 +166,13 @@ elif polarization == 'dual' and scantype == 'ppi':
     VMASK[:, :] = clutter_map_v_mask
     dataset.close()
 
-elif polarization == 'dual' and scantype == 'rhi':
+elif polarization == "dual" and scantype == "rhi":
     for f in glob.glob(os.path.join(datadir, "*" + cluttermap_date + "*.??")):
         print(f)
-        radar = file_to_radar_object(f,extension)
+        radar = file_to_radar_object(f, extension)
         dt, cflag_h, cflag_v = create_clutter_flag_hsrhi(
-                                    radar,
-                                    polarization,
-                                    range_limit,
-                                    z_thresh)
+            radar, polarization, range_limit, z_thresh
+        )
         clutter_flag_h.append(cflag_h)
         clutter_flag_v.append(cflag_v)
         date_time.append(dt)
@@ -172,7 +186,15 @@ elif polarization == 'dual' and scantype == 'rhi':
     clutter_map_v_mask = pct_v > 0.5
     # Write clutter map arrays to netCDF file
     dataset = Dataset(
-        cluttermap_dir + "cluttermap_" + scantype + "_" + site + inst + "_" + cluttermap_date + ".nc",
+        cluttermap_dir
+        + "cluttermap_"
+        + scantype
+        + "_"
+        + site
+        + inst
+        + "_"
+        + cluttermap_date
+        + ".nc",
         "w",
         format="NETCDF4_CLASSIC",
     )
@@ -186,12 +208,8 @@ elif polarization == 'dual' and scantype == 'rhi':
     VPCT_ON = dataset.createVariable(
         "clutter_gate_pcts_zv", np.float64, ("azi", "ele", "rang")
     )
-    HMASK = dataset.createVariable(
-        "clutter_map_mask_zh", "i1", ("azi", "ele", "rang")
-    )
-    VMASK = dataset.createVariable(
-        "clutter_map_mask_zv", "i1", ("azi", "ele", "rang")
-    )
+    HMASK = dataset.createVariable("clutter_map_mask_zh", "i1", ("azi", "ele", "rang"))
+    VMASK = dataset.createVariable("clutter_map_mask_zv", "i1", ("azi", "ele", "rang"))
     HPCT_ON.long_name = "Clutter grid gate percentages (Zh)"
     VPCT_ON.long_name = "Clutter grid gate percentages (Zv)"
     HMASK.long_name = "Clutter map mask (Zh)"
@@ -201,4 +219,3 @@ elif polarization == 'dual' and scantype == 'rhi':
     HMASK[:, :, :] = clutter_map_h_mask
     VMASK[:, :, :] = clutter_map_v_mask
     dataset.close()
-
