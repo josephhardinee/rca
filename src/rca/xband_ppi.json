@@ -1,0 +1,16 @@
+{
+    "config": "xband_ppi",
+    "scan_type": "ppi",
+    "polarization": "dual",
+    "data_directory": "/home/alexishunzinger/data/proj-shared/data_transfer/cor/corxsacrcfrppiM1.a1/",
+    "file_extension": ".nc",
+    "cluttermap_directory": "/home/alexishunzinger/projects/rca_aux/clutter_maps/",
+    "cluttermap_date": "20181105",
+    "baseline_directory": "/home/alexishunzinger/projects/rca_aux/baselines/",
+    "baseline_date": "20181108",
+    "daily_csv_dir": "/home/alexishunzinger/projects/rca_aux/dailies/",
+    "site_abbrev": "ena",
+    "instrument_abbrev": "xsapr2",
+    "range_limit": 10000,
+    "z_threshold": 40
+}
