@@ -1,0 +1,16 @@
+{
+    "config": "cband_rhi",
+    "scan_type": "rhi",
+    "polarization": "dual",
+    "data_directory": "/home/alexishunzinger/data/proj-shared/data_transfer/cor/corcsapr2cfrhsrhiM1.a1/",
+    "file_extension": ".nc",
+    "cluttermap_directory": "/home/alexishunzinger/projects/rca_aux/clutter_maps/",
+    "cluttermap_date": "20181105",
+    "baseline_directory": "/home/alexishunzinger/projects/rca_aux/baselines/",
+    "baseline_date": "20181108",
+    "daily_csv_dir": "/home/alexishunzinger/projects/rca_aux/dailies/",
+    "site_abbrev": "cor",
+    "instrument_abbrev": "csapr2",
+    "range_limit": 40000,
+    "z_threshold": 45
+}
