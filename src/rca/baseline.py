@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import sys
 import numpy as np
 import os
 import glob
@@ -126,7 +125,8 @@ def baseline(radar_config_file):
         dbz95_h_base.long_name = "Baseline 95th percentile reflectivity (H)"
         dbz95_h_base[:] = dbz95_h_baseline
         d.close()
-
+        
+        return dbz95_h_baseline
 
     elif polarization == "dual":
         for f in glob.glob(os.path.join(datadir, "*" + baseline_date + "*")):
@@ -188,3 +188,5 @@ def baseline(radar_config_file):
         dbz95_h_base[:] = dbz95_h_baseline
         dbz95_v_base[:] = dbz95_v_baseline
         d.close()
+        
+        return dbz95_h_baseline, dbz95_v_baseline

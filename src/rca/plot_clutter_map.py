@@ -1,3 +1,5 @@
+import matplotlib.pyplot as plt
+import numpy as np
 # plot_clutter_map.py
 
 # Generic plotting function for clutter maps
@@ -10,7 +12,7 @@ location = ''
 site = ''
 inst = ''
 
-def plot_clutter_map(clutter_map_netcdf,output_directory,scan_type,map_type,polarization,max_range):
+def plot_clutter_map(clutter_map_netcdf,output_directory,scan_type,map_type,polarization,max_range,site,inst,location):
     """
     plot_clutter_map
 
@@ -35,6 +37,15 @@ def plot_clutter_map(clutter_map_netcdf,output_directory,scan_type,map_type,pola
      max_range: int
              maximum range to plot, in km
              i.e. 5, 10, 40
+     site: str
+             3-letter site abbreviation
+             i.e. 'cor', 'ena'
+     inst: str
+             instrument name
+             i.e. 'csapr2', 'kasacr'
+     location: str
+             site and instrument in all caps, no breaks for titling
+             i.e. 'CORCSAPR2', 'ENAXSAPR2'
                        
      Returns:
      --------------
