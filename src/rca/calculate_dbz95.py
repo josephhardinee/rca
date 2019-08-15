@@ -5,7 +5,10 @@ from create_masks import create_az_mask_ppi, create_az_mask_hsrhi
 # 1) calculate_dbz95_ppi
 # 2) calculate_db95_hsrhi
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2741a3075dd0fe8e3ed14e396e40b845118aa832
 def calculate_dbz95_ppi(
     radar, polarization, range_limit, clutter_mask_h, clutter_mask_v=None
 ):
