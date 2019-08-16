@@ -2,15 +2,9 @@
     "config": "clutter_maps",
     "scan_type": "rhi",
     "polarization": "horizontal",
-<<<<<<< HEAD
-    "data_directory": "",
-    "file_extension": ".nc",
-    "cluttermap_directory": "",
-=======
     "data_directory": "/home/alexishunzinger/data/proj-shared/data_transfer/cor/corcsapr2cfrppiM1.a1/",
     "file_extension": ".nc",
     "cluttermap_directory": "/home/alexishunzinger/projects/rca_aux/clutter_maps/",
->>>>>>> 2741a3075dd0fe8e3ed14e396e40b845118aa832
     "site_abbrev": "cor",
     "instrument_abbrev": "kasacr"
 }

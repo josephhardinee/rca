@@ -7,7 +7,6 @@ import numpy as np
 from netCDF4 import Dataset
 #sys.path.append('/home/alexishunzinger/projects/github/rca/src/rca/')
 #from get_pct_on_clutter_map import get_pct_on_clutter_map_ppi, get_pct_on_clutter_map_hsrhi
-import get_pct_on_clutter_map as get
 
 def composite_clutter_map(radar_config_file):
     """
@@ -48,7 +47,7 @@ def composite_clutter_map(radar_config_file):
     clutter_mask_v = []
     clutter_pct_h = []
     clutter_pct_v = []
-
+    
     if polarization == "horizontal" and scantype == "ppi":
         for f in glob.glob(
             os.path.join(
@@ -100,6 +99,7 @@ def composite_clutter_map(radar_config_file):
             # Append output from each HSRHI file to lists
             clutter_mask_h.append(ClutterMaskH)
             clutter_pct_h.append(ClutterPCTH)
+        
 
         array_h = np.zeros(
             (
