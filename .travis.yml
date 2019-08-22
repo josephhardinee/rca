@@ -14,3 +14,4 @@ install:
 # command to run tests
 script:
   - pytest
+install: pip install --user -r requirements.txt
