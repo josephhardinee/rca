@@ -1,17 +1,39 @@
+sudo: false
 language: python
-python:
-  - "2.7"
-  - "3.4"
-  - "3.5"
-  - "3.6"      # current detault Python on Travis CI
-  - "3.7"
-  - "3.7-dev"  # 3.7 development branch
-  - "3.8-dev"  # 3.8 development branch
-  - "nightly"  # nightly build
-# command to install dependencies
-install:
-  - pip install -r requirements.txt
-# command to run tests
-script:
-  - pytest
-install: pip install --user -r requirements.txt
+
+matrix:
+  include:
+  - python: '3.5'
+    env:
+    - PYTHON_VERSION="3.5"
+    - PYTEST_ARGS=""
+    - COVERALLS="true"
+  - python: '3.6'
+    env:
+    - PYTHON_VERSION="3.6"
+    - PYTEST_ARGS=""
+    - COVERALLS="true"
+  - python: '3.6'
+    env:
+    - PYTHON_VERSION="3.6"
+    - PYTEST_ARGS=""
+    - COVERALLS="true"
+    - DOC_BUILD="true"
+  - python: '3.7-dev'
+    env:
+    - PYTHON_VERSION="3.7"
+    - PYTEST_ARGS=""
+    - COVERALLS="true"
+    allow_failures:
+      python: "3.7-dev"
+
+before_install:
+- pip install pytest pytest-cov
+- pip install coveralls
+install: source continuous_integration/install.sh
+script: eval xvfb-run python -m pytest $PYTEST_ARGS
+#script: eval xvfb-run nosetests $NOSE_ARGS
+#after_success:
+#- coveralls
+#- if [[ "$DOC_BUILD" == "true" ]]; then cd $TRAVIS_BUILD_DIR; source continuous_integration/build_docs.sh;
+#  fi
