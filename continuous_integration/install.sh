@@ -32,7 +32,7 @@ source activate testenv
 
 # Install dependencies
 
-conda install -c conda-forge pandas pytest pytest-cov=2.5 sphinx_rtd_theme numpy scipy matplotlib netcdf4 nose sphinx numpydoc hdf4=4.2.12 pyart
+conda install -c conda-forge pandas pytest pytest-cov=2.5 sphinx_rtd_theme numpy scipy matplotlib netcdf4 nose sphinx numpydoc hdf4=4.2.12 arm_pyart
 
 pip install sphinx-gallery nose-cov
 
