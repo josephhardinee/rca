@@ -27,7 +27,7 @@ import string
 
 def plot_rca_timeseries_oneradar(rca_file,output_directory,baseline_date,polarization,scan_type):
     """
-    plot_rca_timeseries
+    plot_rca_timeseries_oneradar
 
      Parameters:
      --------------
