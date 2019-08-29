@@ -6,6 +6,7 @@ import json
 from netCDF4 import Dataset
 import pandas as pd
 from file_to_radar_object import file_to_radar_object
+from get_var_arrays_from_radar_object import get_var_arrays_from_radar_object
 from calculate_dbz95 import calculate_dbz95_ppi, calculate_dbz95_hsrhi
 
 def daily_rca(radar_config_file,date):
@@ -106,9 +107,10 @@ def daily_rca(radar_config_file,date):
         for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):
             print(f)
             radar = file_to_radar_object(f, extension)
+            var_dict = get_var_arrays_from_radar_object(radar, radar_config_file)
             if scantype == "ppi":
                 dt, d95_h, s_h = calculate_dbz95_ppi(
-                    radar,
+                    var_dict,
                     polarization,
                     range_limit,
                     clutter_map_mask_h,
@@ -116,7 +118,7 @@ def daily_rca(radar_config_file,date):
                 )
             elif scantype == "rhi":
                 dt, d95_h, s_h = calculate_dbz95_hsrhi(
-                    radar,
+                    var_dict,
                     polarization,
                     range_limit,
                     clutter_map_mask_h,
@@ -148,9 +150,10 @@ def daily_rca(radar_config_file,date):
         for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):
             print(f)
             radar = file_to_radar_object(f, extension)
+            var_dict = get_var_arrays_from_radar_object(radar, radar_config_file)
             if scantype == "ppi":
                 dt, d95_h, d95_v, s_h, s_v = calculate_dbz95_ppi(
-                    radar,
+                    var_dict,
                     polarization,
                     range_limit,
                     clutter_map_mask_h,
@@ -158,7 +161,7 @@ def daily_rca(radar_config_file,date):
                 )
             elif scantype == "rhi":
                 dt, d95_h, d95_v, s_h, s_v = calculate_dbz95_hsrhi(
-                    radar,
+                    var_dict,
                     polarization,
                     range_limit,
                     clutter_map_mask_h,

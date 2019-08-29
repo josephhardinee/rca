@@ -1,19 +1,21 @@
 import numpy as np
-from create_masks import create_az_mask_ppi, create_az_mask_hsrhi
+from rca.modules.create_masks import create_az_mask_ppi, create_az_mask_hsrhi
 
 # create_clutter_flag contains 2 functions to create clutter flags (masks) for radar PPI and HSRHI files
 # 1) create_clutter_flag_ppi: creates clutter flag/mask for a radar PPI file
 # 2) create_clutter_flag_hsrhi: creates clutter flag/mask for a radar HSRHI file
 
 
-def create_clutter_flag_ppi(radar, polarization, range_limit, z_thresh):
+def create_clutter_flag_ppi(variable_dictionary, polarization, range_limit, z_thresh):
     """
     create_clutter_flag_ppi creates a clutter flag array for a particular PPI radar file (using a precipitation-free day) that will be used for
     clutter map creation. It returns the datetime of the file and the clutter flag arrays for reflectivity in the chosen polarizations (H and V or just H)
     Parameters:
     --------------
-    radar: object (from PyART)
-            radar object contains all variables from the radar file
+    variable_dictionary: dict
+                    dictionary with values, strings, and arrays of relevant radar data
+                    i.e.
+                    'reflectivity_h', 'reflectivity_v', 'azimuth', 'range', 'date_time'
     polarization: string
             specifies for which polarization user wants to create clutter flag array
             'dual': calculate for both H and V
@@ -53,17 +55,10 @@ def create_clutter_flag_ppi(radar, polarization, range_limit, z_thresh):
     clutter_flag_h = np.zeros((len(theta_list), len(r_list)))
     clutter_flag_v = np.zeros((len(theta_list), len(r_list)))
 
-    date_time = radar.time["units"].replace("seconds since ", "")
-    r_start_idx = 0
-    r_stop_idx = np.where(radar.range["data"] > range_limit)[0][0]
-    # Using lowest elevation angle of PPI (0.5 deg)
-    sweep_start_idx = radar.sweep_start_ray_index["data"][0]
-    sweep_stop_idx = radar.sweep_end_ray_index["data"][0] + 1
-    r = radar.range["data"][r_start_idx:r_stop_idx]
-    theta = radar.azimuth["data"][sweep_start_idx:sweep_stop_idx]
-    zh = radar.fields["reflectivity"]["data"][
-        sweep_start_idx:sweep_stop_idx, r_start_idx:r_stop_idx
-    ]
+    date_time = variable_dictionary['date_time']
+    r = variable_dictionary['range']
+    theta = variable_dictionary['azimuth']
+    zh = variable_dictionary['reflectivity_h']
 
     # H POLARIZATION
     for idx_az, az in enumerate(theta_list):  # loop thru each azimuth in list
@@ -90,17 +85,10 @@ def create_clutter_flag_ppi(radar, polarization, range_limit, z_thresh):
                         )  # flag the grid box as clutter is any zh in the 1 km chunk is greater than the threshold value
 
     if polarization == "horizontal":
-        del radar
         return date_time, clutter_flag_h
 
     elif polarization == "dual":
-        zdr = radar.fields["differential_reflectivity"]["data"][
-            sweep_start_idx:sweep_stop_idx, r_start_idx:r_stop_idx
-        ]
-        zv = radar.fields["uncorrected_reflectivity_v"]["data"][
-            sweep_start_idx:sweep_stop_idx, r_start_idx:r_stop_idx
-        ]
-        zv = 10 * np.log10((10 ** (zh / 10)) / (zdr))
+        zv = variable_dictionary['reflectivity_v']
 
         # V POLARIZATION
         for idx_az, az in enumerate(theta_list):  # loop thru each azimuth in list
@@ -126,18 +114,19 @@ def create_clutter_flag_ppi(radar, polarization, range_limit, z_thresh):
                                 1
                             )  # flag the grid box as clutter is any zh in the 1 km chunk is greater than the threshold value
 
-        del radar
         return date_time, clutter_flag_h, clutter_flag_v
 
 
-def create_clutter_flag_hsrhi(radar, polarization, range_limit, z_thresh):
+def create_clutter_flag_hsrhi(variable_dictionary, polarization, range_limit, z_thresh):
     """
     create_clutter_flag_hsrhi creates a clutter flag array for a particular HSRHI radar file (using a precipitation-free day) that will be used for
     clutter map creation. It returns the datetime of the file and the clutter flag arrays for reflectivity in the chosen polarizations (H and V or just H)
     Parameters:
     --------------
-    radar: object (from PyART)
-            radar object contains all variables from the radar file
+    variable_dictionary: dict
+                    dictionary with values, strings, and arrays of relevant radar data
+                    i.e.
+                    'reflectivity_h', 'reflectivity_v', 'azimuth', 'range', 'date_time'
     polarization: string
             specifies for which polarization user wants to create clutter flag array
             'dual': calculate for both H and V
@@ -178,13 +167,11 @@ def create_clutter_flag_hsrhi(radar, polarization, range_limit, z_thresh):
     clutter_flag_h = np.zeros((len(theta_list), len(elev_list), len(r_list)))
     clutter_flag_v = np.zeros((len(theta_list), len(elev_list), len(r_list)))
 
-    date_time = radar.time["units"].replace("seconds since ", "")
-    r_start_idx = 0
-    r_stop_idx = np.where(radar.range["data"] > range_limit)[0][0]
-    r = radar.range["data"][r_start_idx:r_stop_idx]
-    theta = radar.azimuth["data"]
-    elev = radar.elevation["data"]
-    zh = radar.fields["reflectivity"]["data"][:, r_start_idx:r_stop_idx]
+    date_time = variable_dictionary['date_time']
+    r = variable_dictionary['range']
+    theta = variable_dictionary['azimuth']
+    elev = variable_dictionary['elevation']
+    zh = variable_dictionary['reflectivity_h']
 
     # H POLARIZATION
     for idx_az, az in enumerate(theta_list):  # loop thru each azimuth in list
@@ -215,15 +202,10 @@ def create_clutter_flag_hsrhi(radar, polarization, range_limit, z_thresh):
                             )  # flag the grid box as clutter is any zh in the 1 km chunk is greater than the threshold value
 
     if polarization == "horizontal":
-        del radar
         return date_time, clutter_flag_h
 
     elif polarization == "dual":
-        zv = radar.fields["UZv"]["data"][:, r_start_idx:r_stop_idx]
-        zdr = radar.fields["differential_reflectivity"]["data"][
-            :, r_start_idx:r_stop_idx
-        ]
-        zv = zh - zdr
+        zv = variable_dictionary['reflectivity_v']
 
         # V POLARIZATION
         for idx_az, az in enumerate(theta_list):  # loop thru each azimuth in list
@@ -255,5 +237,5 @@ def create_clutter_flag_hsrhi(radar, polarization, range_limit, z_thresh):
                                 ] = (
                                     1
                                 )  # flag the grid box as clutter is any zh in the 1 km chunk is greater than the threshold value
-        del radar
+                                
         return date_time, clutter_flag_h, clutter_flag_v
