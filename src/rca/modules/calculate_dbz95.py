@@ -1,5 +1,5 @@
 import numpy as np
-from create_masks import create_az_mask_ppi, create_az_mask_hsrhi
+from rca.modules.create_masks import create_az_mask_ppi, create_az_mask_hsrhi
 
 # calculate_dbz95 contains 2 functions that calculate 95th percentile clutter area reflectivity
 # 1) calculate_dbz95_ppi
