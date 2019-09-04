@@ -5,10 +5,10 @@ from rca.modules.file_to_radar_object import file_to_radar_object
 from rca.modules.get_var_arrays_from_radar_object import get_var_arrays_from_radar_object
 #from rca.modules.calculate_dbz95 import calculate_dbz95_ppi, calculate_dbz95_hsrhi
 
-radar_config_file = '/Users/hunz743/projects/github/rca/src/rca/cband_ppi.json'
-#radar_config_file = '/Users/hunz743/projects/github/rca/src/rca/kaband_rhi.json'
-file = '/Users/hunz743/projects/rca_auxillary/datafiles/data/corcsapr2cfrppiM1.a1.20181215.000003.nc'
-#file = '/Users/hunz743/projects/rca_auxillary/datafiles/data/corkasacrcfrhsrhiM1.a1.20181215.000309.nc'
+#radar_config_file = '/Users/hunz743/projects/github/rca/src/rca/cband_ppi.json'
+radar_config_file = '/Users/hunz743/projects/github/rca/src/rca/kaband_rhi.json'
+#file = '/Users/hunz743/projects/rca_auxillary/datafiles/data/corcsapr2cfrppiM1.a1.20181215.000003.nc'
+file = '/Users/hunz743/projects/rca_auxillary/datafiles/data/corkasacrcfrhsrhiM1.a1.20181215.000309.nc'
 extension = '.nc'
 radar = file_to_radar_object(file,extension)
 var_dict = get_var_arrays_from_radar_object(radar,radar_config_file)
@@ -18,7 +18,7 @@ print(var_dict['reflectivity_h'].shape)
 #print(var_dict['reflectivity_v'].shape)
 print(var_dict['range'].shape)
 print(var_dict['azimuth'].shape)
-#print(var_dict['elevation'].shape)
+print(var_dict['elevation'].shape)
 print(var_dict['date_time'])
 
 z_thresh = 0.
@@ -32,10 +32,10 @@ clutter_flag_h = np.zeros((len(theta_list), len(r_list)))
 date_time = var_dict['date_time']
 r = var_dict['range']
 theta = var_dict['azimuth']
-#elev = var_dict['elevation']
+elev = var_dict['elevation']
 zh = var_dict['reflectivity_h']
 
-# H POLARIZATION
+"""# H POLARIZATION
 for idx_az, az in enumerate(theta_list):  # loop thru each azimuth in list
     az_mask = create_az_mask_ppi(az, theta)  # create mask for desired azimuths
     zh_rays = zh[
@@ -72,11 +72,11 @@ for idx_az, az in enumerate(theta_list):  # loop thru each azimuth in list
 
 #print(zh_ray_list)
 #print(zh)
-print(clutter_flag_h)
+print(clutter_flag_h)"""
 
-"""range_limit = 10000.
-elev_list = [1,2,3,4,5,165,176,177, 178, 179]
-theta_list = [0, 30, 60, 90, 120, 150]
+range_limit = 10000.
+elev_list = [1] #,2,3,4,5,165,176,177, 178, 179]
+theta_list = [0] #, 30, 60, 90, 120, 150]
 range_shape = range_limit / 1000
 r_list = np.arange(range_shape) + 1
 clutter_flag_h = np.zeros((len(theta_list), len(elev_list), len(r_list)))
@@ -109,8 +109,9 @@ for idx_az, az in enumerate(theta_list):  # loop thru each azimuth in list
                     rstop = -1
                 print(ra,idx_ra,rstart,rstop)
                 print(ra*1000., r[rstart],r[rstop])
+                print(ra*1000., r[idx_ra*10],r[idx_ra*10+10])
                 for idx_z, z in enumerate(
-                    zh_rays[:, rstart:rstop]
+                    zh_rays[:, rstart:rstop] # #idx_ra * 10 : idx_ra * 10 + 10
                 ):  # loop thru each zh value in chunks of 10 100m range gates (1 km chunks)
                     if np.any(z >= z_thresh):
                         zh_ray_list.append(z)
@@ -121,5 +122,6 @@ for idx_az, az in enumerate(theta_list):  # loop thru each azimuth in list
                         )  # flag the grid box as clutter is any zh in the 1 km chunk is greater than the threshold value
 
 
-print(zh_ray_list)
-print(zh)"""
+#print(zh_ray_list)
+#print(zh)
+#print(r)

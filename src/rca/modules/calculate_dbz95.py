@@ -89,8 +89,13 @@ def calculate_dbz95_ppi(
         zh_rays = np.ma.getdata(zh_rays)
         zh_list = []
         for idx_ra, ra in enumerate(r_list):
+            rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+            try:
+                rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+            except IndexError:
+                rstop = -1
             if clutter_mask_h[idx_az, idx_ra]:
-                zh_list.append(zh_rays[:, idx_ra * 10 : idx_ra * 10 + 10])
+                zh_list.append(zh_rays[:, rstart : rstop])
         zh_from_mask.append(zh_list)
 
     all_zh = []
@@ -141,8 +146,13 @@ def calculate_dbz95_ppi(
             zv_rays = np.ma.getdata(zv_rays)
             zv_list = []
             for idx_ra, ra in enumerate(r_list):
+                rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                try:
+                    rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                except IndexError:
+                    rstop = -1
                 if clutter_mask_v[idx_az, idx_ra]:
-                    zv_list.append(zv_rays[:, idx_ra * 10 : idx_ra * 10 + 10])
+                    zv_list.append(zv_rays[:, rstart : rstop])
             zv_from_mask.append(zv_list)
 
         all_zv = []
@@ -277,8 +287,13 @@ def calculate_dbz95_hsrhi(
             zh_rays = np.ma.getdata(zh_rays)
             zh_list = []
             for idx_ra, ra in enumerate(r_list):
+                rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                try:
+                    rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                except IndexError:
+                    rstop = -1
                 if clutter_mask_h[idx_az, idx_el, idx_ra]:
-                    zh_list.append(zh_rays[:, idx_ra * 10 : idx_ra * 10 + 10])
+                    zh_list.append(zh_rays[:, rstart : rstop])
             zh_from_mask.append(zh_list)
 
     all_zh = []
@@ -331,8 +346,13 @@ def calculate_dbz95_hsrhi(
                 zv_rays = np.ma.getdata(zv_rays)
                 zv_list = []
                 for idx_ra, ra in enumerate(r_list):
+                    rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                    try:
+                        rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                    except IndexError:
+                        rstop = -1
                     if clutter_mask_v[idx_az, idx_el, idx_ra]:
-                        zv_list.append(zv_rays[:, idx_ra * 10 : idx_ra * 10 + 10])
+                        zv_list.append(zv_rays[:, rstart : rstop)
                 zv_from_mask.append(zv_list)
 
         all_zv = []

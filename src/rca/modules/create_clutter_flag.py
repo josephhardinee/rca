@@ -73,8 +73,13 @@ def create_clutter_flag_ppi(variable_dictionary, polarization, range_limit, z_th
                 continue  # skip the last value in the range grid
             else:
                 zh_ray_list = []
+                rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                try:
+                    rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                except IndexError:
+                    rstop = -1
                 for idx_z, z in enumerate(
-                    zh_rays[:, idx_ra * 10 : idx_ra * 10 + 10]
+                    zh_rays[:, rstart : rstop]
                 ):  # loop thru each zh value in chunks of 10 100m range gates (1 km chunks)
                     if np.any(z >= z_thresh):
                         zh_ray_list.append(z)
@@ -103,8 +108,13 @@ def create_clutter_flag_ppi(variable_dictionary, polarization, range_limit, z_th
                     continue  # skip the last value in the range grid
                 else:
                     zv_ray_list = []
+                    rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                    try:
+                        rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                    except IndexError:
+                        rstop = -1
                     for idx_z, z in enumerate(
-                        zv_rays[:, idx_ra * 10 : idx_ra * 10 + 10]
+                        zv_rays[:, rstart : rstop]
                     ):  # loop thru each zv value in chunks of 10 100m range gates (1 km chunks)
                         if np.any(z >= z_thresh):
                             zv_ray_list.append(z)
@@ -190,8 +200,13 @@ def create_clutter_flag_hsrhi(variable_dictionary, polarization, range_limit, z_
                     continue  # skip the last value in the range grid
                 else:
                     zh_ray_list = []
+                    rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                    try:
+                        rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                    except IndexError:
+                        rstop = -1
                     for idx_z, z in enumerate(
-                        zh_rays[:, idx_ra * 10 : idx_ra * 10 + 10]
+                        zh_rays[:, rstart : rstop]
                     ):  # loop thru each zh value in chunks of 10 100m range gates (1 km chunks)
                         if np.any(z >= z_thresh):
                             zh_ray_list.append(z)
@@ -227,8 +242,13 @@ def create_clutter_flag_hsrhi(variable_dictionary, polarization, range_limit, z_
                         continue  # skip the last value in the range grid
                     else:
                         zv_ray_list = []
+                        rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                        try:
+                            rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                        except IndexError:
+                            rstop = -1
                         for idx_z, z in enumerate(
-                            zv_rays[:, idx_ra * 10 : idx_ra * 10 + 10]
+                            zv_rays[:, rstart : rstop]
                         ):  # loop thru each zv value in chunks of 10 100m range gates (1 km chunks)
                             if np.any(z >= z_thresh):
                                 zv_ray_list.append(z)
