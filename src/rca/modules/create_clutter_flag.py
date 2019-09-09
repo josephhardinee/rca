@@ -104,7 +104,7 @@ def create_clutter_flag_ppi(variable_dictionary, polarization, range_limit, z_th
             for idx_ra, ra in enumerate(
                 r_list
             ):  # loop thru each range gate in the range grid boxes (len = 80)
-                if ra == range_shape - 1:
+                if ra == range_shape:
                     continue  # skip the last value in the range grid
                 else:
                     zv_ray_list = []
