@@ -245,7 +245,7 @@ def plot_clutter_map(clutter_map_netcdf,output_directory,scan_type,map_type,pola
                 axes[az_idx,0].set_xlim([0,max_range])
                 axes[az_idx,0].set_ylim([0,2])
                 if az_idx == 0:
-                    axes[az_idx,0].set_title(title_date+' clutter map ($Z_H$) at '+title+' \n '+az+' deg.')
+                    axes[az_idx,0].set_title(title_date+' clutter map ($Z_H$) at '+location+' \n '+az+' deg.')
                 elif az_idx == 5:
                     axes[az_idx,0].set_xlabel('Dist. from radar (km)')
                     axes[az_idx,0].set_title(az+' deg.')
@@ -261,7 +261,7 @@ def plot_clutter_map(clutter_map_netcdf,output_directory,scan_type,map_type,pola
                 axes[az_idx,1].set_xlim([0,20])
                 axes[az_idx,1].set_ylim([0,2])
                 if az_idx == 0:
-                    axes[az_idx,1].set_title(title_date+' clutter map ($Z_H$) at '+title+' \n '+az+' deg.')
+                    axes[az_idx,1].set_title(title_date+' clutter map ($Z_H$) at '+location+' \n '+az+' deg.')
                 elif az_idx == 5:
                     axes[az_idx,1].set_xlabel('Dist. from radar (km)')
                     axes[az_idx,1].set_title(az+' deg.')
@@ -274,7 +274,7 @@ def plot_clutter_map(clutter_map_netcdf,output_directory,scan_type,map_type,pola
             cbar_ax = fig.add_axes([0.85, 0.15, 0.02, 0.7])
             cbar = fig.colorbar(im, cax=cbar_ax)
             cbar.ax.set_ylabel(cbar_label)
-            plt.savefig(outputdir+'cluttermap_hsrhi_h_'+site+inst+'_'+title_date+'.png')
+            plt.savefig(output_directory+'cluttermap_hsrhi_h_'+site+inst+'_'+title_date+'.png')
                 
         elif polarization == 'dual':
             clutter_map_mask_h = d.variables['clutter_map_mask_zh'][:,:,:]
@@ -315,7 +315,7 @@ def plot_clutter_map(clutter_map_netcdf,output_directory,scan_type,map_type,pola
                 axes[az_idx,0].set_xlim([0,max_range])
                 axes[az_idx,0].set_ylim([0,2])
                 if az_idx == 0:
-                    axes[az_idx,0].set_title(title_date+' clutter map ($Z_H$) at '+title+' \n '+az+' deg.')
+                    axes[az_idx,0].set_title(title_date+' clutter map ($Z_H$) at '+location+' \n '+az+' deg.')
                 elif az_idx == 5:
                     axes[az_idx,0].set_xlabel('Dist. from radar (km)')
                     axes[az_idx,0].set_title(az+' deg.')
@@ -331,7 +331,7 @@ def plot_clutter_map(clutter_map_netcdf,output_directory,scan_type,map_type,pola
                 axes[az_idx,1].set_xlim([0,20])
                 axes[az_idx,1].set_ylim([0,2])
                 if az_idx == 0:
-                    axes[az_idx,1].set_title(title_date+' clutter map ($Z_H$) at '+title+' \n '+az+' deg.')
+                    axes[az_idx,1].set_title(title_date+' clutter map ($Z_H$) at '+location+' \n '+az+' deg.')
                 elif az_idx == 5:
                     axes[az_idx,1].set_xlabel('Dist. from radar (km)')
                     axes[az_idx,1].set_title(az+' deg.')
@@ -344,7 +344,7 @@ def plot_clutter_map(clutter_map_netcdf,output_directory,scan_type,map_type,pola
             cbar_ax = fig.add_axes([0.85, 0.15, 0.02, 0.7])
             cbar = fig.colorbar(im, cax=cbar_ax)
             cbar.ax.set_ylabel(cbar_label)
-            plt.savefig(outputdir+'cluttermap_hsrhi_h_'+site+inst+'_'+title_date+'.png')
+            plt.savefig(output_directory+'cluttermap_hsrhi_h_'+site+inst+'_'+title_date+'.png')
             
             # Vertical polarization
             # EAST and WEST: 2 column, 6 row plot
@@ -360,7 +360,7 @@ def plot_clutter_map(clutter_map_netcdf,output_directory,scan_type,map_type,pola
                 axes[az_idx,0].set_xlim([0,max_range])
                 axes[az_idx,0].set_ylim([0,2])
                 if az_idx == 0:
-                    axes[az_idx,0].set_title(title_date+' clutter map ($Z_V$) at '+title+' \n '+az+' deg.')
+                    axes[az_idx,0].set_title(title_date+' clutter map ($Z_V$) at '+location+' \n '+az+' deg.')
                 elif az_idx == 5:
                     axes[az_idx,0].set_xlabel('Dist. from radar (km)')
                     axes[az_idx,0].set_title(az+' deg.')
@@ -376,7 +376,7 @@ def plot_clutter_map(clutter_map_netcdf,output_directory,scan_type,map_type,pola
                 axes[az_idx,1].set_xlim([0,20])
                 axes[az_idx,1].set_ylim([0,2])
                 if az_idx == 0:
-                    axes[az_idx,1].set_title(title_date+' clutter map ($Z_V$) at '+title+' \n '+az+' deg.')
+                    axes[az_idx,1].set_title(title_date+' clutter map ($Z_V$) at '+location+' \n '+az+' deg.')
                 elif az_idx == 5:
                     axes[az_idx,1].set_xlabel('Dist. from radar (km)')
                     axes[az_idx,1].set_title(az+' deg.')
@@ -389,7 +389,7 @@ def plot_clutter_map(clutter_map_netcdf,output_directory,scan_type,map_type,pola
             cbar_ax = fig.add_axes([0.85, 0.15, 0.02, 0.7])
             cbar = fig.colorbar(im, cax=cbar_ax)
             cbar.ax.set_ylabel(cbar_label)
-            plt.savefig(outputdir+'cluttermap_hsrhi_v_'+site+inst+'_'+title_date+'.png')
+            plt.savefig(output_directory+'cluttermap_hsrhi_v_'+site+inst+'_'+title_date+'.png')
                    
     else:
         print("Must specify either 'ppi' or 'rhi' for scan_type")

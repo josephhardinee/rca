@@ -5,9 +5,9 @@ import glob
 import json
 from netCDF4 import Dataset
 import pandas as pd
-from file_to_radar_object import file_to_radar_object
-from get_var_arrays_from_radar_object import get_var_arrays_from_radar_object
-from calculate_dbz95 import calculate_dbz95_ppi, calculate_dbz95_hsrhi
+from rca.modules.file_to_radar_object import file_to_radar_object
+from rca.modules.get_var_arrays_from_radar_object import get_var_arrays_from_radar_object
+from rca.modules.calculate_dbz95 import calculate_dbz95_ppi, calculate_dbz95_hsrhi
 
 def daily_rca(radar_config_file,date):
     """
@@ -73,7 +73,6 @@ def daily_rca(radar_config_file,date):
         + scantype
         + "_"
         + site
-        + "_"
         + inst
         + "_"
         + baseline_date
@@ -137,9 +136,7 @@ def daily_rca(radar_config_file,date):
         base = 0  # set to 0 for daily RCA, set to 1 when calculating for baseline
         date = yr + "-" + mon + "-" + day
         # Create dictionary and dataframe
-        csv_frame = pd.read_csv(
-            dailycsvdir + "daily_rca_" + scantype + "_" + site + "_" + inst + ".csv"
-        )
+        csv_frame = pd.read_csv(daily_csv_fullpath)
         rca_dict = {"DATE": date, "RCA_H": rca_h, "RCA_V": np.nan, "BASELINE": base}
         csv_frame = csv_frame.append(rca_dict, ignore_index=True)
         csv_frame.set_index("DATE")

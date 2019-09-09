@@ -4,12 +4,12 @@ import os
 import glob
 import json
 from netCDF4 import Dataset
-from file_to_radar_object import file_to_radar_object
-from get_var_arrays_from_radar_object import get_var_arrays_from_radar_object
-from calculate_dbz95 import calculate_dbz95_ppi, calculate_dbz95_hsrhi
+from rca.modules.file_to_radar_object import file_to_radar_object
+from rca.modules.get_var_arrays_from_radar_object import get_var_arrays_from_radar_object
+from rca.modules.calculate_dbz95 import calculate_dbz95_ppi, calculate_dbz95_hsrhi
 
 
-def baseline(radar_config_file):
+def baseline(radar_config_file,date):
     """
     baseline.py loops through a day's worth of radar files (specify PPI or HSRHI),
     calculates the median daily 95th percentile clutter area reflectivity,
@@ -46,7 +46,8 @@ def baseline(radar_config_file):
     site = config_vars["site_abbrev"]
     inst = config_vars["instrument_abbrev"]
     range_limit = config_vars["range_limit"]
-
+    
+    baseline_date = date
     # Read in clutter map netCDF
     dataset = Dataset(
         cluttermap_dir

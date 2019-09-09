@@ -273,6 +273,9 @@ def calculate_dbz95_hsrhi(
     elev_list = [1, 2, 3, 4, 5, 175, 176, 177, 178, 179]
     theta_list = [0, 30, 60, 90, 120, 150]
     r_list = np.arange(range_shape) + 1
+    #print('range_limit',range_limit)
+    #print('range_shape',range_shape)
+    #print('r_list',r_list)
 
     # Artificially increase/decrease reflectivity values for testing
     # zh = zh-5.
@@ -285,25 +288,45 @@ def calculate_dbz95_hsrhi(
             el_mask = np.abs(elev - el) < 0.5
             zh_rays = zh[np.logical_and(az_mask, el_mask), :]
             zh_rays = np.ma.getdata(zh_rays)
-            zh_list = []
+            #print(zh_rays.shape)
+            #zh_list = []
             for idx_ra, ra in enumerate(r_list):
-                rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
-                try:
-                    rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
-                except IndexError:
-                    rstop = -1
-                if clutter_mask_h[idx_az, idx_el, idx_ra]:
-                    zh_list.append(zh_rays[:, rstart : rstop])
-            zh_from_mask.append(zh_list)
-
+                if clutter_mask_h[idx_az,idx_el,idx_ra]:
+                    if ra == range_shape:
+                        continue
+                    else:
+                        rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                        try:
+                            rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                        except IndexError:
+                            rstop = -1
+                        #zh_list.append(zh_rays[:, rstart : rstop])
+                        zh_from_mask.append(zh_rays[:,rstart:rstop])
+    
+    #print(len(zh_from_mask))
+    #print(len(zh_from_mask[0]))
     all_zh = []
-    for i in range(0, len(zh_from_mask)):
-        zh_from_mask[i] = np.array(zh_from_mask[i])
-        if len(zh_from_mask[i]) != 0:
-            for ia, a in enumerate(zh_from_mask[i][:, 0, 0]):
-                for ib, b in enumerate(zh_from_mask[i][0, :, 0]):
-                    for ic, c in enumerate(zh_from_mask[i][0, 0, :]):
-                        all_zh.append(zh_from_mask[i][ia, ib, ic])
+    
+    for i in range(0,len(zh_from_mask)):
+        if len(zh_from_mask[i]) !=0:
+            for j in range(0, len(zh_from_mask[i])):
+                for k in range(0,len(zh_from_mask[i][j])):
+                    all_zh.append(zh_from_mask[i][j][k])
+    print('num pts = ',len(all_zh))
+    #print(all_zh)
+
+    #for i in range(0, len(zh_from_mask)):
+     #   print(i, len(zh_from_mask[i]))
+     #   print(zh_from_mask[i][0].shape)
+     #   print(zh_from_mask[i])
+   #     if len(zh_from_mask[i]) != 0:
+   #         print(type(zh_from_mask[i]))
+            #zh_from_mask[i] = np.array(zh_from_mask[i])
+            #if len(zh_from_mask[i]) != 0:
+    #        for ia, a in enumerate(zh_from_mask[i][:, 0, 0]):
+    #            for ib, b in enumerate(zh_from_mask[i][0, :, 0]):
+    #                for ic, c in enumerate(zh_from_mask[i][0, 0, :]):
+    #                    all_zh.append(zh_from_mask[i][ia, ib, ic])
 
     num_pts_h = len(all_zh)
     hn, hbins = np.histogram(all_zh, bins=525, range=(-40.0, 65.0))
@@ -327,6 +350,7 @@ def calculate_dbz95_hsrhi(
         #'polynomial_func':hpoly_func,
         "reflectivity_95": dbz95_h,
     }
+    print('dbz95H = ',dbz95_h)
     if polarization == "horizontal":
         return date_time, dbz95_h, stats_h
 
@@ -352,7 +376,7 @@ def calculate_dbz95_hsrhi(
                     except IndexError:
                         rstop = -1
                     if clutter_mask_v[idx_az, idx_el, idx_ra]:
-                        zv_list.append(zv_rays[:, rstart : rstop)
+                        zv_list.append(zv_rays[:, rstart : rstop])
                 zv_from_mask.append(zv_list)
 
         all_zv = []

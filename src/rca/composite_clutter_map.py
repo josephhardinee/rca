@@ -5,8 +5,7 @@ import glob
 import json
 import numpy as np
 from netCDF4 import Dataset
-#sys.path.append('/home/alexishunzinger/projects/github/rca/src/rca/')
-#from get_pct_on_clutter_map import get_pct_on_clutter_map_ppi, get_pct_on_clutter_map_hsrhi
+from rca.modules.get_pct_on_clutter_map import get_pct_on_clutter_map_ppi, get_pct_on_clutter_map_hsrhi
 
 def composite_clutter_map(radar_config_file):
     """
@@ -55,7 +54,7 @@ def composite_clutter_map(radar_config_file):
             )
         ):
             print(f)
-            ClutterMaskH, ClutterPCTH = get.get_pct_on_clutter_map_ppi(f, polarization)
+            ClutterMaskH, ClutterPCTH = get_pct_on_clutter_map_ppi(f, polarization)
             # Append output from each HSRHI file to lists
             clutter_mask_h.append(ClutterMaskH)
             clutter_pct_h.append(ClutterPCTH)
@@ -95,7 +94,7 @@ def composite_clutter_map(radar_config_file):
             )
         ):
             print(f)
-            ClutterMaskH, ClutterPCTH = get.get_pct_on_clutter_map_hsrhi(f, polarization)
+            ClutterMaskH, ClutterPCTH = get_pct_on_clutter_map_hsrhi(f, polarization)
             # Append output from each HSRHI file to lists
             clutter_mask_h.append(ClutterMaskH)
             clutter_pct_h.append(ClutterPCTH)
@@ -140,7 +139,7 @@ def composite_clutter_map(radar_config_file):
             )
         ):
             print(f)
-            ClutterMaskH, ClutterMaskV, ClutterPCTH, ClutterPCTV = get.get_pct_on_clutter_map_ppi(
+            ClutterMaskH, ClutterMaskV, ClutterPCTH, ClutterPCTV = get_pct_on_clutter_map_ppi(
                 f, polarization
             )
             # Append output from each HSRHI file to lists
@@ -202,7 +201,7 @@ def composite_clutter_map(radar_config_file):
             )
         ):
             print(f)
-            ClutterMaskH, ClutterMaskV, ClutterPCTH, ClutterPCTV = get.get_pct_on_clutter_map_hsrhi(
+            ClutterMaskH, ClutterMaskV, ClutterPCTH, ClutterPCTV = get_pct_on_clutter_map_hsrhi(
                 f, polarization
             )
             # Append output from each HSRHI file to lists
