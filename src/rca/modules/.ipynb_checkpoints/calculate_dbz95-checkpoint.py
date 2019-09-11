@@ -6,7 +6,7 @@ from create_masks import create_az_mask_ppi, create_az_mask_hsrhi
 # 2) calculate_db95_hsrhi
 
 def calculate_dbz95_ppi(
-    radar, polarization, range_limit, clutter_mask_h, clutter_mask_v=None
+    variable_dictionary, polarization, range_limit, clutter_mask_h, clutter_mask_v=None
 ):
     """
     calculate_dbz95_hsrhi calculates the 95th percentile reflectivity for a given radar HSRHI file
@@ -15,8 +15,10 @@ def calculate_dbz95_ppi(
     including number of points, histogram/PDF, bins, CDF.
     Parameters:
     --------------
-    radar: object (from PyART)
-            radar object contains all variables from the radar file
+    variable_dictionary: dict
+                    dictionary with values, strings, and arrays of relevant radar data
+                    i.e.
+                    'reflectivity_h', 'reflectivity_v', 'azimuth', 'range', 'date_time'
     polarization: string
             specifies for which polarization user wants to create clutter flag array
             'dual': calculate for both H and V
@@ -67,18 +69,10 @@ def calculate_dbz95_ppi(
     # 2) specify Z thresh at some point (in config file?)
     ###############################
 
-    date_time = radar.time["units"].replace("seconds since ", "")
-    r_start_idx = 0
-    r_stop_idx = np.where(radar.range["data"] > range_limit)[0][0]
-    # Using lowest elevation angle of PPI (0.5 deg)
-    sweep_start_idx = radar.sweep_start_ray_index["data"][0]
-    sweep_stop_idx = radar.sweep_end_ray_index["data"][0] + 1
-    # Get variables (only the rays/gates needed)
-    r = radar.range["data"][r_start_idx:r_stop_idx]
-    theta = radar.azimuth["data"][sweep_start_idx:sweep_stop_idx]
-    zh = radar.fields["UZh"]["data"][
-        sweep_start_idx:sweep_stop_idx, r_start_idx:r_stop_idx
-    ]
+    date_time = variable_dictionary['date_time']
+    r = variable_dictionary['range']
+    theta = variable_dictionary['azimuth']
+    zh = variable_dictionary['reflectivity_h']
 
     range_shape = range_limit / 1000
     theta_list = np.arange(360)
@@ -95,8 +89,13 @@ def calculate_dbz95_ppi(
         zh_rays = np.ma.getdata(zh_rays)
         zh_list = []
         for idx_ra, ra in enumerate(r_list):
+            rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+            try:
+                rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+            except IndexError:
+                rstop = -1
             if clutter_mask_h[idx_az, idx_ra]:
-                zh_list.append(zh_rays[:, idx_ra * 10 : idx_ra * 10 + 10])
+                zh_list.append(zh_rays[:, rstart : rstop])
         zh_from_mask.append(zh_list)
 
     all_zh = []
@@ -131,17 +130,10 @@ def calculate_dbz95_ppi(
     }
 
     if polarization == "horizontal":
-        del radar
         return date_time, dbz95_h, stats_h
 
     elif polarization == "dual":
-        zv = radar.fields["UZv"]["data"][
-            sweep_start_idx:sweep_stop_idx, r_start_idx:r_stop_idx
-        ]
-        zdr = radar.fields["differential_reflectivity"]["data"][
-            sweep_start_idx:sweep_stop_idx, r_start_idx:r_stop_idx
-        ]
-        zv = 10 * np.log10((10 ** (zh / 10)) / (zdr))
+        zv = variable_dictionary['reflectivity_v']
 
         # Artificially increase/decrease reflectivity values for testing
         # zv = zv-5.
@@ -154,8 +146,13 @@ def calculate_dbz95_ppi(
             zv_rays = np.ma.getdata(zv_rays)
             zv_list = []
             for idx_ra, ra in enumerate(r_list):
+                rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                try:
+                    rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                except IndexError:
+                    rstop = -1
                 if clutter_mask_v[idx_az, idx_ra]:
-                    zv_list.append(zv_rays[:, idx_ra * 10 : idx_ra * 10 + 10])
+                    zv_list.append(zv_rays[:, rstart : rstop])
             zv_from_mask.append(zv_list)
 
         all_zv = []
@@ -189,7 +186,6 @@ def calculate_dbz95_ppi(
             "reflectivity_95": dbz95_v,
         }
 
-        del radar
         return date_time, dbz95_h, dbz95_v, stats_h, stats_v
 
         # if np.nanmax(all_zh) <= 20.:
@@ -204,7 +200,7 @@ def calculate_dbz95_ppi(
 
 
 def calculate_dbz95_hsrhi(
-    radar, polarization, range_limit, clutter_mask_h, clutter_mask_v=None
+    variable_dictionary, polarization, range_limit, clutter_mask_h, clutter_mask_v=None
 ):
     """
     calculate_dbz95_hsrhi calculates the 95th percentile reflectivity for a given radar HSRHI file
@@ -213,8 +209,10 @@ def calculate_dbz95_hsrhi(
     including number of points, histogram/PDF, bins, CDF.
     Parameters:
     --------------
-    radar: object (from PyART)
-            radar object contains all variables from the radar file
+    variable_dictionary: dict
+                    dictionary with values, strings, and arrays of relevant radar data
+                    i.e.
+                    'reflectivity_h', 'reflectivity_v', 'azimuth', 'range', 'date_time', 'elevation'
     polarization: string
             specifies for which polarization user wants to create clutter flag array
             'dual': calculate for both H and V
@@ -265,13 +263,11 @@ def calculate_dbz95_hsrhi(
     # 2) specify Z thresh at some point (in config file?)
     ###############################
 
-    date_time = radar.time["units"].replace("seconds since ", "")
-    r_start_idx = 0
-    r_stop_idx = np.where(radar.range["data"] > range_limit)[0][0]
-    r = radar.range["data"][r_start_idx:r_stop_idx]
-    theta = radar.azimuth["data"]
-    elev = radar.elevation["data"]
-    zh = radar.fields["UZh"]["data"][:, r_start_idx:r_stop_idx]
+    date_time = variable_dictionary['date_time']
+    r = variable_dictionary['range']
+    elev = variable_dictionary['elevation']
+    theta = variable_dictionary['azimuth']
+    zh = variable_dictionary['reflectivity_h']
 
     range_shape = range_limit / 1000
     elev_list = [1, 2, 3, 4, 5, 175, 176, 177, 178, 179]
@@ -291,8 +287,13 @@ def calculate_dbz95_hsrhi(
             zh_rays = np.ma.getdata(zh_rays)
             zh_list = []
             for idx_ra, ra in enumerate(r_list):
+                rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                try:
+                    rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                except IndexError:
+                    rstop = -1
                 if clutter_mask_h[idx_az, idx_el, idx_ra]:
-                    zh_list.append(zh_rays[:, idx_ra * 10 : idx_ra * 10 + 10])
+                    zh_list.append(zh_rays[:, rstart : rstop])
             zh_from_mask.append(zh_list)
 
     all_zh = []
@@ -327,17 +328,10 @@ def calculate_dbz95_hsrhi(
         "reflectivity_95": dbz95_h,
     }
     if polarization == "horizontal":
-        del radar
         return date_time, dbz95_h, stats_h
 
     elif polarization == "dual":
-        zv = radar.fields["uncorrected_reflectivity_v"]["data"][
-            :, r_start_idx:r_stop_idx
-        ]
-        zdr = radar.fields["differential_reflectivity"]["data"][
-            :, r_start_idx:r_stop_idx
-        ]
-        zv = zh - zdr
+        zv = variable_dictionary['reflectivity_v']
 
         # Artificially increase/decrease reflectivity values for testing
         # zv = zv-5.
@@ -352,8 +346,13 @@ def calculate_dbz95_hsrhi(
                 zv_rays = np.ma.getdata(zv_rays)
                 zv_list = []
                 for idx_ra, ra in enumerate(r_list):
+                    rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                    try:
+                        rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                    except IndexError:
+                        rstop = -1
                     if clutter_mask_v[idx_az, idx_el, idx_ra]:
-                        zv_list.append(zv_rays[:, idx_ra * 10 : idx_ra * 10 + 10])
+                        zv_list.append(zv_rays[:, rstart : rstop])
                 zv_from_mask.append(zv_list)
 
         all_zv = []
@@ -388,5 +387,4 @@ def calculate_dbz95_hsrhi(
             "reflectivity_95": dbz95_v,
         }
 
-        del radar
         return date_time, dbz95_h, dbz95_v, stats_h, stats_v

@@ -127,6 +127,7 @@ def calculate_dbz95_ppi(
 
     elif polarization == "dual":
         zv = variable_dictionary['reflectivity_v']
+
         # V POLARIZATION
         zv_from_mask = []
         for idx_az, az in enumerate(theta_list):
@@ -268,9 +269,9 @@ def calculate_dbz95_hsrhi(
                         except IndexError:
                             rstop = -1
                         zh_from_mask.append(zh_rays[:,rstart:rstop])
-    
+
     all_zh = []
-    for i in range(0,len(zh_from_mask)):
+    for i in range(0, len(zh_from_mask)):
         if len(zh_from_mask[i]) !=0:
             for j in range(0, len(zh_from_mask[i])):
                 for k in range(0,len(zh_from_mask[i][j])):
@@ -300,6 +301,7 @@ def calculate_dbz95_hsrhi(
 
     elif polarization == "dual":
         zv = variable_dictionary['reflectivity_v']
+
         # V POLARIZATION
         zv_from_mask = []
         for idx_az, az in enumerate(theta_list):
@@ -319,7 +321,7 @@ def calculate_dbz95_hsrhi(
                             except IndexError:
                                 rstop = -1
                             zv_from_mask.append(zv_rays[:,rstart:rstop])
-        
+
         all_zv = []
         for i in range(0, len(zv_from_mask)):
             if len(zv_from_mask[i]) !=0:

@@ -6,5 +6,5 @@
     "file_extension": ".nc",
     "cluttermap_directory": "/home/alexishunzinger/projects/rca_aux/clutter_maps/",
     "site_abbrev": "cor",
-    "instrument_abbrev": "kasacr"
+    "instrument_abbrev": "xsacr"
 }

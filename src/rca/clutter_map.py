@@ -4,9 +4,9 @@ import os
 import glob
 import json
 from netCDF4 import Dataset
-from rca.modules.create_clutter_flag import create_clutter_flag_ppi, create_clutter_flag_hsrhi
-from rca.modules.file_to_radar_object import file_to_radar_object
-from rca.modules.get_var_arrays_from_radar_object import get_var_arrays_from_radar_object
+from modules.create_clutter_flag import create_clutter_flag_ppi, create_clutter_flag_hsrhi
+from modules.file_to_radar_object import file_to_radar_object
+from modules.get_var_arrays_from_radar_object import get_var_arrays_from_radar_object
 
 def clutter_map(radar_config_file,date):
     """
@@ -29,6 +29,9 @@ def clutter_map(radar_config_file,date):
                     instrument
                     range limit
                     reflectivity threshold
+    date: str
+        date used for clutter map day
+        in YYYYMMDD format (overrides what's in config file)
                     
     Returns:
     --------------

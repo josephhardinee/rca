@@ -4,10 +4,11 @@ import os
 import glob
 import json
 from netCDF4 import Dataset
-from create_clutter_flag import create_clutter_flag_ppi, create_clutter_flag_hsrhi
-from file_to_radar_object import file_to_radar_object
+from modules.create_clutter_flag import create_clutter_flag_ppi, create_clutter_flag_hsrhi
+from modules.file_to_radar_object import file_to_radar_object
+from modules.get_var_arrays_from_radar_object import get_var_arrays_from_radar_object
 
-def clutter_map(radar_config_file):
+def clutter_map(radar_config_file,date):
     """
     clutter_map loops through a day's worth of radar files (specify PPI or HSRHI, dual or horizontal polarization)
     utilizes the create_clutter_flag function to flag clutter points for each scan. If more than 50% of the day's 
@@ -28,6 +29,9 @@ def clutter_map(radar_config_file):
                     instrument
                     range limit
                     reflectivity threshold
+    date: str
+        date used for clutter map day
+        in YYYYMMDD format (overrides what's in config file)
                     
     Returns:
     --------------
@@ -47,6 +51,8 @@ def clutter_map(radar_config_file):
     range_limit = config_vars["range_limit"]
     z_thresh = config_vars["z_threshold"]
 
+    cluttermap_date = date
+
     # Lists to fill in loops below
     clutter_flag_h = []
     clutter_flag_v = []
@@ -56,8 +62,9 @@ def clutter_map(radar_config_file):
         for f in glob.glob(os.path.join(datadir, "*" + cluttermap_date + "*.??")):
             print(f)
             radar = file_to_radar_object(f, extension)
+            var_dict = get_var_arrays_from_radar_object(radar, radar_config_file)
             dt, cflag_h = create_clutter_flag_ppi(
-                radar, polarization, range_limit, z_thresh
+                var_dict, polarization, range_limit, z_thresh
             )
             clutter_flag_h.append(cflag_h)
             date_time.append(dt)
@@ -97,8 +104,9 @@ def clutter_map(radar_config_file):
         for f in glob.glob(os.path.join(datadir, "*" + cluttermap_date + "*.??")):
             print(f)
             radar = file_to_radar_object(f, extension)
+            var_dict = get_var_arrays_from_radar_object(radar, radar_config_file)
             dt, cflag_h = create_clutter_flag_hsrhi(
-                radar, polarization, range_limit, z_thresh
+                var_dict, polarization, range_limit, z_thresh
             )
             clutter_flag_h.append(cflag_h)
             date_time.append(dt)
@@ -139,8 +147,9 @@ def clutter_map(radar_config_file):
         for f in glob.glob(os.path.join(datadir, "*" + cluttermap_date + "*.??")):
             print(f)
             radar = file_to_radar_object(f, extension)
+            var_dict = get_var_arrays_from_radar_object(radar, radar_config_file)
             dt, cflag_h, cflag_v = create_clutter_flag_ppi(
-                radar, polarization, range_limit, z_thresh
+                var_dict, polarization, range_limit, z_thresh
             )
             clutter_flag_h.append(cflag_h)
             clutter_flag_v.append(cflag_v)
@@ -192,8 +201,9 @@ def clutter_map(radar_config_file):
         for f in glob.glob(os.path.join(datadir, "*" + cluttermap_date + "*.??")):
             print(f)
             radar = file_to_radar_object(f, extension)
+            var_dict = get_var_arrays_from_radar_object(radar, radar_config_file)
             dt, cflag_h, cflag_v = create_clutter_flag_hsrhi(
-                radar, polarization, range_limit, z_thresh
+                var_dict, polarization, range_limit, z_thresh
             )
             clutter_flag_h.append(cflag_h)
             clutter_flag_v.append(cflag_v)

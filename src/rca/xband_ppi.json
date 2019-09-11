@@ -1,7 +1,7 @@
 {
     "config": "xband_ppi",
     "scan_type": "ppi",
-    "polarization": "dual",
+    "polarization": "horizontal",
     "data_directory": "/home/alexishunzinger/data/proj-shared/data_transfer/cor/corxsacrcfrppiM1.a1/",
     "file_extension": ".nc",
     "cluttermap_directory": "/home/alexishunzinger/projects/taranis/taranis/calibration/datafiles/",
@@ -12,5 +12,5 @@
     "site_abbrev": "ena",
     "instrument_abbrev": "xsapr2",
     "range_limit": 10000,
-    "z_threshold": 40
+    "z_threshold": 35
 }

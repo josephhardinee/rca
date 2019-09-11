@@ -1,16 +1,16 @@
 {
     "config": "xband_rhi",
     "scan_type": "rhi",
-    "polarization": "dual",
+    "polarization": "horizontal",
     "data_directory": "/home/alexishunzinger/data/proj-shared/data_transfer/cor/corxsacrcfrhsrhiM1.a1/",
     "file_extension": ".nc",
     "cluttermap_directory": "/home/alexishunzinger/projects/rca_aux/clutter_maps/",
     "cluttermap_date": "20181105",
     "baseline_directory": "/home/alexishunzinger/projects/rca_aux/baselines/",
-    "baseline_date": "20181108",
+    "baseline_date": "20181120",
     "daily_csv_dir": "/home/alexishunzinger/projects/rca_aux/dailies/",
-    "site_abbrev": "ena",
-    "instrument_abbrev": "xsapr2",
+    "site_abbrev": "cor",
+    "instrument_abbrev": "xsacr",
     "range_limit": 20000,
-    "z_threshold": 40
+    "z_threshold": 35
 }
