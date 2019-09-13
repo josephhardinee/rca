@@ -1,5 +1,5 @@
 import numpy as np
-from modules.create_masks import create_az_mask_ppi, create_az_mask_hsrhi
+from rca.modules.create_masks import create_az_mask_ppi, create_az_mask_hsrhi
 
 # create_clutter_flag contains 2 functions to create clutter flags (masks) for radar PPI and HSRHI files
 # 1) create_clutter_flag_ppi: creates clutter flag/mask for a radar PPI file

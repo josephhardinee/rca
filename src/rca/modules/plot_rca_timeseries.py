@@ -43,7 +43,7 @@ def plot_rca_timeseries_oneradar(rca_file,output_directory,baseline_date,polariz
         xtext0 = 2.0
 
         params = {'mathtext.default': 'regular',
-                'family': 'sans',
+                #'family': 'sans',
                 'size': 11}          
         plt.rcParams.update(params)
         
@@ -191,7 +191,7 @@ def plot_rca_timeseries_tworadar(rca_file1,rca_file2,output_directory,baseline_d
         xtext0 = 2.0
 
         params = {'mathtext.default': 'regular',
-                'family': 'sans',
+        #        'family': 'sans',
                 'size': 11}          
         plt.rcParams.update(params)
         
@@ -397,7 +397,7 @@ def plot_rca_timeseries_threeradar(rca_file1,rca_file2,rca_file3,output_director
         xtext0 = 2.0
 
         params = {'mathtext.default': 'regular',
-                'family': 'sans',
+        #        'family': 'sans',
                 'size': 11}          
         plt.rcParams.update(params)
         
