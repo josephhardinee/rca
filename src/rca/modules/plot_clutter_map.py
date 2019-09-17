@@ -7,15 +7,8 @@ from matplotlib.colors import BoundaryNorm
 
 # Generic plotting function for clutter maps
 
-######
-# Things to be handled
-# location, site, inst inputs
-######
-location = ''
-site = ''
-inst = ''
-
-def plot_clutter_map(clutter_map_netcdf,output_directory,scan_type,map_type,polarization,max_range,site,inst,location):
+def
+plot_clutter_map(clutter_map_netcdf,output_directory,scan_type,map_type,polarization,max_range,site,inst,location):
     """
     plot_clutter_map
 

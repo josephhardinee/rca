@@ -1,10 +1,10 @@
 {
     "config": "clutter_maps",
     "scan_type": "rhi",
-    "polarization": "horizontal",
-    "data_directory": "/home/alexishunzinger/data/proj-shared/data_transfer/cor/corcsapr2cfrppiM1.a1/",
+    "polarization": "dual",
+    "data_directory": "/home/alexishunzinger/data/proj-shared/data_transfer/cor/corcsapr2cfrhsrhiM1.a1/",
     "file_extension": ".nc",
     "cluttermap_directory": "/home/alexishunzinger/projects/rca_aux/clutter_maps/",
     "site_abbrev": "cor",
-    "instrument_abbrev": "xsacr"
+    "instrument_abbrev": "csapr2"
 }
