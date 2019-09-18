@@ -42,9 +42,9 @@ def plot_rca_timeseries_oneradar(rca_file,output_directory,baseline_date,polariz
         xtext = 8.0
         xtext0 = 2.0
 
-        params = {'mathtext.default': 'regular',
+        params = {'mathtext.default': 'regular'}#,
                 #'family': 'sans',
-                'size': 11}          
+                #'size': 11}          
         plt.rcParams.update(params)
         
         df = pd.read_csv(rca_file)
@@ -144,7 +144,7 @@ def plot_rca_timeseries_oneradar(rca_file,output_directory,baseline_date,polariz
                 plt.savefig(output_directory+'rca_hv_'+scan_type+'_'+site+inst+'.png')
 
     
-def plot_rca_timeseries_tworadar(rca_file1,rca_file2,output_directory,baseline_date,polarization,scan_type,site,inst1,inst2,location):
+def plot_rca_timeseries_tworadar(rca_file1,rca_file2,output_directory,baseline_date,polarization,scan_type,site,inst1,inst2):
         """
         plot_rca_timeseries_tworadar
 
@@ -184,15 +184,16 @@ def plot_rca_timeseries_tworadar(rca_file1,rca_file2,output_directory,baseline_d
         """
         
         ylim = -3.0,3.0
-        lw = 1.0
+        pw = 0.05
+        lw = 0.2
         base_lw = 1.5
         ytext = 2.0
         xtext = 8.0
         xtext0 = 2.0
 
-        params = {'mathtext.default': 'regular',
+        params = {'mathtext.default': 'regular'}#,
         #        'family': 'sans',
-                'size': 11}          
+         #       'size': 11}          
         plt.rcParams.update(params)
         
         df1 = pd.read_csv(rca_file1)
@@ -216,7 +217,7 @@ def plot_rca_timeseries_tworadar(rca_file1,rca_file2,output_directory,baseline_d
         ax.axhline(0.,linestyle='--',color='grey')
         ax.scatter(df1['DATE'],df1['RCA_H'],
                 color='k',
-                linewidth=lw,
+                linewidth=pw,
                 label=inst1.upper())
         ax.plot(df1['DATE'],df1['RCA_H'],
                 color='k',
@@ -224,7 +225,7 @@ def plot_rca_timeseries_tworadar(rca_file1,rca_file2,output_directory,baseline_d
                 label='')
         ax.scatter(df2['DATE'],df2['RCA_H'],
                 color='r',
-                linewidth=lw,
+                linewidth=pw,
                 label=inst2.upper())
         ax.plot(df2['DATE'],df2['RCA_H'],
                 color='r',
@@ -236,9 +237,10 @@ def plot_rca_timeseries_tworadar(rca_file1,rca_file2,output_directory,baseline_d
         ax.set_ylim(ylim)
         #ax.text(xtext,ytext,h_text1)
         locs, labs = plt.xticks()
-        plt.xticks(locs[::1])
+        plt.xticks(locs[::14])
         plt.xticks
         plt.gcf().autofmt_xdate()
+        plt.legend()
         plt.savefig(output_directory+'rca_h_'+scan_type+'_'+site+inst1+'_'+site+inst2+'.png')
                 
         if polarization == 'dual':
@@ -258,7 +260,7 @@ def plot_rca_timeseries_tworadar(rca_file1,rca_file2,output_directory,baseline_d
                 ax.axhline(0.,linestyle='--',color='grey')
                 ax.scatter(df1['DATE'],df1['RCA_V'],
                         color='k',
-                        linewidth=lw,
+                        linewidth=pw,
                         label=inst1.upper())
                 ax.plot(df1['DATE'],df1['RCA_V'],
                         color='k',
@@ -266,7 +268,7 @@ def plot_rca_timeseries_tworadar(rca_file1,rca_file2,output_directory,baseline_d
                         label='')
                 ax.scatter(df2['DATE'],df2['RCA_V'],
                         color='r',
-                        linewidth=lw,
+                        linewidth=pw,
                         label=inst2.upper())
                 ax.plot(df2['DATE'],df2['RCA_V'],
                         color='r',
@@ -278,9 +280,10 @@ def plot_rca_timeseries_tworadar(rca_file1,rca_file2,output_directory,baseline_d
                 ax.set_ylim(ylim)
                 #ax.text(xtext,ytext,v_text1)
                 locs, labs = plt.xticks()
-                plt.xticks(locs[::1])
+                plt.xticks(locs[::14])
                 plt.xticks
                 plt.gcf().autofmt_xdate()
+                plt.legend()
                 plt.savefig(output_directory+'rca_v_'+scan_type+'_'+site+inst1+'_'+site+inst2+'.png')
                 
                 # Plot H and V together (one plot or dual plot?)
@@ -289,7 +292,7 @@ def plot_rca_timeseries_tworadar(rca_file1,rca_file2,output_directory,baseline_d
                 axes[0].axhline(0.,linestyle='--',color='grey')
                 axes[0].scatter(df1['DATE'],df1['RCA_H'],
                         color='k',
-                        linewidth=lw,
+                        linewidth=pw,
                         label=inst1.upper())
                 axes[0].plot(df1['DATE'],df1['RCA_H'],
                         color='k',
@@ -297,7 +300,7 @@ def plot_rca_timeseries_tworadar(rca_file1,rca_file2,output_directory,baseline_d
                         label='')
                 axes[0].scatter(df2['DATE'],df2['RCA_H'],
                         color='r',
-                        linewidth=lw,
+                        linewidth=pw,
                         label=inst2.upper())
                 axes[0].plot(df2['DATE'],df2['RCA_H'],
                         color='r',
@@ -311,14 +314,14 @@ def plot_rca_timeseries_tworadar(rca_file1,rca_file2,output_directory,baseline_d
                 axes[0].text(0.03, 0.87, '('+string.ascii_lowercase[0]+')', transform=axes[0].transAxes, 
                         size=20, weight='regular')
                 locs, labs = plt.xticks()
-                plt.xticks(locs[::1])
+                plt.xticks(locs[::14])
                 plt.xticks
                 plt.gcf().autofmt_xdate()
 
                 axes[1].axhline(0.,linestyle='--',color='grey')
                 axes[1].scatter(df1['DATE'],df1['RCA_V'],
                         color='k',
-                        linewidth=lw,
+                        linewidth=pw,
                         label=inst1.upper())
                 axes[1].plot(df1['DATE'],df1['RCA_V'],
                         color='k',
@@ -326,7 +329,7 @@ def plot_rca_timeseries_tworadar(rca_file1,rca_file2,output_directory,baseline_d
                         label='')
                 axes[1].scatter(df2['DATE'],df2['RCA_V'],
                         color='r',
-                        linewidth=lw,
+                        linewidth=pw,
                         label=inst2.upper())
                 axes[1].plot(df2['DATE'],df2['RCA_V'],
                         color='r',
@@ -340,13 +343,14 @@ def plot_rca_timeseries_tworadar(rca_file1,rca_file2,output_directory,baseline_d
                 axes[1].text(0.03, 0.87, '('+string.ascii_lowercase[1]+')', transform=axes[1].transAxes, 
                         size=20, weight='regular')
                 locs, labs = plt.xticks()
-                plt.xticks(locs[::1])
+                plt.xticks(locs[::14])
                 plt.xticks
                 plt.gcf().autofmt_xdate()
+                plt.legend()
                 plt.savefig(output_directory+'rca_hv_'+scan_type+'_'+site+inst1+'_'+site+inst2+'.png')
 
 
-def plot_rca_timeseries_threeradar(rca_file1,rca_file2,rca_file3,output_directory,baseline_date,polarization,scan_type,site,inst1,inst2,inst3,location):
+def plot_rca_timeseries_threeradar(rca_file1,rca_file2,rca_file3,output_directory,baseline_date,polarization,scan_type,site,inst1,inst2,inst3):
         """
         plot_rca_timeseries_threeradar
 
@@ -389,16 +393,17 @@ def plot_rca_timeseries_threeradar(rca_file1,rca_file2,rca_file3,output_director
 
         """
         
-        ylim = -3.0,3.0
-        lw = 1.0
+        ylim = -2.0,10.0
+        pw = 0.05
+        lw = 0.2
         base_lw = 1.5
         ytext = 2.0
         xtext = 8.0
         xtext0 = 2.0
 
-        params = {'mathtext.default': 'regular',
+        params = {'mathtext.default': 'regular'}#,
         #        'family': 'sans',
-                'size': 11}          
+         #       'size': 11}          
         plt.rcParams.update(params)
         
         df1 = pd.read_csv(rca_file1)
@@ -430,26 +435,26 @@ def plot_rca_timeseries_threeradar(rca_file1,rca_file2,rca_file3,output_director
         ax.axhline(0.,linestyle='--',color='grey')
         ax.scatter(df1['DATE'],df1['RCA_H'],
                 color='k',
-                linewidth=lw,
+                linewidth=pw,
                 label=inst1.upper())
         ax.plot(df1['DATE'],df1['RCA_H'],
                 color='k',
                 linewidth=lw,
                 label='')
         ax.scatter(df2['DATE'],df2['RCA_H'],
-                color='r',
-                linewidth=lw,
+                color='grey',
+                linewidth=pw,
                 label=inst2.upper())
         ax.plot(df2['DATE'],df2['RCA_H'],
-                color='r',
+                color='grey',
                 linewidth=lw,
                 label='')
         ax.scatter(df3['DATE'],df3['RCA_H'],
-                color='grey',
-                linewidth=lw,
+                color='red',
+                linewidth=pw,
                 label=inst3.upper())
         ax.plot(df3['DATE'],df3['RCA_H'],
-                color='grey',
+                color='red',
                 linewidth=lw,
                 label='')
         ax.scatter(baseline_date,0.0,marker='D',linewidth=base_lw,color='b')
@@ -458,9 +463,10 @@ def plot_rca_timeseries_threeradar(rca_file1,rca_file2,rca_file3,output_director
         ax.set_ylim(ylim)
         #ax.text(xtext,ytext,h_text1)
         locs, labs = plt.xticks()
-        plt.xticks(locs[::1])
+        plt.xticks(locs[::14])
         plt.xticks
         plt.gcf().autofmt_xdate()
+        plt.legend()
         plt.savefig(output_directory+'rca_h_'+scan_type+'_'+site+inst1+'_'+site+inst2+'_'+site+inst3+'.png')
                 
         if polarization == 'dual':
@@ -493,19 +499,19 @@ def plot_rca_timeseries_threeradar(rca_file1,rca_file2,rca_file3,output_director
                         linewidth=lw,
                         label='')
                 ax.scatter(df2['DATE'],df2['RCA_V'],
-                        color='r',
+                        color='grey',
                         linewidth=lw,
                         label=inst2.upper())
                 ax.plot(df2['DATE'],df2['RCA_V'],
-                        color='r',
+                        color='grey',
                         linewidth=lw,
                         label='')
                 ax.scatter(df3['DATE'],df3['RCA_V'],
-                        color='grey',
+                        color='red',
                         linewidth=lw,
                         label=inst3.upper())
                 ax.plot(df3['DATE'],df3['RCA_V'],
-                        color='grey',
+                        color='red',
                         linewidth=lw,
                         label='')
                 ax.scatter(baseline_date,0.0,marker='D',linewidth=base_lw,color='b')
@@ -514,9 +520,10 @@ def plot_rca_timeseries_threeradar(rca_file1,rca_file2,rca_file3,output_director
                 ax.set_ylim(ylim)
                 #ax.text(xtext,ytext,v_text1)
                 locs, labs = plt.xticks()
-                plt.xticks(locs[::1])
+                plt.xticks(locs[::14])
                 plt.xticks
                 plt.gcf().autofmt_xdate()
+                plt.legend()
                 plt.savefig(output_directory+'rca_v_'+scan_type+'_'+site+inst1+'_'+site+inst2+'_'+site+inst3+'.png')
                 
                 # Plot H and V together (one plot or dual plot?)
@@ -532,19 +539,19 @@ def plot_rca_timeseries_threeradar(rca_file1,rca_file2,rca_file3,output_director
                         linewidth=lw,
                         label='')
                 axes[0].scatter(df2['DATE'],df2['RCA_H'],
-                        color='r',
+                        color='grey',
                         linewidth=lw,
                         label=inst2.upper())
                 axes[0].plot(df2['DATE'],df2['RCA_H'],
-                        color='r',
+                        color='grey',
                         linewidth=lw,
                         label='')
                 axes[0].scatter(df3['DATE'],df3['RCA_H'],
-                        color='grey',
+                        color='red',
                         linewidth=lw,
                         label=inst3.upper())
                 axes[0].plot(df3['DATE'],df3['RCA_H'],
-                        color='grey',
+                        color='red',
                         linewidth=lw,
                         label='')
                 axes[0].set_ylabel('RCA value (dB)')
@@ -558,6 +565,7 @@ def plot_rca_timeseries_threeradar(rca_file1,rca_file2,rca_file3,output_director
                 plt.xticks(locs[::1])
                 plt.xticks
                 plt.gcf().autofmt_xdate()
+                plt.legend()
 
                 axes[1].axhline(0.,linestyle='--',color='grey')
                 axes[1].scatter(df1['DATE'],df1['RCA_V'],
@@ -569,19 +577,19 @@ def plot_rca_timeseries_threeradar(rca_file1,rca_file2,rca_file3,output_director
                         linewidth=lw,
                         label='')
                 axes[1].scatter(df2['DATE'],df2['RCA_V'],
-                        color='r',
+                        color='grey',
                         linewidth=lw,
                         label=inst2.upper())
                 axes[1].plot(df2['DATE'],df2['RCA_V'],
-                        color='r',
+                        color='grey',
                         linewidth=lw,
                         label='')
                 axes[1].scatter(df3['DATE'],df3['RCA_V'],
-                        color='grey',
+                        color='red',
                         linewidth=lw,
                         label=inst3.upper())
                 axes[1].plot(df3['DATE'],df3['RCA_V'],
-                        color='grey',
+                        color='red',
                         linewidth=lw,
                         label='')
                 axes[1].set_ylabel('RCA value (dB)')
@@ -592,9 +600,10 @@ def plot_rca_timeseries_threeradar(rca_file1,rca_file2,rca_file3,output_director
                 axes[1].text(0.03, 0.87, '('+string.ascii_lowercase[1]+')', transform=axes[1].transAxes, 
                         size=20, weight='regular')
                 locs, labs = plt.xticks()
-                plt.xticks(locs[::1])
+                plt.xticks(locs[::14])
                 plt.xticks
                 plt.gcf().autofmt_xdate()
+                plt.legend()
                 plt.savefig(output_directory+'rca_hv_'+scan_type+'_'+site+inst1+'_'+site+inst2+'_'+site+inst3+'.png')
 
     
