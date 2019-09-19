@@ -4,11 +4,15 @@ import os
 import glob
 import json
 from netCDF4 import Dataset
-from modules.create_clutter_flag import create_clutter_flag_ppi, create_clutter_flag_hsrhi
+from modules.create_clutter_flag import (
+    create_clutter_flag_ppi,
+    create_clutter_flag_hsrhi,
+)
 from modules.file_to_radar_object import file_to_radar_object
 from modules.get_var_arrays_from_radar_object import get_var_arrays_from_radar_object
 
-def clutter_map(radar_config_file,date):
+
+def clutter_map(radar_config_file, date):
     """
     clutter_map loops through a day's worth of radar files (specify PPI or HSRHI, dual or horizontal polarization)
     utilizes the create_clutter_flag function to flag clutter points for each scan. If more than 50% of the day's 
@@ -136,7 +140,9 @@ def clutter_map(radar_config_file,date):
         HPCT_ON = dataset.createVariable(
             "clutter_gate_pcts_zh", np.float64, ("azi", "ele", "rang")
         )
-        HMASK = dataset.createVariable("clutter_map_mask_zh", "i1", ("azi", "ele", "rang"))
+        HMASK = dataset.createVariable(
+            "clutter_map_mask_zh", "i1", ("azi", "ele", "rang")
+        )
         HPCT_ON.long_name = "Clutter grid gate percentages (Zh)"
         HMASK.long_name = "Clutter map mask (Zh)"
         HPCT_ON[:, :, :] = pct_h
@@ -240,8 +246,12 @@ def clutter_map(radar_config_file,date):
         VPCT_ON = dataset.createVariable(
             "clutter_gate_pcts_zv", np.float64, ("azi", "ele", "rang")
         )
-        HMASK = dataset.createVariable("clutter_map_mask_zh", "i1", ("azi", "ele", "rang"))
-        VMASK = dataset.createVariable("clutter_map_mask_zv", "i1", ("azi", "ele", "rang"))
+        HMASK = dataset.createVariable(
+            "clutter_map_mask_zh", "i1", ("azi", "ele", "rang")
+        )
+        VMASK = dataset.createVariable(
+            "clutter_map_mask_zv", "i1", ("azi", "ele", "rang")
+        )
         HPCT_ON.long_name = "Clutter grid gate percentages (Zh)"
         VPCT_ON.long_name = "Clutter grid gate percentages (Zv)"
         HMASK.long_name = "Clutter map mask (Zh)"

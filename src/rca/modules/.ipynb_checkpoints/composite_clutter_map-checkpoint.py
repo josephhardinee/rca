@@ -5,8 +5,10 @@ import glob
 import json
 import numpy as np
 from netCDF4 import Dataset
-#sys.path.append('/home/alexishunzinger/projects/github/rca/src/rca/')
-#from get_pct_on_clutter_map import get_pct_on_clutter_map_ppi, get_pct_on_clutter_map_hsrhi
+
+# sys.path.append('/home/alexishunzinger/projects/github/rca/src/rca/')
+# from get_pct_on_clutter_map import get_pct_on_clutter_map_ppi, get_pct_on_clutter_map_hsrhi
+
 
 def composite_clutter_map(radar_config_file):
     """
@@ -47,7 +49,7 @@ def composite_clutter_map(radar_config_file):
     clutter_mask_v = []
     clutter_pct_h = []
     clutter_pct_v = []
-    
+
     if polarization == "horizontal" and scantype == "ppi":
         for f in glob.glob(
             os.path.join(
@@ -72,7 +74,13 @@ def composite_clutter_map(radar_config_file):
         pct_h = np.sum(array_h, axis=0) / len(array_h[:, 0, 0])
         clutter_map_h_mask = pct_h > 0.8
         dataset = Dataset(
-            cluttermap_dir + "cluttermap_" + scantype + "_" + site + inst + "_composite.nc",
+            cluttermap_dir
+            + "cluttermap_"
+            + scantype
+            + "_"
+            + site
+            + inst
+            + "_composite.nc",
             "w",
             format="NETCDF4_CLASSIC",
         )
@@ -95,11 +103,12 @@ def composite_clutter_map(radar_config_file):
             )
         ):
             print(f)
-            ClutterMaskH, ClutterPCTH = get.get_pct_on_clutter_map_hsrhi(f, polarization)
+            ClutterMaskH, ClutterPCTH = get.get_pct_on_clutter_map_hsrhi(
+                f, polarization
+            )
             # Append output from each HSRHI file to lists
             clutter_mask_h.append(ClutterMaskH)
             clutter_pct_h.append(ClutterPCTH)
-        
 
         array_h = np.zeros(
             (
@@ -115,7 +124,13 @@ def composite_clutter_map(radar_config_file):
         pct_h = np.sum(array_h, axis=0) / len(array_h[:, 0, 0, 0])
         clutter_map_h_mask = pct_h > 0.8
         dataset = Dataset(
-            cluttermap_dir + "cluttermap_" + scantype + "_" + site + inst + "_composite.nc",
+            cluttermap_dir
+            + "cluttermap_"
+            + scantype
+            + "_"
+            + site
+            + inst
+            + "_composite.nc",
             "w",
             format="NETCDF4_CLASSIC",
         )
@@ -125,13 +140,14 @@ def composite_clutter_map(radar_config_file):
         HPCT_ON = dataset.createVariable(
             "clutter_gate_pcts_zh", np.float64, ("azi", "el", "rang")
         )
-        HMASK = dataset.createVariable("clutter_map_mask_zh", "i1", ("azi", "el", "rang"))
+        HMASK = dataset.createVariable(
+            "clutter_map_mask_zh", "i1", ("azi", "el", "rang")
+        )
         HPCT_ON.long_name = "Clutter grid gate percentages (Zh)"
         HMASK.long_name = "Clutter map mask (Zh)"
         HPCT_ON[:, :, :] = pct_h
         HMASK[:, :, :] = clutter_map_h_mask
         dataset.close()
-
 
     elif polarization == "dual" and scantype == "ppi":
         for f in glob.glob(
@@ -171,7 +187,13 @@ def composite_clutter_map(radar_config_file):
         clutter_map_h_mask = pct_h > 0.8
         clutter_map_v_mask = pct_v > 0.8
         dataset = Dataset(
-            cluttermap_dir + "cluttermap_" + scantype + "_" + site + inst + "_composite.nc",
+            cluttermap_dir
+            + "cluttermap_"
+            + scantype
+            + "_"
+            + site
+            + inst
+            + "_composite.nc",
             "w",
             format="NETCDF4_CLASSIC",
         )
@@ -239,7 +261,13 @@ def composite_clutter_map(radar_config_file):
         clutter_map_v_mask = pct_v > 0.8
 
         dataset = Dataset(
-            cluttermap_dir + "cluttermap_" + scantype + "_" + site + inst + "_composite.nc",
+            cluttermap_dir
+            + "cluttermap_"
+            + scantype
+            + "_"
+            + site
+            + inst
+            + "_composite.nc",
             "w",
             format="NETCDF4_CLASSIC",
         )
@@ -252,8 +280,12 @@ def composite_clutter_map(radar_config_file):
         VPCT_ON = dataset.createVariable(
             "clutter_gate_pcts_zv", np.float64, ("azi", "el", "rang")
         )
-        HMASK = dataset.createVariable("clutter_map_mask_zh", "i1", ("azi", "el", "rang"))
-        VMASK = dataset.createVariable("clutter_map_mask_zv", "i1", ("azi", "el", "rang"))
+        HMASK = dataset.createVariable(
+            "clutter_map_mask_zh", "i1", ("azi", "el", "rang")
+        )
+        VMASK = dataset.createVariable(
+            "clutter_map_mask_zv", "i1", ("azi", "el", "rang")
+        )
         HPCT_ON.long_name = "Clutter grid gate percentages (Zh)"
         VPCT_ON.long_name = "Clutter grid gate percentages (Zv)"
         HMASK.long_name = "Clutter map mask (Zh)"

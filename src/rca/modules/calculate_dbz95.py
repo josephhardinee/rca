@@ -5,6 +5,7 @@ from rca.modules.create_masks import create_az_mask_ppi, create_az_mask_hsrhi
 # 1) calculate_dbz95_ppi
 # 2) calculate_db95_hsrhi
 
+
 def calculate_dbz95_ppi(
     variable_dictionary, polarization, range_limit, clutter_mask_h, clutter_mask_v=None
 ):
@@ -59,20 +60,10 @@ def calculate_dbz95_ppi(
 
     """
 
-    ###############################
-    # NEED TO CORRECT/ADD
-    # 1) how to make variable names generic, or specify them elsewhere based on the file type (this should be able to happen in file_to_radar_object ?)
-    # reflectivity_h = 'UZh' or 'reflectivity' or 'uncorrected_reflectivity_h'
-    # reflectivity_v = 'UZv' or 'uncorrected_reflectivity_v'
-    # diff_reflectivity = differential_reflectivity' <---- this only here or used if Zv variable is not readily available
-
-    # 2) specify Z thresh at some point (in config file?)
-    ###############################
-
-    date_time = variable_dictionary['date_time']
-    r = variable_dictionary['range']
-    theta = variable_dictionary['azimuth']
-    zh = variable_dictionary['reflectivity_h']
+    date_time = variable_dictionary["date_time"]
+    r = variable_dictionary["range"]
+    theta = variable_dictionary["azimuth"]
+    zh = variable_dictionary["reflectivity_h"]
 
     range_shape = range_limit / 1000
     theta_list = np.arange(360)
@@ -85,16 +76,16 @@ def calculate_dbz95_ppi(
         zh_rays = zh[az_mask, :]
         zh_rays = np.ma.getdata(zh_rays)
         for idx_ra, ra in enumerate(r_list):
-            if clutter_mask_h[idx_az,idx_ra]:
+            if clutter_mask_h[idx_az, idx_ra]:
                 if ra == range_shape:
                     continue
                 else:
-                    rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                    rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
                     try:
-                        rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                        rstop = np.where(r - (r_list[idx_ra + 1] * 1000.0) >= 0.0)[0][0]
                     except IndexError:
                         rstop = -1
-                    zh_from_mask.append(zh_rays[:, rstart : rstop])
+                    zh_from_mask.append(zh_rays[:, rstart:rstop])
 
     all_zh = []
     for i in range(0, len(zh_from_mask)):
@@ -102,7 +93,7 @@ def calculate_dbz95_ppi(
             for j in range(0, len(zh_from_mask[i])):
                 for k in range(0, len(zh_from_mask[i][j])):
                     all_zh.append(zh_from_mask[i][j][k])
-    print('num pts = ',len(all_zh))
+    print("num pts = ", len(all_zh))
 
     num_pts_h = len(all_zh)
     hn, hbins = np.histogram(all_zh, bins=525, range=(-40.0, 65.0))
@@ -121,12 +112,12 @@ def calculate_dbz95_ppi(
         "cdf": hp,
         "reflectivity_95": dbz95_h,
     }
-    print('dbz95H = ',dbz95_h)
+    print("dbz95H = ", dbz95_h)
     if polarization == "horizontal":
         return date_time, dbz95_h, stats_h
 
     elif polarization == "dual":
-        zv = variable_dictionary['reflectivity_v']
+        zv = variable_dictionary["reflectivity_v"]
 
         # V POLARIZATION
         zv_from_mask = []
@@ -135,24 +126,26 @@ def calculate_dbz95_ppi(
             zv_rays = zv[az_mask, :]
             zv_rays = np.ma.getdata(zv_rays)
             for idx_ra, ra in enumerate(r_list):
-                if clutter_mask_v[idx_az,idx_ra]:
+                if clutter_mask_v[idx_az, idx_ra]:
                     if ra == range_shape:
                         continue
                     else:
-                        rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                        rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
                         try:
-                            rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                            rstop = np.where(r - (r_list[idx_ra + 1] * 1000.0) >= 0.0)[
+                                0
+                            ][0]
                         except IndexError:
                             rstop = -1
-                        zv_from_mask.append(zv_rays[:, rstart : rstop])
+                        zv_from_mask.append(zv_rays[:, rstart:rstop])
 
         all_zv = []
         for i in range(0, len(zv_from_mask)):
             if len(zv_from_mask[i]) != 0:
                 for j in range(0, len(zv_from_mask[i])):
-                    for k in range(0,len(zv_from_mask[i][j])):
+                    for k in range(0, len(zv_from_mask[i][j])):
                         all_zh.append(zv_from_mask[i][j][k])
-        print('num pts = ',len(all_zv))
+        print("num pts = ", len(all_zv))
 
         num_pts_v = len(all_zv)
         vn, vbins = np.histogram(all_zv, bins=525, range=(-40.0, 65.0))
@@ -171,7 +164,7 @@ def calculate_dbz95_ppi(
             "cdf": vp,
             "reflectivity_95": dbz95_v,
         }
-        print('dbz95V = ',dbz95_v)
+        print("dbz95V = ", dbz95_v)
         return date_time, dbz95_h, dbz95_v, stats_h, stats_v
 
 
@@ -229,21 +222,11 @@ def calculate_dbz95_hsrhi(
 
     """
 
-    ###############################
-    # NEED TO CORRECT/ADD
-    # 1) how to make variable names generic, or specify them elsewhere based on the file type (this should be able to happen in file_to_radar_object ?)
-    # reflectivity_h = 'UZh' or 'reflectivity' or 'uncorrected_reflectivity_h'
-    # reflectivity_v = 'UZv' or 'uncorrected_reflectivity_v'
-    # diff_reflectivity = differential_reflectivity' <---- this only here or used if Zv variable is not readily available
-
-    # 2) specify Z thresh at some point (in config file?)
-    ###############################
-
-    date_time = variable_dictionary['date_time']
-    r = variable_dictionary['range']
-    elev = variable_dictionary['elevation']
-    theta = variable_dictionary['azimuth']
-    zh = variable_dictionary['reflectivity_h']
+    date_time = variable_dictionary["date_time"]
+    r = variable_dictionary["range"]
+    elev = variable_dictionary["elevation"]
+    theta = variable_dictionary["azimuth"]
+    zh = variable_dictionary["reflectivity_h"]
 
     range_shape = range_limit / 1000
     elev_list = [1, 2, 3, 4, 5, 175, 176, 177, 178, 179]
@@ -259,24 +242,26 @@ def calculate_dbz95_hsrhi(
             zh_rays = zh[np.logical_and(az_mask, el_mask), :]
             zh_rays = np.ma.getdata(zh_rays)
             for idx_ra, ra in enumerate(r_list):
-                if clutter_mask_h[idx_az,idx_el,idx_ra]:
+                if clutter_mask_h[idx_az, idx_el, idx_ra]:
                     if ra == range_shape:
                         continue
                     else:
-                        rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                        rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
                         try:
-                            rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                            rstop = np.where(r - (r_list[idx_ra + 1] * 1000.0) >= 0.0)[
+                                0
+                            ][0]
                         except IndexError:
                             rstop = -1
-                        zh_from_mask.append(zh_rays[:,rstart:rstop])
+                        zh_from_mask.append(zh_rays[:, rstart:rstop])
 
     all_zh = []
     for i in range(0, len(zh_from_mask)):
-        if len(zh_from_mask[i]) !=0:
+        if len(zh_from_mask[i]) != 0:
             for j in range(0, len(zh_from_mask[i])):
-                for k in range(0,len(zh_from_mask[i][j])):
+                for k in range(0, len(zh_from_mask[i][j])):
                     all_zh.append(zh_from_mask[i][j][k])
-    print('num pts = ',len(all_zh))
+    print("num pts = ", len(all_zh))
 
     num_pts_h = len(all_zh)
     hn, hbins = np.histogram(all_zh, bins=525, range=(-40.0, 65.0))
@@ -295,12 +280,12 @@ def calculate_dbz95_hsrhi(
         "cdf": hp,
         "reflectivity_95": dbz95_h,
     }
-    print('dbz95H = ',dbz95_h)
+    print("dbz95H = ", dbz95_h)
     if polarization == "horizontal":
         return date_time, dbz95_h, stats_h
 
     elif polarization == "dual":
-        zv = variable_dictionary['reflectivity_v']
+        zv = variable_dictionary["reflectivity_v"]
 
         # V POLARIZATION
         zv_from_mask = []
@@ -311,24 +296,26 @@ def calculate_dbz95_hsrhi(
                 zv_rays = zv[np.logical_and(az_mask, el_mask), :]
                 zv_rays = np.ma.getdata(zv_rays)
                 for idx_ra, ra in enumerate(r_list):
-                    if clutter_mask_v[idx_az,idx_el,idx_ra]:
+                    if clutter_mask_v[idx_az, idx_el, idx_ra]:
                         if ra == range_shape:
                             continue
                         else:
-                            rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                            rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
                             try:
-                                rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                                rstop = np.where(
+                                    r - (r_list[idx_ra + 1] * 1000.0) >= 0.0
+                                )[0][0]
                             except IndexError:
                                 rstop = -1
-                            zv_from_mask.append(zv_rays[:,rstart:rstop])
+                            zv_from_mask.append(zv_rays[:, rstart:rstop])
 
         all_zv = []
         for i in range(0, len(zv_from_mask)):
-            if len(zv_from_mask[i]) !=0:
+            if len(zv_from_mask[i]) != 0:
                 for j in range(0, len(zv_from_mask[i])):
-                    for k in range(0,len(zv_from_mask[i][j])):
+                    for k in range(0, len(zv_from_mask[i][j])):
                         all_zh.append(zv_from_mask[i][j][k])
-        print('num pts = ',len(all_zv))
+        print("num pts = ", len(all_zv))
 
         num_pts_v = len(all_zv)
         vn, vbins = np.histogram(all_zv, bins=525, range=(-40.0, 65.0))
@@ -347,5 +334,5 @@ def calculate_dbz95_hsrhi(
             "cdf": vp,
             "reflectivity_95": dbz95_v,
         }
-        print('dbz95V = ',dbz95_v)
+        print("dbz95V = ", dbz95_v)
         return date_time, dbz95_h, dbz95_v, stats_h, stats_v

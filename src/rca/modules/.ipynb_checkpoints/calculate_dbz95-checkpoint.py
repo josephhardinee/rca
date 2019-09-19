@@ -5,6 +5,7 @@ from create_masks import create_az_mask_ppi, create_az_mask_hsrhi
 # 1) calculate_dbz95_ppi
 # 2) calculate_db95_hsrhi
 
+
 def calculate_dbz95_ppi(
     variable_dictionary, polarization, range_limit, clutter_mask_h, clutter_mask_v=None
 ):
@@ -69,10 +70,10 @@ def calculate_dbz95_ppi(
     # 2) specify Z thresh at some point (in config file?)
     ###############################
 
-    date_time = variable_dictionary['date_time']
-    r = variable_dictionary['range']
-    theta = variable_dictionary['azimuth']
-    zh = variable_dictionary['reflectivity_h']
+    date_time = variable_dictionary["date_time"]
+    r = variable_dictionary["range"]
+    theta = variable_dictionary["azimuth"]
+    zh = variable_dictionary["reflectivity_h"]
 
     range_shape = range_limit / 1000
     theta_list = np.arange(360)
@@ -89,13 +90,13 @@ def calculate_dbz95_ppi(
         zh_rays = np.ma.getdata(zh_rays)
         zh_list = []
         for idx_ra, ra in enumerate(r_list):
-            rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+            rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
             try:
-                rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                rstop = np.where(r - (r_list[idx_ra + 1] * 1000.0) >= 0.0)[0][0]
             except IndexError:
                 rstop = -1
             if clutter_mask_h[idx_az, idx_ra]:
-                zh_list.append(zh_rays[:, rstart : rstop])
+                zh_list.append(zh_rays[:, rstart:rstop])
         zh_from_mask.append(zh_list)
 
     all_zh = []
@@ -133,7 +134,7 @@ def calculate_dbz95_ppi(
         return date_time, dbz95_h, stats_h
 
     elif polarization == "dual":
-        zv = variable_dictionary['reflectivity_v']
+        zv = variable_dictionary["reflectivity_v"]
 
         # Artificially increase/decrease reflectivity values for testing
         # zv = zv-5.
@@ -146,13 +147,13 @@ def calculate_dbz95_ppi(
             zv_rays = np.ma.getdata(zv_rays)
             zv_list = []
             for idx_ra, ra in enumerate(r_list):
-                rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
                 try:
-                    rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                    rstop = np.where(r - (r_list[idx_ra + 1] * 1000.0) >= 0.0)[0][0]
                 except IndexError:
                     rstop = -1
                 if clutter_mask_v[idx_az, idx_ra]:
-                    zv_list.append(zv_rays[:, rstart : rstop])
+                    zv_list.append(zv_rays[:, rstart:rstop])
             zv_from_mask.append(zv_list)
 
         all_zv = []
@@ -263,11 +264,11 @@ def calculate_dbz95_hsrhi(
     # 2) specify Z thresh at some point (in config file?)
     ###############################
 
-    date_time = variable_dictionary['date_time']
-    r = variable_dictionary['range']
-    elev = variable_dictionary['elevation']
-    theta = variable_dictionary['azimuth']
-    zh = variable_dictionary['reflectivity_h']
+    date_time = variable_dictionary["date_time"]
+    r = variable_dictionary["range"]
+    elev = variable_dictionary["elevation"]
+    theta = variable_dictionary["azimuth"]
+    zh = variable_dictionary["reflectivity_h"]
 
     range_shape = range_limit / 1000
     elev_list = [1, 2, 3, 4, 5, 175, 176, 177, 178, 179]
@@ -287,13 +288,13 @@ def calculate_dbz95_hsrhi(
             zh_rays = np.ma.getdata(zh_rays)
             zh_list = []
             for idx_ra, ra in enumerate(r_list):
-                rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
                 try:
-                    rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                    rstop = np.where(r - (r_list[idx_ra + 1] * 1000.0) >= 0.0)[0][0]
                 except IndexError:
                     rstop = -1
                 if clutter_mask_h[idx_az, idx_el, idx_ra]:
-                    zh_list.append(zh_rays[:, rstart : rstop])
+                    zh_list.append(zh_rays[:, rstart:rstop])
             zh_from_mask.append(zh_list)
 
     all_zh = []
@@ -331,7 +332,7 @@ def calculate_dbz95_hsrhi(
         return date_time, dbz95_h, stats_h
 
     elif polarization == "dual":
-        zv = variable_dictionary['reflectivity_v']
+        zv = variable_dictionary["reflectivity_v"]
 
         # Artificially increase/decrease reflectivity values for testing
         # zv = zv-5.
@@ -346,13 +347,13 @@ def calculate_dbz95_hsrhi(
                 zv_rays = np.ma.getdata(zv_rays)
                 zv_list = []
                 for idx_ra, ra in enumerate(r_list):
-                    rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                    rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
                     try:
-                        rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                        rstop = np.where(r - (r_list[idx_ra + 1] * 1000.0) >= 0.0)[0][0]
                     except IndexError:
                         rstop = -1
                     if clutter_mask_v[idx_az, idx_el, idx_ra]:
-                        zv_list.append(zv_rays[:, rstart : rstop])
+                        zv_list.append(zv_rays[:, rstart:rstop])
                 zv_from_mask.append(zv_list)
 
         all_zv = []

@@ -56,6 +56,7 @@ def get_pct_on_clutter_map_ppi(filename, polarization):
             clutter_map_pcts_v,
         )
 
+
 def get_pct_on_clutter_map_hsrhi(filename, polarization):
     "Grabbing clutter maps percentages and clutter map masks from files"
     """
