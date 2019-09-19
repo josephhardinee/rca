@@ -6,10 +6,13 @@ import json
 from netCDF4 import Dataset
 import pandas as pd
 from rca.modules.file_to_radar_object import file_to_radar_object
-from rca.modules.get_var_arrays_from_radar_object import get_var_arrays_from_radar_object
+from rca.modules.get_var_arrays_from_radar_object import (
+    get_var_arrays_from_radar_object,
+)
 from rca.modules.calculate_dbz95 import calculate_dbz95_ppi, calculate_dbz95_hsrhi
 
-def daily_rca(radar_config_file,date):
+
+def daily_rca(radar_config_file, date):
     """
     daily_rca loops through a day's worth of radar files (specify PPI or HSRHI, dual or horizontal polarization),
     calculates the median daily 95th percentile clutter area reflectivity,
@@ -53,7 +56,9 @@ def daily_rca(radar_config_file,date):
     inst = config_vars["instrument_abbrev"]
     range_limit = config_vars["range_limit"]
 
-    daily_csv_fullpath = dailycsvdir + "daily_rca_" + scantype + "_" + site + inst + ".csv"
+    daily_csv_fullpath = (
+        dailycsvdir + "daily_rca_" + scantype + "_" + site + inst + ".csv"
+    )
 
     # Read in clutter map netCDF and baseline value netCDF
     dataset = Dataset(
@@ -141,7 +146,6 @@ def daily_rca(radar_config_file,date):
         csv_frame = csv_frame.append(rca_dict, ignore_index=True)
         csv_frame.set_index("DATE")
         csv_frame.to_csv(daily_csv_fullpath, index=False)
-
 
     elif polarization == "dual":
         for f in glob.glob(os.path.join(datadir, "*" + date + "*.??")):

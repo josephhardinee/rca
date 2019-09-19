@@ -39,15 +39,6 @@ def create_clutter_flag_ppi(variable_dictionary, polarization, range_limit, z_th
                     no clutter present: 0
 
     """
-    ###############################
-    # NEED TO CORRECT/ADD
-    # 1) how to make variable names generic, or specify them elsewhere based on the file type (this should be able to happen in file_to_radar_object ?)
-    # reflectivity_h = 'UZh' or 'reflectivity' or 'uncorrected_reflectivity_h'
-    # reflectivity_v = 'UZv' or 'uncorrected_reflectivity_v'
-    # diff_reflectivity = differential_reflectivity' <---- this only here or used if Zv variable is not readily available
-
-    # 2) specify Z thresh at some point (in config file?)
-    ###############################
 
     theta_list = np.arange(360)
     range_shape = range_limit / 1000
@@ -55,10 +46,10 @@ def create_clutter_flag_ppi(variable_dictionary, polarization, range_limit, z_th
     clutter_flag_h = np.zeros((len(theta_list), len(r_list)))
     clutter_flag_v = np.zeros((len(theta_list), len(r_list)))
 
-    date_time = variable_dictionary['date_time']
-    r = variable_dictionary['range']
-    theta = variable_dictionary['azimuth']
-    zh = variable_dictionary['reflectivity_h']
+    date_time = variable_dictionary["date_time"]
+    r = variable_dictionary["range"]
+    theta = variable_dictionary["azimuth"]
+    zh = variable_dictionary["reflectivity_h"]
 
     # H POLARIZATION
     for idx_az, az in enumerate(theta_list):  # loop thru each azimuth in list
@@ -73,13 +64,13 @@ def create_clutter_flag_ppi(variable_dictionary, polarization, range_limit, z_th
                 continue  # skip the last value in the range grid
             else:
                 zh_ray_list = []
-                rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
                 try:
-                    rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                    rstop = np.where(r - (r_list[idx_ra + 1] * 1000.0) >= 0.0)[0][0]
                 except IndexError:
                     rstop = -1
                 for idx_z, z in enumerate(
-                    zh_rays[:, rstart : rstop]
+                    zh_rays[:, rstart:rstop]
                 ):  # loop thru each zh value in chunks of 10 100m range gates (1 km chunks)
                     if np.any(z >= z_thresh):
                         zh_ray_list.append(z)
@@ -93,7 +84,7 @@ def create_clutter_flag_ppi(variable_dictionary, polarization, range_limit, z_th
         return date_time, clutter_flag_h
 
     elif polarization == "dual":
-        zv = variable_dictionary['reflectivity_v']
+        zv = variable_dictionary["reflectivity_v"]
 
         # V POLARIZATION
         for idx_az, az in enumerate(theta_list):  # loop thru each azimuth in list
@@ -108,13 +99,13 @@ def create_clutter_flag_ppi(variable_dictionary, polarization, range_limit, z_th
                     continue  # skip the last value in the range grid
                 else:
                     zv_ray_list = []
-                    rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                    rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
                     try:
-                        rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                        rstop = np.where(r - (r_list[idx_ra + 1] * 1000.0) >= 0.0)[0][0]
                     except IndexError:
                         rstop = -1
                     for idx_z, z in enumerate(
-                        zv_rays[:, rstart : rstop]
+                        zv_rays[:, rstart:rstop]
                     ):  # loop thru each zv value in chunks of 10 100m range gates (1 km chunks)
                         if np.any(z >= z_thresh):
                             zv_ray_list.append(z)
@@ -160,15 +151,6 @@ def create_clutter_flag_hsrhi(variable_dictionary, polarization, range_limit, z_
                     no clutter present: 0
 
     """
-    ###############################
-    # NEED TO CORRECT/ADD
-    # 1) how to make variable names generic, or specify them elsewhere based on the file type (this should be able to happen in file_to_radar_object ?)
-    # reflectivity_h = 'UZh' or 'reflectivity' or 'uncorrected_reflectivity_h'
-    # reflectivity_v = 'UZv' or 'uncorrected_reflectivity_v'
-    # diff_reflectivity = differential_reflectivity' <---- this only here or used if Zv variable is not readily available
-
-    # 2) specify Z thresh at some point (in config file?)
-    ###############################
 
     elev_list = [1, 2, 3, 4, 5, 175, 176, 177, 178, 179]
     theta_list = [0, 30, 60, 90, 120, 150]
@@ -177,11 +159,11 @@ def create_clutter_flag_hsrhi(variable_dictionary, polarization, range_limit, z_
     clutter_flag_h = np.zeros((len(theta_list), len(elev_list), len(r_list)))
     clutter_flag_v = np.zeros((len(theta_list), len(elev_list), len(r_list)))
 
-    date_time = variable_dictionary['date_time']
-    r = variable_dictionary['range']
-    theta = variable_dictionary['azimuth']
-    elev = variable_dictionary['elevation']
-    zh = variable_dictionary['reflectivity_h']
+    date_time = variable_dictionary["date_time"]
+    r = variable_dictionary["range"]
+    theta = variable_dictionary["azimuth"]
+    elev = variable_dictionary["elevation"]
+    zh = variable_dictionary["reflectivity_h"]
 
     # H POLARIZATION
     for idx_az, az in enumerate(theta_list):  # loop thru each azimuth in list
@@ -200,13 +182,13 @@ def create_clutter_flag_hsrhi(variable_dictionary, polarization, range_limit, z_
                     continue  # skip the last value in the range grid
                 else:
                     zh_ray_list = []
-                    rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                    rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
                     try:
-                        rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                        rstop = np.where(r - (r_list[idx_ra + 1] * 1000.0) >= 0.0)[0][0]
                     except IndexError:
                         rstop = -1
                     for idx_z, z in enumerate(
-                        zh_rays[:, rstart : rstop]
+                        zh_rays[:, rstart:rstop]
                     ):  # loop thru each zh value in chunks of 10 100m range gates (1 km chunks)
                         if np.any(z >= z_thresh):
                             zh_ray_list.append(z)
@@ -220,7 +202,7 @@ def create_clutter_flag_hsrhi(variable_dictionary, polarization, range_limit, z_
         return date_time, clutter_flag_h
 
     elif polarization == "dual":
-        zv = variable_dictionary['reflectivity_v']
+        zv = variable_dictionary["reflectivity_v"]
 
         # V POLARIZATION
         for idx_az, az in enumerate(theta_list):  # loop thru each azimuth in list
@@ -242,13 +224,15 @@ def create_clutter_flag_hsrhi(variable_dictionary, polarization, range_limit, z_
                         continue  # skip the last value in the range grid
                     else:
                         zv_ray_list = []
-                        rstart = np.where(r-(ra*1000.) >= 0.)[0][0]
+                        rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
                         try:
-                            rstop = np.where(r-(r_list[idx_ra+1]*1000.) >= 0.)[0][0]
+                            rstop = np.where(r - (r_list[idx_ra + 1] * 1000.0) >= 0.0)[
+                                0
+                            ][0]
                         except IndexError:
                             rstop = -1
                         for idx_z, z in enumerate(
-                            zv_rays[:, rstart : rstop]
+                            zv_rays[:, rstart:rstop]
                         ):  # loop thru each zv value in chunks of 10 100m range gates (1 km chunks)
                             if np.any(z >= z_thresh):
                                 zv_ray_list.append(z)
@@ -257,5 +241,5 @@ def create_clutter_flag_hsrhi(variable_dictionary, polarization, range_limit, z_
                                 ] = (
                                     1
                                 )  # flag the grid box as clutter is any zh in the 1 km chunk is greater than the threshold value
-                                
+
         return date_time, clutter_flag_h, clutter_flag_v

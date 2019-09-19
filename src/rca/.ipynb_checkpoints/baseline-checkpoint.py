@@ -46,7 +46,7 @@ def baseline(radar_config_file):
     site = config_vars["site_abbrev"]
     inst = config_vars["instrument_abbrev"]
     range_limit = config_vars["range_limit"]
-    
+
     # Read in clutter map netCDF
     dataset = Dataset(
         cluttermap_dir
@@ -128,7 +128,7 @@ def baseline(radar_config_file):
         dbz95_h_base.long_name = "Baseline 95th percentile reflectivity (H)"
         dbz95_h_base[:] = dbz95_h_baseline
         d.close()
-        
+
         return dbz95_h_baseline
 
     elif polarization == "dual":
@@ -192,5 +192,5 @@ def baseline(radar_config_file):
         dbz95_h_base[:] = dbz95_h_baseline
         dbz95_v_base[:] = dbz95_v_baseline
         d.close()
-        
+
         return dbz95_h_baseline, dbz95_v_baseline
