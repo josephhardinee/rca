@@ -1,0 +1,399 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>rca.composite_clutter_map &#8212; rca 0.0.post0.dev71+gcdb911c documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for rca.composite_clutter_map</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">netCDF4</span> <span class="k">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">rca.modules.get_pct_on_clutter_map</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">get_pct_on_clutter_map_ppi</span><span class="p">,</span>
+    <span class="n">get_pct_on_clutter_map_hsrhi</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="composite_clutter_map"><a class="viewcode-back" href="../../api/rca.html#rca.composite_clutter_map.composite_clutter_map">[docs]</a><span class="k">def</span> <span class="nf">composite_clutter_map</span><span class="p">(</span><span class="n">radar_config_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        composite_clutter_map combines all daily clutter maps available or specified into a single composite clutter map</span>
+<span class="sd">        for use in baseline and RCA calculation later. If more than 80% of the daily clutter points occur for all the daily</span>
+<span class="sd">        clutter maps, that is considered a composite clutter point.</span>
+<span class="sd">        The composite clutter map (array) is written to a netCDF.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        --------------</span>
+<span class="sd">        radar_config_file: str</span>
+<span class="sd">                    path to JSON file containing specifications:</span>
+<span class="sd">                        data directory</span>
+<span class="sd">                        file extension</span>
+<span class="sd">                        daily clutter map directory</span>
+<span class="sd">                        scan type</span>
+<span class="sd">                        polarization</span>
+<span class="sd">                        site</span>
+<span class="sd">                        instrument</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        --------------</span>
+<span class="sd">        (no specific return)</span>
+<span class="sd">        however, a netCDF file is written out</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="n">config_vars</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">radar_config_file</span><span class="p">))</span>
+    <span class="n">datadir</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s2">&quot;data_directory&quot;</span><span class="p">]</span>
+    <span class="n">extension</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s2">&quot;file_extension&quot;</span><span class="p">]</span>
+    <span class="n">cluttermap_dir</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s2">&quot;cluttermap_directory&quot;</span><span class="p">]</span>
+    <span class="n">scantype</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s2">&quot;scan_type&quot;</span><span class="p">]</span>
+    <span class="n">polarization</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s2">&quot;polarization&quot;</span><span class="p">]</span>
+    <span class="n">site</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s2">&quot;site_abbrev&quot;</span><span class="p">]</span>
+    <span class="n">inst</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s2">&quot;instrument_abbrev&quot;</span><span class="p">]</span>
+
+    <span class="n">clutter_mask_h</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">clutter_mask_v</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">clutter_pct_h</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">clutter_pct_v</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">polarization</span> <span class="o">==</span> <span class="s2">&quot;horizontal&quot;</span> <span class="ow">and</span> <span class="n">scantype</span> <span class="o">==</span> <span class="s2">&quot;ppi&quot;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">cluttermap_dir</span><span class="p">,</span> <span class="s2">&quot;cluttermap_&quot;</span> <span class="o">+</span> <span class="n">scantype</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">site</span> <span class="o">+</span> <span class="n">inst</span> <span class="o">+</span> <span class="s2">&quot;_*.nc&quot;</span>
+            <span class="p">)</span>
+        <span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">ClutterMaskH</span><span class="p">,</span> <span class="n">ClutterPCTH</span> <span class="o">=</span> <span class="n">get_pct_on_clutter_map_ppi</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">polarization</span><span class="p">)</span>
+            <span class="c1"># Append output from each HSRHI file to lists</span>
+            <span class="n">clutter_mask_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ClutterMaskH</span><span class="p">)</span>
+            <span class="n">clutter_pct_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ClutterPCTH</span><span class="p">)</span>
+
+        <span class="n">array_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">)):</span>
+            <span class="n">array_h</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">clutter_mask_h</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">pct_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">array_h</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">array_h</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">clutter_map_h_mask</span> <span class="o">=</span> <span class="n">pct_h</span> <span class="o">&gt;</span> <span class="mf">0.8</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
+            <span class="n">cluttermap_dir</span>
+            <span class="o">+</span> <span class="s2">&quot;cluttermap_&quot;</span>
+            <span class="o">+</span> <span class="n">scantype</span>
+            <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+            <span class="o">+</span> <span class="n">site</span>
+            <span class="o">+</span> <span class="n">inst</span>
+            <span class="o">+</span> <span class="s2">&quot;_composite.nc&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+            <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;NETCDF4_CLASSIC&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">azi</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;azi&quot;</span><span class="p">,</span> <span class="mi">360</span><span class="p">)</span>
+        <span class="n">rang</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;rang&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">HPCT_ON</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span>
+            <span class="s2">&quot;clutter_gate_pcts_zh&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;azi&quot;</span><span class="p">,</span> <span class="s2">&quot;rang&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">HMASK</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s2">&quot;clutter_map_mask_zh&quot;</span><span class="p">,</span> <span class="s2">&quot;i1&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;azi&quot;</span><span class="p">,</span> <span class="s2">&quot;rang&quot;</span><span class="p">))</span>
+        <span class="n">HPCT_ON</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s2">&quot;Clutter grid gate percentages (Zh)&quot;</span>
+        <span class="n">HMASK</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s2">&quot;Clutter map mask (Zh)&quot;</span>
+        <span class="n">HPCT_ON</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">pct_h</span>
+        <span class="n">HMASK</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">clutter_map_h_mask</span>
+        <span class="n">dataset</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">elif</span> <span class="n">polarization</span> <span class="o">==</span> <span class="s2">&quot;horizontal&quot;</span> <span class="ow">and</span> <span class="n">scantype</span> <span class="o">==</span> <span class="s2">&quot;rhi&quot;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">cluttermap_dir</span><span class="p">,</span> <span class="s2">&quot;cluttermap_&quot;</span> <span class="o">+</span> <span class="n">scantype</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">site</span> <span class="o">+</span> <span class="n">inst</span> <span class="o">+</span> <span class="s2">&quot;_*.nc&quot;</span>
+            <span class="p">)</span>
+        <span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">ClutterMaskH</span><span class="p">,</span> <span class="n">ClutterPCTH</span> <span class="o">=</span> <span class="n">get_pct_on_clutter_map_hsrhi</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">polarization</span><span class="p">)</span>
+            <span class="c1"># Append output from each HSRHI file to lists</span>
+            <span class="n">clutter_mask_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ClutterMaskH</span><span class="p">)</span>
+            <span class="n">clutter_pct_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ClutterPCTH</span><span class="p">)</span>
+
+        <span class="n">array_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">)):</span>
+            <span class="n">array_h</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">clutter_mask_h</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="c1"># Calculate percentage of &quot;clutter ON&quot; for each grid box in clutter map grid</span>
+        <span class="n">pct_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">array_h</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">array_h</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">clutter_map_h_mask</span> <span class="o">=</span> <span class="n">pct_h</span> <span class="o">&gt;</span> <span class="mf">0.8</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
+            <span class="n">cluttermap_dir</span>
+            <span class="o">+</span> <span class="s2">&quot;cluttermap_&quot;</span>
+            <span class="o">+</span> <span class="n">scantype</span>
+            <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+            <span class="o">+</span> <span class="n">site</span>
+            <span class="o">+</span> <span class="n">inst</span>
+            <span class="o">+</span> <span class="s2">&quot;_composite.nc&quot;</span>
+            <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+            <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;NETCDF4_CLASSIC&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">azi</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;azi&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="n">rang</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;rang&quot;</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="n">el</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;el&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">HPCT_ON</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span>
+            <span class="s2">&quot;clutter_gate_pcts_zh&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;azi&quot;</span><span class="p">,</span> <span class="s2">&quot;el&quot;</span><span class="p">,</span> <span class="s2">&quot;rang&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">HMASK</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span>
+            <span class="s2">&quot;clutter_map_mask_zh&quot;</span><span class="p">,</span> <span class="s2">&quot;i1&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;azi&quot;</span><span class="p">,</span> <span class="s2">&quot;el&quot;</span><span class="p">,</span> <span class="s2">&quot;rang&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">HPCT_ON</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s2">&quot;Clutter grid gate percentages (Zh)&quot;</span>
+        <span class="n">HMASK</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s2">&quot;Clutter map mask (Zh)&quot;</span>
+        <span class="n">HPCT_ON</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">pct_h</span>
+        <span class="n">HMASK</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">clutter_map_h_mask</span>
+        <span class="n">dataset</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">elif</span> <span class="n">polarization</span> <span class="o">==</span> <span class="s2">&quot;dual&quot;</span> <span class="ow">and</span> <span class="n">scantype</span> <span class="o">==</span> <span class="s2">&quot;ppi&quot;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">cluttermap_dir</span><span class="p">,</span> <span class="s2">&quot;cluttermap_&quot;</span> <span class="o">+</span> <span class="n">scantype</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">site</span> <span class="o">+</span> <span class="n">inst</span> <span class="o">+</span> <span class="s2">&quot;_*.nc&quot;</span>
+            <span class="p">)</span>
+        <span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">ClutterMaskH</span><span class="p">,</span> <span class="n">ClutterMaskV</span><span class="p">,</span> <span class="n">ClutterPCTH</span><span class="p">,</span> <span class="n">ClutterPCTV</span> <span class="o">=</span> <span class="n">get_pct_on_clutter_map_ppi</span><span class="p">(</span>
+                <span class="n">f</span><span class="p">,</span> <span class="n">polarization</span>
+            <span class="p">)</span>
+            <span class="c1"># Append output from each HSRHI file to lists</span>
+            <span class="n">clutter_mask_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ClutterMaskH</span><span class="p">)</span>
+            <span class="n">clutter_mask_v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ClutterMaskV</span><span class="p">)</span>
+            <span class="n">clutter_pct_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ClutterPCTH</span><span class="p">)</span>
+            <span class="n">clutter_pct_v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ClutterPCTV</span><span class="p">)</span>
+
+        <span class="n">array_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">array_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_v</span><span class="p">),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_v</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_v</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">)):</span>
+            <span class="n">array_h</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">clutter_mask_h</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">array_v</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">clutter_mask_v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">pct_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">array_h</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">array_h</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">pct_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">array_v</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">array_v</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">clutter_map_h_mask</span> <span class="o">=</span> <span class="n">pct_h</span> <span class="o">&gt;</span> <span class="mf">0.8</span>
+        <span class="n">clutter_map_v_mask</span> <span class="o">=</span> <span class="n">pct_v</span> <span class="o">&gt;</span> <span class="mf">0.8</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
+            <span class="n">cluttermap_dir</span>
+            <span class="o">+</span> <span class="s2">&quot;cluttermap_&quot;</span>
+            <span class="o">+</span> <span class="n">scantype</span>
+            <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+            <span class="o">+</span> <span class="n">site</span>
+            <span class="o">+</span> <span class="n">inst</span>
+            <span class="o">+</span> <span class="s2">&quot;_composite.nc&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+            <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;NETCDF4_CLASSIC&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">azi</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;azi&quot;</span><span class="p">,</span> <span class="mi">360</span><span class="p">)</span>
+        <span class="n">rang</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;rang&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">HPCT_ON</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span>
+            <span class="s2">&quot;clutter_gate_pcts_zh&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;azi&quot;</span><span class="p">,</span> <span class="s2">&quot;rang&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">VPCT_ON</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span>
+            <span class="s2">&quot;clutter_gate_pcts_zv&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;azi&quot;</span><span class="p">,</span> <span class="s2">&quot;rang&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">HMASK</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s2">&quot;clutter_map_mask_zh&quot;</span><span class="p">,</span> <span class="s2">&quot;i1&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;azi&quot;</span><span class="p">,</span> <span class="s2">&quot;rang&quot;</span><span class="p">))</span>
+        <span class="n">VMASK</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s2">&quot;clutter_map_mask_zv&quot;</span><span class="p">,</span> <span class="s2">&quot;i1&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;azi&quot;</span><span class="p">,</span> <span class="s2">&quot;rang&quot;</span><span class="p">))</span>
+        <span class="n">HPCT_ON</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s2">&quot;Clutter grid gate percentages (Zh)&quot;</span>
+        <span class="n">VPCT_ON</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s2">&quot;Clutter grid gate percentages (Zv)&quot;</span>
+        <span class="n">HMASK</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s2">&quot;Clutter map mask (Zh)&quot;</span>
+        <span class="n">VMASK</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s2">&quot;Clutter map mask (Zv)&quot;</span>
+        <span class="n">HPCT_ON</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">pct_h</span>
+        <span class="n">VPCT_ON</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">pct_v</span>
+        <span class="n">HMASK</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">clutter_map_h_mask</span>
+        <span class="n">VMASK</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">clutter_map_v_mask</span>
+        <span class="n">dataset</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">elif</span> <span class="n">polarization</span> <span class="o">==</span> <span class="s2">&quot;dual&quot;</span> <span class="ow">and</span> <span class="n">scantype</span> <span class="o">==</span> <span class="s2">&quot;rhi&quot;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">cluttermap_dir</span><span class="p">,</span> <span class="s2">&quot;cluttermap_&quot;</span> <span class="o">+</span> <span class="n">scantype</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">site</span> <span class="o">+</span> <span class="n">inst</span> <span class="o">+</span> <span class="s2">&quot;_*.nc&quot;</span>
+            <span class="p">)</span>
+        <span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">ClutterMaskH</span><span class="p">,</span> <span class="n">ClutterMaskV</span><span class="p">,</span> <span class="n">ClutterPCTH</span><span class="p">,</span> <span class="n">ClutterPCTV</span> <span class="o">=</span> <span class="n">get_pct_on_clutter_map_hsrhi</span><span class="p">(</span>
+                <span class="n">f</span><span class="p">,</span> <span class="n">polarization</span>
+            <span class="p">)</span>
+            <span class="c1"># Append output from each HSRHI file to lists</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">ClutterMaskH</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="n">clutter_mask_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ClutterMaskH</span><span class="p">)</span>
+            <span class="n">clutter_mask_v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ClutterMaskV</span><span class="p">)</span>
+            <span class="n">clutter_pct_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ClutterPCTH</span><span class="p">)</span>
+            <span class="n">clutter_pct_v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ClutterPCTV</span><span class="p">)</span>
+
+        <span class="n">array_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">array_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_v</span><span class="p">),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_v</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_v</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_v</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">clutter_mask_h</span><span class="p">)):</span>
+            <span class="n">array_h</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">clutter_mask_h</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">array_v</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">clutter_mask_v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="n">pct_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">array_h</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">array_h</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">pct_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">array_v</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">array_v</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">clutter_map_h_mask</span> <span class="o">=</span> <span class="n">pct_h</span> <span class="o">&gt;</span> <span class="mf">0.8</span>
+        <span class="n">clutter_map_v_mask</span> <span class="o">=</span> <span class="n">pct_v</span> <span class="o">&gt;</span> <span class="mf">0.8</span>
+
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
+            <span class="n">cluttermap_dir</span>
+            <span class="o">+</span> <span class="s2">&quot;cluttermap_&quot;</span>
+            <span class="o">+</span> <span class="n">scantype</span>
+            <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+            <span class="o">+</span> <span class="n">site</span>
+            <span class="o">+</span> <span class="n">inst</span>
+            <span class="o">+</span> <span class="s2">&quot;_composite.nc&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+            <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;NETCDF4_CLASSIC&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">azi</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;azi&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="n">rang</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;rang&quot;</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+        <span class="n">el</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;el&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">HPCT_ON</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span>
+            <span class="s2">&quot;clutter_gate_pcts_zh&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;azi&quot;</span><span class="p">,</span> <span class="s2">&quot;el&quot;</span><span class="p">,</span> <span class="s2">&quot;rang&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">VPCT_ON</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span>
+            <span class="s2">&quot;clutter_gate_pcts_zv&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;azi&quot;</span><span class="p">,</span> <span class="s2">&quot;el&quot;</span><span class="p">,</span> <span class="s2">&quot;rang&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">HMASK</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span>
+            <span class="s2">&quot;clutter_map_mask_zh&quot;</span><span class="p">,</span> <span class="s2">&quot;i1&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;azi&quot;</span><span class="p">,</span> <span class="s2">&quot;el&quot;</span><span class="p">,</span> <span class="s2">&quot;rang&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">VMASK</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span>
+            <span class="s2">&quot;clutter_map_mask_zv&quot;</span><span class="p">,</span> <span class="s2">&quot;i1&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;azi&quot;</span><span class="p">,</span> <span class="s2">&quot;el&quot;</span><span class="p">,</span> <span class="s2">&quot;rang&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">HPCT_ON</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s2">&quot;Clutter grid gate percentages (Zh)&quot;</span>
+        <span class="n">VPCT_ON</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s2">&quot;Clutter grid gate percentages (Zv)&quot;</span>
+        <span class="n">HMASK</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s2">&quot;Clutter map mask (Zh)&quot;</span>
+        <span class="n">VMASK</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s2">&quot;Clutter map mask (Zv)&quot;</span>
+        <span class="n">HPCT_ON</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">pct_h</span>
+        <span class="n">VPCT_ON</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">pct_v</span>
+        <span class="n">HMASK</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">clutter_map_h_mask</span>
+        <span class="n">VMASK</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">clutter_map_v_mask</span>
+        <span class="n">dataset</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">rca</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">Module Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Alexis Hunzinger.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
