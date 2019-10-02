@@ -1,6 +1,10 @@
 sudo: false
 language: python
 
+env: 
+    global:
+        - secure: "xtotszr88WOCxe1Dw3t8Y3nk9q8EcVPSiNEji2AIRkFT3IGj35r+OBJiZ68bAWNMqVlYudNvhzniHKtB5ODivJ+G7F5vIRlwHtn7/HjBk1S9haxfKl2Oa5E9aPEbGAL8Tcd9o6op3J9xw2uhLYsh8DAYr7jV1EEvUdKEjh5iCiKuMkofX9e/a8FbVWZltdL+ib6xcb7b1SYseMJd/qUuZpHbaoVpITsYfWylVXG492q9nP/FGtc7euzTqDhpo+G/0l3etYEDDnThbwwBrGF4XpxG2d/qkIBVkKII9mADW9gbJ752Bxm6PFgDQahDbUiwJRbwvLCp+LpBPpJbSLCzBVt365/rccN70kfbctvEfYqD4KQZeIOPI2EvaUf4BhtnseZNU6MfdL26/WBOVGlLSSeikK9W65QjFg7DYdLNr+zVnQ5ZnnX+S3XaINiWeWOMOMoKWBcg0757jB+11VQl4hffp3QYIiFe7SBJW2pORXeJrvp8Jfv8pIkb+zihVxa3ncycrWTzd9UAWN4J13wzfXfvFbVn82jO8LnJ+x9KOZti8yT10Mh6aqd/3mX26ACSPHA2QzNYnFh08M8VgrKfsragUyWx25P7nSN2GvFi1w9vCT7bLxX7xgoLjTFAfHFZX3LNNbF6j8IoHLlJQiYVzZO/pOunrbt+rb88lYSZIvE="
+
 matrix:
   include:
   - python: '3.6'
@@ -8,21 +12,25 @@ matrix:
     - PYTHON_VERSION="3.6"
     - PYTEST_ARGS=""
     - COVERALLS="true"
-# - python: '3.7-dev'
-#   env:
-#   - PYTHON_VERSION="3.7"
-#   - PYTEST_ARGS=""
-#   - COVERALLS="true"
-#   allow_failures:
-#     python: "3.7-dev"
+  - python: '3.6'
+    env:
+    - PYTHON_VERSION="3.6"
+    - PYTEST_ARGS=""
+    - COVERALLS="true"
+    - DOCS="true"
+
 
 before_install:
-- pip install pytest pytest-cov
+- pip install pytest pytest-cov doctr
 - pip install coveralls
 install: source continuous_integration/install.sh
-script: eval xvfb-run python -m pytest $PYTEST_ARGS
+script: 
+      - set -e
+      - | 
+         if [[ "${DOCS}" == "true" ]]; then
+          cd docs;
+          make html;
+          cd ..;
+          doctr deploy --built-docs docs/_build/html docs/_build/html
+      - eval xvfb-run python -m pytest $PYTEST_ARGS
 #script: eval xvfb-run nosetests $NOSE_ARGS
-#after_success:
-#- coveralls
-#- if [[ "$DOC_BUILD" == "true" ]]; then cd $TRAVIS_BUILD_DIR; source continuous_integration/build_docs.sh;
-#  fi
