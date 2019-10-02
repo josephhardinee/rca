@@ -21,16 +21,17 @@ matrix:
 
 
 before_install:
-- pip install pytest pytest-cov doctr
-- pip install coveralls
+- pip install pytest pytest-cov doctr coveralls sphinx
 install: source continuous_integration/install.sh
-script: 
-      - set -e
-      - | 
-         if [[ "${DOCS}" == "true" ]]; then
+script:
+  - set -e
+  - set -x
+  # Note, the commands below need --sync to actually sync, to override sync: False below. Also, every deploy to the main repo needs to have --key-path deploy_key.enc.
+  - |
+    if [[ "${DOCS}" == "true" ]]; then
           cd docs;
           make html;
           cd ..;
-          doctr deploy --built-docs docs/_build/html docs/_build/html
+          doctr deploy --built-docs docs/_build/html ./
       - eval xvfb-run python -m pytest $PYTEST_ARGS
 #script: eval xvfb-run nosetests $NOSE_ARGS
