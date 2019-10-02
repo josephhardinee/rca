@@ -5,11 +5,9 @@ import glob
 import json
 from netCDF4 import Dataset
 import pandas as pd
-from rca.modules.file_to_radar_object import file_to_radar_object
-from rca.modules.get_var_arrays_from_radar_object import (
-    get_var_arrays_from_radar_object,
-)
-from rca.modules.calculate_dbz95 import calculate_dbz95_ppi, calculate_dbz95_hsrhi
+from file_to_radar_object import file_to_radar_object
+from get_var_arrays_from_radar_object import get_var_arrays_from_radar_object
+from calculate_dbz95 import calculate_dbz95_ppi, calculate_dbz95_hsrhi
 
 
 def daily_rca(radar_config_file, date):

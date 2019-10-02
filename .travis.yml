@@ -1,0 +1,28 @@
+sudo: false
+language: python
+
+matrix:
+  include:
+  - python: '3.6'
+    env:
+    - PYTHON_VERSION="3.6"
+    - PYTEST_ARGS=""
+    - COVERALLS="true"
+# - python: '3.7-dev'
+#   env:
+#   - PYTHON_VERSION="3.7"
+#   - PYTEST_ARGS=""
+#   - COVERALLS="true"
+#   allow_failures:
+#     python: "3.7-dev"
+
+before_install:
+- pip install pytest pytest-cov
+- pip install coveralls
+install: source continuous_integration/install.sh
+script: eval xvfb-run python -m pytest $PYTEST_ARGS
+#script: eval xvfb-run nosetests $NOSE_ARGS
+#after_success:
+#- coveralls
+#- if [[ "$DOC_BUILD" == "true" ]]; then cd $TRAVIS_BUILD_DIR; source continuous_integration/build_docs.sh;
+#  fi

@@ -5,7 +5,7 @@ import glob
 import json
 import numpy as np
 from netCDF4 import Dataset
-from rca.modules.get_pct_on_clutter_map import (
+from modules.get_pct_on_clutter_map import (
     get_pct_on_clutter_map_ppi,
     get_pct_on_clutter_map_hsrhi,
 )
@@ -129,7 +129,7 @@ def composite_clutter_map(radar_config_file):
             + "_"
             + site
             + inst
-            + "_composite.nc"
+            + "_composite.nc",
             "w",
             format="NETCDF4_CLASSIC",
         )

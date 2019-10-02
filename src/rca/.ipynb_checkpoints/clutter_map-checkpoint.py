@@ -4,14 +4,12 @@ import os
 import glob
 import json
 from netCDF4 import Dataset
-from rca.modules.create_clutter_flag import (
+from modules.create_clutter_flag import (
     create_clutter_flag_ppi,
     create_clutter_flag_hsrhi,
 )
-from rca.modules.file_to_radar_object import file_to_radar_object
-from rca.modules.get_var_arrays_from_radar_object import (
-    get_var_arrays_from_radar_object,
-)
+from modules.file_to_radar_object import file_to_radar_object
+from modules.get_var_arrays_from_radar_object import get_var_arrays_from_radar_object
 
 
 def clutter_map(radar_config_file, date):
@@ -118,7 +116,6 @@ def clutter_map(radar_config_file, date):
             date_time.append(dt)
         # Calculate percentage of "clutter ON" for each grid box in clutter map grid
         clutter_flag_h = np.asarray(clutter_flag_h)
-        print(clutter_flag_h.shape)
         pct_h = np.sum(clutter_flag_h, axis=0) / len(clutter_flag_h[:, 0, 0, 0])
         # Create mask where clutter percentages are greater than 50%
         clutter_map_h_mask = pct_h > 0.5

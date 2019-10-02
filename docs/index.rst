@@ -48,7 +48,9 @@ Contents
    Authors <authors>
    Changelog <changelog>
    Module Reference <api/modules>
-
+   
+   rca/src/rca/
+   rca/src/rca/modules/   
 
 Indices and tables
 ==================

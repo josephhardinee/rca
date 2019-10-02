@@ -10,9 +10,9 @@ def create_az_mask_ppi(azimuth_value, azimuth_array):
     create_az_mask_ppi creates a mask for a desired azimuth angle for an array of azimuth from a radar PPI file
     Parameters:
     --------------
-    azimuth_value: integer
+    azimuth_value: float
                     value of the radar azimuth of interest
-                    i.e. 0, 27, 60, 120, etc.
+                    i.e. 0., 27., 60., 120., etc.
     azimuth_array: array-like
                     array of azimuth values to search through and find the appropriate azimuth
     Returns:
@@ -39,9 +39,9 @@ def create_az_mask_hsrhi(azimuth_value, azimuth_array):
     create_az_mask_hsrhi creates a mask for a desired azimuth angle for an array of azimuth from a radar HSRHI file
     Parameters:
     --------------
-    azimuth_value: integer
+    azimuth_value: float
                     value of the radar azimuth of interest
-                    i.e. 30, 60, 120, etc.
+                    i.e. 30., 60., 120., etc.
     azimuth_array: array-like
                     array of azimuth values to search through and find the appropriate azimuth
     Returns:

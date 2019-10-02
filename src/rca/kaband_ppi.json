@@ -12,5 +12,5 @@
     "site_abbrev": "cor",
     "instrument_abbrev": "kasacr",
     "range_limit": 10000,
-    "z_threshold": 30
+    "z_threshold": 10
 }

@@ -3,13 +3,14 @@ rca
 ===
 
 
-Add a short description here!
+(Add a short description here!)
+This package is an extension of the relative calibration adjusment (RCA) technique developed for the calibration of weather radars. The extension is built to calculate RCA for C, X, and Ka-band radars that use both PPI and RHI scans.
 
 
 Description
 ===========
 
-A longer description of your project goes here...
+(A longer description of your project goes here...)
 
 
 Note
