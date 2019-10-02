@@ -24,8 +24,6 @@ before_install:
 - pip install pytest pytest-cov doctr coveralls sphinx
 install: source continuous_integration/install.sh
 script:
-  - set -e
-  - set -x
   # Note, the commands below need --sync to actually sync, to override sync: False below. Also, every deploy to the main repo needs to have --key-path deploy_key.enc.
   - |
     if [[ "${DOCS}" == "true" ]]; then
