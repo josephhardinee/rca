@@ -50,7 +50,7 @@ def create_clutter_flag_ppi(variable_dictionary, polarization, range_limit, z_th
     r = variable_dictionary["range"]
     theta = variable_dictionary["azimuth"]
     zh = variable_dictionary["reflectivity_h"]
-
+    
     # H POLARIZATION
     for idx_az, az in enumerate(theta_list):  # loop thru each azimuth in list
         az_mask = create_az_mask_ppi(az, theta)  # create mask for desired azimuths

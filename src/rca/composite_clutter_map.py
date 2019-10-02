@@ -129,7 +129,7 @@ def composite_clutter_map(radar_config_file):
             + "_"
             + site
             + inst
-            + "_composite.nc",
+            + "_composite.nc"
             "w",
             format="NETCDF4_CLASSIC",
         )

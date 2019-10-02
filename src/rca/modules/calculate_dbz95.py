@@ -227,6 +227,20 @@ def calculate_dbz95_hsrhi(
     elev = variable_dictionary["elevation"]
     theta = variable_dictionary["azimuth"]
     zh = variable_dictionary["reflectivity_h"]
+    
+    ###########################
+    # Special case
+    #    KASACR calibration constant during CACTI
+    #    zh(corrected) = zh(in_file) + zh_offset
+    #    BEFORE 2019-03-18 16:42:33 UTC
+    #        dirt on waveguide, reflectivity low
+    #        zh_offset = 10.6 + difference of RCA going backward in time
+    #    AFTER 2019-03-18 16:42:33 UTC
+    #        waveguide cleaned
+    #        zh_offset = 10.6
+    zh_offset = 10.6
+    zh = zh + zh_offset
+    ###########################
 
     range_shape = range_limit / 1000
     elev_list = [1, 2, 3, 4, 5, 175, 176, 177, 178, 179]

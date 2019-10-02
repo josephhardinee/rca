@@ -6,9 +6,6 @@ from matplotlib.colors import BoundaryNorm
 import string
 
 
-<<<<<<< HEAD
-def plot_clutter_map(clutter_map_netcdf,output_directory,scan_type,map_type,polarization,max_range,site,inst,location):
-=======
 def plot_clutter_map(
     clutter_map_netcdf,
     output_directory,
@@ -19,7 +16,6 @@ def plot_clutter_map(
     site,
     inst,
 ):
->>>>>>> c1afa077d29880063c580fbb92fb12c2f66462bd
     """
     plot_clutter_map
 
