@@ -1,8 +1,8 @@
 ===
-rca
+Welcome to WxRadarRCA's documentation!
 ===
 
-This is the documentation of **rca**.
+This is the documentation of **WxRadarRCA**.
 
 .. note::
 
