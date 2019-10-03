@@ -1,8 +1,12 @@
-===
+=========
 Welcome to WxRadarRCA's documentation!
-===
+=========
 
-This is the documentation of **WxRadarRCA**.
+This is the documentation for the extension of the relative calibration adjustment (RCA) technique for weather radar tool (**WxRadarRCA**).
+
+.. note::
+
+	This is a note.
 
 .. note::
 
