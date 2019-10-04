@@ -1,20 +1,20 @@
-===
-rca
-===
+========
+RCA for Weather Radar
+========
 
-
-(Add a short description here!)
 This package is an extension of the relative calibration adjusment (RCA) technique developed for the calibration of weather radars. The extension is built to calculate RCA for C, X, and Ka-band radars that use both PPI and RHI scans.
 
 
 Description
 ===========
 
-(A longer description of your project goes here...)
+RCA for Weather Radar is an open source Python package to work with weather radar data from S, C, X, and Ka-band frequencies. The package contains code written to accommodate for both plan-position indicator (PPI) and range-height indicator (RHI) scans, adapted from the original steps outlined in *(reference Wolff et al 2015 paper)*.
+
+
+*Long description*
+*See paper*
 
 
 Note
 ====
 
-This project has been set up using PyScaffold 3.0.3. For details and usage
-information on PyScaffold see http://pyscaffold.org/.
