@@ -12,6 +12,7 @@ import os
 import sys
 import inspect
 import shutil
+import sphinx_rtd_theme
 
 __location__ = os.path.join(
     os.getcwd(), os.path.dirname(inspect.getfile(inspect.currentframe()))
