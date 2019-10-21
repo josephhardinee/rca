@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-=========
-Welcome to RCA for Weather Radar's documentation!
-=========
-
-This is the documentation for the extension of the relative calibration adjustment (RCA) technique for weather radar.
-
-.. note::
-
-	This is a note.
-=======
 =================================================
 Welcome to RCA for Weather Radar's documentation!
 =================================================
 
 This is the documentation for the extension of the relative calibration adjustment (RCA) technique for weather radar.
->>>>>>> bf0ebbb06db89ab25e7a46b543b224599361a422
 
 .. note::
 

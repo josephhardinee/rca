@@ -33,7 +33,8 @@ script:
           cd ..;
           doctr deploy --built-docs docs/_build/html ./
           fi
-  - |  if [[ "${DOCS}" == "false" ]]; then
+  - |  
+    if [[ "${DOCS}" == "false" ]]; then
           eval xvfb-run python -m pytest $PYTEST_ARGS
           fi
 #script: eval xvfb-run nosetests $NOSE_ARGS
