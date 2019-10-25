@@ -4,14 +4,9 @@ import os
 import glob
 import json
 from netCDF4 import Dataset
-from rca.modules.create_clutter_flag import (
-    create_clutter_flag_ppi,
-    create_clutter_flag_hsrhi,
-)
-from rca.modules.file_to_radar_object import file_to_radar_object
-from rca.modules.get_var_arrays_from_radar_object import (
-    get_var_arrays_from_radar_object,
-)
+from .create_clutter_flag import create_clutter_flag_ppi, create_clutter_flag_hsrhi
+from .aux.file_to_radar_object import file_to_radar_object
+from .aux.get_var_arrays_from_radar_object import get_var_arrays_from_radar_object
 
 
 def clutter_map(radar_config_file, date):
@@ -21,30 +16,16 @@ def clutter_map(radar_config_file, date):
     scans have a gate identified, it is considered a clutter point and saved to the resulting clutter map.
     The clutter map (array) is written to a netCDF.
     
-    Parameters:
-    --------------
+    Parameters
+    ----------
     radar_config_file: str
-                path to JSON file containing specifications:
-                    data directory
-                    file extension
-                    output directory for clutter map
-                    date of clutter map
-                    scan type
-                    polarization
-                    site
-                    instrument
-                    range limit
-                    reflectivity threshold
+        path to JSON file containing specifications: data directory, file extension, output directory for clutter map, date of clutter map, scan type, polarization, site, instrument, range limit, reflectivity threshold
     date: str
         date used for clutter map day
         in YYYYMMDD format (overrides what's in config file)
                     
-    Returns:
-    --------------
-    (no specific return)
-    however, a netCDF file is written out
-    
     """
+
     config_vars = json.load(open(radar_config_file))
     datadir = config_vars["data_directory"]
     extension = config_vars["file_extension"]

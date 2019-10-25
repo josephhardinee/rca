@@ -1,10 +1,5 @@
 import numpy as np
-from rca.modules.create_masks import create_az_mask_ppi, create_az_mask_hsrhi
-
-# calculate_dbz95 contains 2 functions that calculate 95th percentile clutter area reflectivity
-# 1) calculate_dbz95_ppi
-# 2) calculate_db95_hsrhi
-
+from .aux.create_masks import create_az_mask_ppi, create_az_mask_hsrhi
 
 def calculate_dbz95_ppi(
     variable_dictionary, polarization, range_limit, clutter_mask_h, clutter_mask_v=None
@@ -14,49 +9,50 @@ def calculate_dbz95_ppi(
     using the input HSRHI cluter map masks (H and/or V). Returns the date and time of the file,
     95th percentile reflectivity value for Zh and/or Zv, and dictionaries of statistics,
     including number of points, histogram/PDF, bins, CDF.
-    Parameters:
-    --------------
+    
+    Parameters
+    ----------
     variable_dictionary: dict
-                    dictionary with values, strings, and arrays of relevant radar data
-                    i.e.
-                    'reflectivity_h', 'reflectivity_v', 'azimuth', 'range', 'date_time'
-    polarization: string
-            specifies for which polarization user wants to create clutter flag array
-            'dual': calculate for both H and V
-            'horizontal': calculate only for H
-    range_limit: integer
-            value of desired radar gate range limit
-    clutter_mask_h: masked array
-                    masked array denotes which elements are considered clutter
-                    used to extract reflectivity values from overlapping radar gates
-                    for H polarization
-    clutter_mask_h: masked array
-                    masked array denotes which elements are considered clutter
-                    used to extract reflectivity values from overlapping radar gates
-                    for V polarization
-                    default is None, array must be provided if calculating for V polarization
-    Returns:
-    --------------
-    date_time: string
-                date and time of the file
+        dictionary with values, strings, and arrays of relevant radar data
+        i.e. 'reflectivity_h', 'reflectivity_v', 'azimuth', 'range', 'date_time'
+    polarization: str
+        specifies for which polarization user wants to create clutter flag array
+        'dual': calculate for both H and V
+        'horizontal': calculate only for H
+    range_limit: int
+        value of desired radar gate range limit
+    clutter_mask_h: MaskedArray
+        masked array denotes which elements are considered clutter
+        used to extract reflectivity values from overlapping radar gates
+        for H polarization
+    clutter_mask_h: MaskedArray
+        masked array denotes which elements are considered clutter
+        used to extract reflectivity values from overlapping radar gates
+        for V polarization
+        default is None, array must be provided if calculating for V polarization
+    
+    Returns
+    -------
+    date_time: str
+        date and time of the file
     dbz95_h: float (or array?)
-                value of the 95th percentile clutter area reflectivity for H polarization
-    stats_h: dictionary
-                contains statistics from the PDF and CDF of the clutter area reflectivity in H polarization
-                num_pts_h: number of points
-                hn: number of histogram bins
-                hbins: bin edges of histogram
-                hp: CDF
-                dbz95_h: 95th percentile reflectivity
+        value of the 95th percentile clutter area reflectivity for H polarization
+    stats_h: dict
+        contains statistics from the PDF and CDF of the clutter area reflectivity in H polarization
+        num_pts_h: number of points
+        hn: number of histogram bins
+        hbins: bin edges of histogram
+        hp: CDF
+        dbz95_h: 95th percentile reflectivity
     dbz95_v: float (or array?)
-                value of the 95th percentile clutter area reflectivity for V polarization
-    stats_v: dictionary
-                contains statistics from the PDF and CDF of the clutter area reflectivity in V polarization
-                num_pts_v: number of points
-                vn: number of histogram bins
-                vbins: bin edges of histogram
-                vp: CDF
-                dbz95_v: 95th percentile reflectivity
+        value of the 95th percentile clutter area reflectivity for V polarization
+    stats_v: dict
+        contains statistics from the PDF and CDF of the clutter area reflectivity in V polarization
+        num_pts_v: number of points
+        vn: number of histogram bins
+        vbins: bin edges of histogram
+        vp: CDF
+        dbz95_v: 95th percentile reflectivity
 
     """
 
@@ -176,49 +172,50 @@ def calculate_dbz95_hsrhi(
     using the input HSRHI cluter map masks (H and/or V). Returns the date and time of the file,
     95th percentile reflectivity value for Zh and/or Zv, and dictionaries of statistics,
     including number of points, histogram/PDF, bins, CDF.
-    Parameters:
-    --------------
+    
+    Parameters
+    ----------
     variable_dictionary: dict
-                    dictionary with values, strings, and arrays of relevant radar data
-                    i.e.
-                    'reflectivity_h', 'reflectivity_v', 'azimuth', 'range', 'date_time', 'elevation'
-    polarization: string
-            specifies for which polarization user wants to create clutter flag array
-            'dual': calculate for both H and V
-            'horizontal': calculate only for H
-    range_limit: integer
-            value of desired radar gate range limit
-    clutter_mask_h: masked array
-                    masked array denotes which elements are considered clutter
-                    used to extract reflectivity values from overlapping radar gates
-                    for H polarization
-    clutter_mask_h: masked array
-                    masked array denotes which elements are considered clutter
-                    used to extract reflectivity values from overlapping radar gates
-                    for V polarization
-                    default is None, array must be provided if calculating for V polarization
-    Returns:
-    --------------
-    date_time: string
-                date and time of the file
+        dictionary with values, strings, and arrays of relevant radar data
+        i.e. 'reflectivity_h', 'reflectivity_v', 'azimuth', 'range', 'date_time', 'elevation'
+    polarization: str
+        specifies for which polarization user wants to create clutter flag array
+        'dual': calculate for both H and V
+        'horizontal': calculate only for H
+    range_limit: int
+        value of desired radar gate range limit
+    clutter_mask_h: MaskedArray
+        masked array denotes which elements are considered clutter
+        used to extract reflectivity values from overlapping radar gates
+        for H polarization
+    clutter_mask_h: MaskedArray
+        masked array denotes which elements are considered clutter
+        used to extract reflectivity values from overlapping radar gates
+        for V polarization
+        default is None, array must be provided if calculating for V polarization
+    
+    Returns
+    -------
+    date_time: str
+        date and time of the file
     dbz95_h: float (or array?)
-                value of the 95th percentile clutter area reflectivity for H polarization
-    stats_h: dictionary
-                contains statistics from the PDF and CDF of the clutter area reflectivity in H polarization
-                num_pts_h: number of points
-                hn: number of histogram bins
-                hbins: bin edges of histogram
-                hp: CDF
-                dbz95_h: 95th percentile reflectivity
+        value of the 95th percentile clutter area reflectivity for H polarization
+    stats_h: dict
+        contains statistics from the PDF and CDF of the clutter area reflectivity in H polarization
+        num_pts_h: number of points
+        hn: number of histogram bins
+        hbins: bin edges of histogram
+        hp: CDF
+        dbz95_h: 95th percentile reflectivity
     dbz95_v: float (or array?)
-                value of the 95th percentile clutter area reflectivity for V polarization
-    stats_v: dictionary
-                contains statistics from the PDF and CDF of the clutter area reflectivity in V polarization
-                num_pts_v: number of points
-                vn: number of histogram bins
-                vbins: bin edges of histogram
-                vp: CDF
-                dbz95_v: 95th percentile reflectivity
+        value of the 95th percentile clutter area reflectivity for V polarization
+    stats_v: dict
+        contains statistics from the PDF and CDF of the clutter area reflectivity in V polarization
+        num_pts_v: number of points
+        vn: number of histogram bins
+        vbins: bin edges of histogram
+        vp: CDF
+        dbz95_v: 95th percentile reflectivity
 
     """
 
@@ -227,7 +224,7 @@ def calculate_dbz95_hsrhi(
     elev = variable_dictionary["elevation"]
     theta = variable_dictionary["azimuth"]
     zh = variable_dictionary["reflectivity_h"]
-    
+
     ###########################
     # Special case
     #    KASACR calibration constant during CACTI

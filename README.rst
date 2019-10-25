@@ -53,15 +53,17 @@ Usage
 
 Please refer to the publication
 
+
+
 Figures 1 and 2 summarize the steps for RCA calculation and represent the workflow and code structure of RCA for Weather Radar.
 
-.. figure:: /testdata/images/flowchart_cluttermap.png
+.. figure:: testdata/images/flowchart_cluttermap_small.png
    :scale: 50 %
-   :alt: workflow for clutter map creation
+   
+   This is the caption for Figure 1 (not labeled?)
 
-   This is the caption for Figure 1 (is it actually labeled?) 
 
-.. figure:: /testdata/images/flowchart_rca.png
+.. figure:: testdata/images/flowchart_rca_small.png
    :scale: 50 %
    :alt: workflow for rca calculation
 

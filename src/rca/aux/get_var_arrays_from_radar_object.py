@@ -8,24 +8,26 @@ def get_var_arrays_from_radar_object(radar, radar_config_file):
     to use PyART to extract variables to be used in calculations
     Returns variables in arrays or strings in a single dictionary
 
-    Parameters:
-     --------------
-        radar: radar object
-             radar object (often from PyART) contains all radar data and info
-        radar_config_file: str
-             path to and .json configuration file specific to the radar and scan type used
+    Parameters
+    ----------
+    radar: radar object
+        radar object (often from PyART) contains all radar data and info
+    radar_config_file: str
+        path to and .json configuration file specific to the radar and scan type used
                        
-     Returns:
-     --------------
-        var_dict: dictionary
-            dictionary or relevant variables needed for the rest of clutter mapa nd RCA calculation
-            var_dict = {
-                    "date_time": date_time,
-                    "range": r,
-                    "azimuth": theta,
-                    "elevation": elev,
-                    "reflectivity_h": zh,
-                    "reflectivity_v": zv
+    Returns
+    -------
+    var_dict: dict
+        dictionary or relevant variables needed for the rest of clutter mapa nd RCA calculation
+        var_dict = {
+        "date_time": date_time,
+        "range": r,
+        "azimuth": theta,
+        "elevation": elev,
+        "reflectivity_h": zh,
+        "reflectivity_v": zv
+        }
+    
     """
 
     config_vars = json.load(open(radar_config_file))

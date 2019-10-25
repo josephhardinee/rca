@@ -2,7 +2,7 @@ import pytest
 import rca
 import numpy as np
 
-from rca.modules import create_masks
+from rca.aux import create_masks
 
 
 def test_create_az_mask_ppi_returns_array():

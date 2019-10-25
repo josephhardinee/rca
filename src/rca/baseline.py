@@ -4,39 +4,24 @@ import os
 import glob
 import json
 from netCDF4 import Dataset
-from rca.modules.file_to_radar_object import file_to_radar_object
-from rca.modules.get_var_arrays_from_radar_object import (
-    get_var_arrays_from_radar_object,
-)
-from rca.modules.calculate_dbz95 import calculate_dbz95_ppi, calculate_dbz95_hsrhi
+from .aux.file_to_radar_object import file_to_radar_object
+from .aux.get_var_arrays_from_radar_object import get_var_arrays_from_radar_object
+from .calculate_dbz95 import calculate_dbz95_ppi, calculate_dbz95_hsrhi
 
 
 def baseline(radar_config_file):
     """
-    baseline.py loops through a day's worth of radar files (specify PPI or HSRHI),
+    baseline loops through a day's worth of radar files (specify PPI or HSRHI),
     calculates the median daily 95th percentile clutter area reflectivity,
     and saves the value to a netCDF as the baseline 95th percentile clutter area reflectivity.
     
-    Parameters:
-    --------------
+    Parameters
+    ----------
     radar_config_file: str
-                path to JSON file containing specifications:
-                    data directory
-                    file extension
-                    clutter map directory
-                    output directory for baseline netCDF
-                    baseline date
-                    scan type
-                    polarization
-                    site
-                    instrument
-                    range limit
-                    
-    Returns:
-    --------------
-    (no specific return)
-    however, a netCDF file is written out
+        path to JSON file containing specifications: data directory, file extension, clutter map directory, output directory for baseline netCDF, baseline date, scan type, polarization, site, instrument, range limit
+                     
     """
+
     config_vars = json.load(open(radar_config_file))
     datadir = config_vars["data_directory"]
     extension = config_vars["file_extension"]

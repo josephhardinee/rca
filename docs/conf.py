@@ -77,6 +77,7 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
     "sphinx_rtd_theme",
+    "jupyter_sphinx.execute",
     ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -92,7 +93,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"rca"
+project = u"RCA for Weather Radar"
 copyright = u"2019, Alexis Hunzinger"
 
 # The version info for the project you're documenting, acts as replacement for

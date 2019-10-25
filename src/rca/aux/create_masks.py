@@ -8,18 +8,22 @@ import numpy as np
 def create_az_mask_ppi(azimuth_value, azimuth_array):
     """
     create_az_mask_ppi creates a mask for a desired azimuth angle for an array of azimuth from a radar PPI file
-    Parameters:
-    --------------
+    
+    Parameters
+    ----------
     azimuth_value: float
-                    value of the radar azimuth of interest
-                    i.e. 0., 27., 60., 120., etc.
-    azimuth_array: array-like
-                    array of azimuth values to search through and find the appropriate azimuth
-    Returns:
-    --------------
-    az_mask: masked array
-                array of same shape as azimuth_array, masked to highlight the desried azimuth value
+        value of the radar azimuth of interest
+        i.e. 0., 27., 60., 120., etc.
+    azimuth_array: array_like
+        array of azimuth values to search through and find the appropriate azimuth
+    
+    Returns
+    -------
+    az_mask: MaskedArray
+        array of same shape as azimuth_array, masked to highlight the desried azimuth value
+    
     """
+    
     if azimuth_value == 0.0:
         az_mask = np.logical_or(
             np.logical_and(
@@ -37,18 +41,22 @@ def create_az_mask_ppi(azimuth_value, azimuth_array):
 def create_az_mask_hsrhi(azimuth_value, azimuth_array):
     """
     create_az_mask_hsrhi creates a mask for a desired azimuth angle for an array of azimuth from a radar HSRHI file
-    Parameters:
-    --------------
+    
+    Parameters
+    ----------
     azimuth_value: float
-                    value of the radar azimuth of interest
-                    i.e. 30., 60., 120., etc.
-    azimuth_array: array-like
-                    array of azimuth values to search through and find the appropriate azimuth
-    Returns:
-    --------------
-    az_mask: masked array
-                array of same shape as azimuth_array, masked to highlight the desried azimuth value
+        value of the radar azimuth of interest
+        i.e. 30., 60., 120., etc.
+    azimuth_array: array_like
+        array of azimuth values to search through and find the appropriate azimuth
+    
+    Returns
+    -------
+    az_mask: MaskedArray
+        array of same shape as azimuth_array, masked to highlight the desried azimuth value
+    
     """
+    
     if azimuth_value == 0.0:
         az_mask = np.logical_or(
             np.logical_and(

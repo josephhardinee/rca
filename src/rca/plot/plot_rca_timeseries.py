@@ -8,35 +8,30 @@ def plot_rca_timeseries_oneradar(
     rca_file, output_directory, baseline_date, polarization, scan_type, site, inst
 ):
     """
-        plot_rca_timeseries_oneradar
+    plot_rca_timeseries_oneradar
 
-        Parameters:
-        --------------
-        rca_file: str
-                path to RCA CSV file
-        output_directory: str
-                path to directory for output .png file(s)
-        baseline_date: str
-                YYYY-MM-DD format of baseline date in this dataset
-        polarization: str
-                specify the polarization(s) desired
-                'horizontal'
-                'dual'
-        scan_type: str
-                specify if the map is for PPI or RHI
-                'ppi'
-                'rhi'
-        site: str
-                site abbreviation
-        inst: str
-                instrument name
+    Parameters
+    ----------
+    rca_file: str
+        path to RCA CSV file
+    output_directory: str
+        path to directory for output .png file(s)
+    baseline_date: str
+        YYYY-MM-DD format of baseline date in this dataset
+    polarization: str
+        specify the polarization(s) desired
+        'horizontal'
+        'dual'
+    scan_type: str
+        specify if the map is for PPI or RHI
+        'ppi'
+        'rhi'
+    site: str
+        site abbreviation
+    inst: str
+        instrument name
                         
-        Returns:
-        --------------
-        (no specific return)
-        however, plot is saved out
-
-        """
+    """
 
     ylim = -3.0, 3.0
     pw = 0.2
@@ -209,41 +204,35 @@ def plot_rca_timeseries_tworadar(
     inst2,
 ):
     """
-        plot_rca_timeseries_tworadar
+    plot_rca_timeseries_tworadar
 
-        Parameters:
-        --------------
-        rca_file1: str
-                path to RCA CSV file for radar 1
-        rca_file2: str
-                path to RCA CSV file for radar 2
-        output_directory: str
-                path to directory for output .png file(s)
-        baseline_date: str
-                YYYY-MM-DD format of baseline date in this dataset
-        polarization: str
-                specify the polarization(s) desired
-                'horizontal'
-                'dual'
-        scan_type: str
-                specify if the map is for PPI or RHI
-                'ppi'
-                'rhi'
-                'ppirhi'
-        site: str
-                site abbreviation
-        inst1: str
-                instrument name for radar 1
-        inst2: str
-                instrument name for radar 2
+    Parameters
+    ----------
+    rca_file1: str
+        path to RCA CSV file for radar 1
+    rca_file2: str
+        path to RCA CSV file for radar 2
+    output_directory: str
+        path to directory for output .png file(s)
+    baseline_date: str
+        YYYY-MM-DD format of baseline date in this dataset
+    polarization: str
+        specify the polarization(s) desired
+        'horizontal'
+        'dual'
+    scan_type: str
+        specify if the map is for PPI or RHI
+        'ppi'
+        'rhi'
+        'ppirhi'
+    site: str
+        site abbreviation
+    inst1: str
+        instrument name for radar 1
+    inst2: str
+        instrument name for radar 2
                 
-                        
-        Returns:
-        --------------
-        (no specific return)
-        however, plot is saved out
-
-        """
+    """
 
     ylim = -3.0, 3.0
     pw = 0.05
@@ -511,46 +500,40 @@ def plot_rca_timeseries_threeradar(
     inst3,
 ):
     """
-        plot_rca_timeseries_threeradar
+    plot_rca_timeseries_threeradar
 
-        Parameters:
-        --------------
-        rca_file1: str
-                path to RCA CSV file for radar 1
-        rca_file2: str
-                path to RCA CSV file for radar 2
-        rca_file3: str
-                path to RCA CSV file for radar 3
-        output_directory: str
-                path to directory for output .png file(s)
-        baseline_date: str
-                YYYY-MM-DD format of baseline date in this dataset
-        polarization: str
-                specify the polarization(s) desired
-                'horizontal'
-                'dual'
-        scan_type: str
-                specify if the map is for PPI or RHI
-                'ppi'
-                'rhi'
-        site: str
-                site abbreviation
-        inst1: str
-                instrument name for radar 1
-        inst2: str
-                instrument name for radar 2
-        inst3: str
-                instrument name for radar 3
-        location: str
-                site and instrument (use for plot title)
-                
+    Parameters
+    ----------
+    rca_file1: str
+        path to RCA CSV file for radar 1
+    rca_file2: str
+        path to RCA CSV file for radar 2
+    rca_file3: str
+        path to RCA CSV file for radar 3
+    output_directory: str
+        path to directory for output .png file(s)
+    baseline_date: str
+        YYYY-MM-DD format of baseline date in this dataset
+    polarization: str
+        specify the polarization(s) desired
+        'horizontal'
+        'dual'
+    scan_type: str
+        specify if the map is for PPI or RHI
+        'ppi'
+        'rhi'
+    site: str
+        site abbreviation
+    inst1: str
+        instrument name for radar 1
+    inst2: str
+        instrument name for radar 2
+    inst3: str
+        instrument name for radar 3
+    location: str
+        site and instrument (use for plot title)        
                         
-        Returns:
-        --------------
-        (no specific return)
-        however, plot is saved out
-
-        """
+    """
 
     ylim = -2.0, 10.0
     pw = 0.05

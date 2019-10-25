@@ -17,42 +17,38 @@ def plot_clutter_map(
     inst,
 ):
     """
-    plot_clutter_map
+    Plot a clutter map of either PPI of RHI data. Must first calculate the clutter map using clutter_map module.
 
-     Parameters:
-     --------------
-     clutter_map_netcdf: str
-             path to clutter map netCDF
-     output_directory: str
-             path to directory for output .png file
-     scan_type: str
-             specify if the map is for PPI or RHI
-             'ppi'
-             'rhi'
-     map_type: str
-             specify if a daily or composite clutter map
-             'daily'
-             'composite'
-     polarization: str
-             specify the polarization(s) desired
-             'horizontal'
-             'dual'
-     max_range: int
-             maximum range to plot, in km
-             i.e. 5, 10, 40
-     site: str
-             3-letter site abbreviation
-             i.e. 'cor', 'ena'
-     inst: str
-             instrument name
-             i.e. 'csapr2', 'kasacr'
+    Parameters
+    ----------
+    clutter_map_netcdf: str
+        path to clutter map netCDF
+    output_directory: str
+        path to directory for output .png file
+    scan_type: str
+        specify if the map is for PPI or RHI
+        'ppi'
+        'rhi'
+    map_type: str
+        specify if a daily or composite clutter map
+        'daily'
+        'composite'
+    polarization: str
+        specify the polarization(s) desired
+        'horizontal'
+        'dual'
+    max_range: int
+        maximum range to plot, in km
+        i.e. 5, 10, 40
+    site: str
+        3-letter site abbreviation
+        i.e. 'cor', 'ena'
+    inst: str
+        instrument name
+        i.e. 'csapr2', 'kasacr'
                        
-     Returns:
-     --------------
-     (no specific return)
-     however, plot is saved out
-
     """
+    
     # Formatting specifications
     params = {"mathtext.default": "regular"}
     plt.rcParams.update(params)

@@ -1,42 +1,38 @@
 import numpy as np
-from rca.modules.create_masks import create_az_mask_ppi, create_az_mask_hsrhi
-
-# create_clutter_flag contains 2 functions to create clutter flags (masks) for radar PPI and HSRHI files
-# 1) create_clutter_flag_ppi: creates clutter flag/mask for a radar PPI file
-# 2) create_clutter_flag_hsrhi: creates clutter flag/mask for a radar HSRHI file
-
+from .aux.create_masks import create_az_mask_ppi, create_az_mask_hsrhi
 
 def create_clutter_flag_ppi(variable_dictionary, polarization, range_limit, z_thresh):
     """
     create_clutter_flag_ppi creates a clutter flag array for a particular PPI radar file (using a precipitation-free day) that will be used for
     clutter map creation. It returns the datetime of the file and the clutter flag arrays for reflectivity in the chosen polarizations (H and V or just H)
-    Parameters:
-    --------------
+    
+    Parameters
+    ----------
     variable_dictionary: dict
-                    dictionary with values, strings, and arrays of relevant radar data
-                    i.e.
-                    'reflectivity_h', 'reflectivity_v', 'azimuth', 'range', 'date_time'
-    polarization: string
-            specifies for which polarization user wants to create clutter flag array
-            'dual': calculate for both H and V
-            'horizontal': calculate only for H
-    range_limit: integer
-            value of desired radar gate range limit
+        dictionary with values, strings, and arrays of relevant radar data
+        i.e. 'reflectivity_h', 'reflectivity_v', 'azimuth', 'range', 'date_time'
+    polarization: str
+        specifies for which polarization user wants to create clutter flag array
+        'dual': calculate for both H and V
+        'horizontal': calculate only for H
+    range_limit: int
+        value of desired radar gate range limit
     z_thresh: float
-            reflectivity threshold for clutter cut off
-            i.e. gate reflectivity must be greater than z_thresh to be considered clutter
-    Returns:
-    --------------
-    date_time: string
-                date and time of the file
+        reflectivity threshold for clutter cut off
+        i.e. gate reflectivity must be greater than z_thresh to be considered clutter
+    
+    Returns
+    -------
+    date_time: str
+        date and time of the file
     clutter_flag_h: array
-                    array of shape (azimuth, elevation, range) noting elements where clutter is flagged in the H polarization
-                    clutter present: 1
-                    no clutter present: 0
+        array of shape (azimuth, elevation, range) noting elements where clutter is flagged in the H polarization
+        clutter present: 1
+        no clutter present: 0
     clutter_flag_v: array
-                    array of shape (azimuth, elevation, range) noting elements where clutter is flagged in the V polarization
-                    clutter present: 1
-                    no clutter present: 0
+        array of shape (azimuth, elevation, range) noting elements where clutter is flagged in the V polarization
+        clutter present: 1
+        no clutter present: 0
 
     """
 
@@ -50,7 +46,7 @@ def create_clutter_flag_ppi(variable_dictionary, polarization, range_limit, z_th
     r = variable_dictionary["range"]
     theta = variable_dictionary["azimuth"]
     zh = variable_dictionary["reflectivity_h"]
-    
+
     # H POLARIZATION
     for idx_az, az in enumerate(theta_list):  # loop thru each azimuth in list
         az_mask = create_az_mask_ppi(az, theta)  # create mask for desired azimuths
@@ -122,33 +118,34 @@ def create_clutter_flag_hsrhi(variable_dictionary, polarization, range_limit, z_
     """
     create_clutter_flag_hsrhi creates a clutter flag array for a particular HSRHI radar file (using a precipitation-free day) that will be used for
     clutter map creation. It returns the datetime of the file and the clutter flag arrays for reflectivity in the chosen polarizations (H and V or just H)
-    Parameters:
-    --------------
+    
+    Parameters
+    ----------
     variable_dictionary: dict
-                    dictionary with values, strings, and arrays of relevant radar data
-                    i.e.
-                    'reflectivity_h', 'reflectivity_v', 'azimuth', 'range', 'date_time'
-    polarization: string
-            specifies for which polarization user wants to create clutter flag array
-            'dual': calculate for both H and V
-            'horizontal': calculate only for H
-    range_limit: integer
-            value of desired radar gate range limit
+        dictionary with values, strings, and arrays of relevant radar data
+        i.e. 'reflectivity_h', 'reflectivity_v', 'azimuth', 'range', 'date_time'
+    polarization: str
+        specifies for which polarization user wants to create clutter flag array
+        'dual': calculate for both H and V
+        'horizontal': calculate only for H
+    range_limit: int
+        value of desired radar gate range limit
     z_thresh: float
-            reflectivity threshold for clutter cut off
-            i.e. gate reflectivity must be greater than z_thresh to be considered clutter
-    Returns:
-    --------------
-    date_time: string
-                date and time of the file
+        reflectivity threshold for clutter cut off
+        i.e. gate reflectivity must be greater than z_thresh to be considered clutter
+    
+    Returns
+    -------
+    date_time: str
+        date and time of the file
     clutter_flag_h: array
-                    array of shape (azimuth, elevation, range) noting elements where clutter is flagged in the H polarization
-                    clutter present: 1
-                    no clutter present: 0
+        array of shape (azimuth, elevation, range) noting elements where clutter is flagged in the H polarization
+        clutter present: 1
+        no clutter present: 0
     clutter_flag_v: array
-                    array of shape (azimuth, elevation, range) noting elements where clutter is flagged in the V polarization
-                    clutter present: 1
-                    no clutter present: 0
+        array of shape (azimuth, elevation, range) noting elements where clutter is flagged in the V polarization
+        clutter present: 1
+        no clutter present: 0
 
     """
 

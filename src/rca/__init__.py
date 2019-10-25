@@ -1,4 +1,16 @@
 # -*- coding: utf-8 -*-
+"""
+==========================
+Mapping (:mod:`rca`)
+==========================
+.. current modules:: rca
+Py-ART has a robust function for mapping radar data from the collected radar
+coordinates to Cartesian coordinates.
+.. autosummary::
+    :toctree: generated/
+    plot
+"""
+
 from pkg_resources import get_distribution, DistributionNotFound
 
 try:

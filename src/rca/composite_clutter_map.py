@@ -5,7 +5,7 @@ import glob
 import json
 import numpy as np
 from netCDF4 import Dataset
-from rca.modules.get_pct_on_clutter_map import (
+from .get_pct_on_clutter_map import (
     get_pct_on_clutter_map_ppi,
     get_pct_on_clutter_map_hsrhi,
 )
@@ -13,29 +13,14 @@ from rca.modules.get_pct_on_clutter_map import (
 
 def composite_clutter_map(radar_config_file):
     """
-        composite_clutter_map combines all daily clutter maps available or specified into a single composite clutter map
-        for use in baseline and RCA calculation later. If more than 80% of the daily clutter points occur for all the daily
-        clutter maps, that is considered a composite clutter point.
-        The composite clutter map (array) is written to a netCDF.
+    composite_clutter_map combines all daily clutter maps available or specified into a single composite clutter map for use in baseline and RCA calculation later. If more than 80% of the daily clutter points occur for all the daily clutter maps, that is considered a composite clutter point. The composite clutter map (array) is written to a netCDF.
 
-        Parameters:
-        --------------
-        radar_config_file: str
-                    path to JSON file containing specifications:
-                        data directory
-                        file extension
-                        daily clutter map directory
-                        scan type
-                        polarization
-                        site
-                        instrument
+    Parameters
+    ----------
+    radar_config_file: str
+        path to JSON file containing specifications: data directory, file extension, daily clutter map directory, scan type, polarization, site, instrument
 
-        Returns:
-        --------------
-        (no specific return)
-        however, a netCDF file is written out
-
-        """
+    """
 
     config_vars = json.load(open(radar_config_file))
     datadir = config_vars["data_directory"]
