@@ -234,8 +234,8 @@ def plot_rca_timeseries_tworadar(
                 
     """
 
-    ylim = -3.0, 3.0
-    pw = 0.05
+    ylim = -1.0, 1.0
+    pw = 0.01
     lw = 0.2
     base_lw = 1.5
     ytext = 2.0
