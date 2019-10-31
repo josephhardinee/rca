@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Changelog &mdash; RCA for Weather Radar 0.0.post0.dev68+gf91dc48 documentation</title>
+  <title>Calculate RCA values &mdash; RCA for Weather Radar 0.0.post0.dev68+gf91dc48 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="rca package" href="rca.html" />
-    <link rel="prev" title="Contributors" href="authors.html" /> 
+    <link rel="next" title="Plot a time series of RCA" href="plot-rca.html" />
+    <link rel="prev" title="Calculate a baseline" href="baseline-calculate.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -87,12 +87,16 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-1">Version 0.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rca.html">Package Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="clutter-map.html">Create a clutter map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot-clutter-map.html">Plot a clutter map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="baseline-calculate.html">Calculate a baseline</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Calculate RCA values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot-rca.html">Plot a time series of RCA</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="rca.html">Package Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
             
@@ -138,13 +142,15 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Changelog</li>
+          <li><a href="examples.html">Examples</a> &raquo;</li>
+        
+      <li>Calculate RCA values</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/changelog.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/rca-calculate.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -157,15 +163,23 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="changelog">
-<span id="changes"></span><h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="version-0-1">
-<h2>Version 0.1<a class="headerlink" href="#version-0-1" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Feature A added</p></li>
-<li><p>FIX: nasty bug #1729 fixed</p></li>
-<li><p>add your changes here!</p></li>
-</ul>
+  <div class="section" id="calculate-rca-values">
+<h1>Calculate RCA values<a class="headerlink" href="#calculate-rca-values" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># import commands</span>
+<span class="kn">from</span> <span class="nn">.daily_rca</span> <span class="kn">import</span> <span class="n">daily_rca</span>
+
+<span class="c1"># select date, radar band and scan type and find corresponding configuration file</span>
+<span class="c1"># edit radar configuration file appropriately</span>
+<span class="n">radar_config_file</span> <span class="o">=</span> <span class="s1">&#39;/__your_path_to__/rca/src/rca/config/__band_scan.json__&#39;</span>
+<span class="n">date</span> <span class="o">=</span> <span class="s1">&#39;YYYYMMDD&#39;</span>
+<span class="n">daily_rca</span><span class="p">(</span><span class="n">radar_config_file</span><span class="p">,</span><span class="n">date</span><span class="p">)</span>
+
+<span class="c1"># to calculate daily RCA for multiple days (i.e. one week), loop the daily_rca function</span>
+<span class="n">week</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;01&#39;</span><span class="p">,</span><span class="s1">&#39;02&#39;</span><span class="p">,</span><span class="s1">&#39;03&#39;</span><span class="p">,</span><span class="s1">&#39;04&#39;</span><span class="p">,</span><span class="s1">&#39;05&#39;</span><span class="p">,</span><span class="s1">&#39;06&#39;</span><span class="p">,</span><span class="s1">&#39;07&#39;</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="n">week</span><span class="p">:</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="s1">&#39;201910&#39;</span><span class="o">+</span><span class="n">day</span>
+    <span class="n">daily_rca</span><span class="p">(</span><span class="n">radar_config_file</span><span class="p">,</span><span class="n">date</span><span class="p">)</span>
+</pre></div>
 </div>
 </div>
 
@@ -177,10 +191,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="rca.html" class="btn btn-neutral float-right" title="rca package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="plot-rca.html" class="btn btn-neutral float-right" title="Plot a time series of RCA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="authors.html" class="btn btn-neutral float-left" title="Contributors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="baseline-calculate.html" class="btn btn-neutral float-left" title="Calculate a baseline" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

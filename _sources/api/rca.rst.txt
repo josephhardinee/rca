@@ -12,6 +12,14 @@ rca.baseline module
    :undoc-members:
    :show-inheritance:
 
+rca.calculate\_dbz95 module
+---------------------------
+
+.. automodule:: rca.calculate_dbz95
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 rca.clutter\_map module
 -----------------------
 
@@ -28,10 +36,10 @@ rca.composite\_clutter\_map module
    :undoc-members:
    :show-inheritance:
 
-rca.create\_rca\_csv module
----------------------------
+rca.create\_clutter\_flag module
+--------------------------------
 
-.. automodule:: rca.create_rca_csv
+.. automodule:: rca.create_clutter_flag
    :members:
    :undoc-members:
    :show-inheritance:
@@ -40,6 +48,14 @@ rca.daily\_rca module
 ---------------------
 
 .. automodule:: rca.daily_rca
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rca.get\_pct\_on\_clutter\_map module
+-------------------------------------
+
+.. automodule:: rca.get_pct_on_clutter_map
    :members:
    :undoc-members:
    :show-inheritance:

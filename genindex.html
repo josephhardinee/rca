@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; rca 0.0.post0.dev70+g1b57ea9 documentation</title>
+  <title>Index &mdash; RCA for Weather Radar 0.0.post0.dev68+gf91dc48 documentation</title>
   
 
   
@@ -49,7 +49,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> rca
+            <a href="index.html" class="icon icon-home"> RCA for Weather Radar
           
 
           
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.0.post0.dev70+g1b57ea9
+                0.0.post0.dev68+gf91dc48
               </div>
             
           
@@ -87,7 +87,8 @@
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/modules.html">Module Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rca.html">Package Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
             
@@ -102,7 +103,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">rca</a>
+          <a href="index.html">RCA for Weather Radar</a>
         
       </nav>
 
@@ -157,13 +158,16 @@
  <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  
 </div>
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/rca.html#rca.baseline.baseline">baseline() (in module rca.baseline)</a>
+      <li><a href="api/rca.html#rca.baseline.baseline">baseline() (in module rca.baseline)</a>, <a href="rca-mod.html#rca.baseline.baseline">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -171,13 +175,25 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/rca.html#rca.clutter_map.clutter_map">clutter_map() (in module rca.clutter_map)</a>
+      <li><a href="api/rca.html#rca.calculate_dbz95.calculate_dbz95_hsrhi">calculate_dbz95_hsrhi() (in module rca.calculate_dbz95)</a>, <a href="rca-mod.html#rca.calculate_dbz95.calculate_dbz95_hsrhi">[1]</a>
+</li>
+      <li><a href="api/rca.html#rca.calculate_dbz95.calculate_dbz95_ppi">calculate_dbz95_ppi() (in module rca.calculate_dbz95)</a>, <a href="rca-mod.html#rca.calculate_dbz95.calculate_dbz95_ppi">[1]</a>
+</li>
+      <li><a href="api/rca.html#rca.clutter_map.clutter_map">clutter_map() (in module rca.clutter_map)</a>, <a href="rca-mod.html#rca.clutter_map.clutter_map">[1]</a>
+</li>
+      <li><a href="api/rca.html#rca.composite_clutter_map.composite_clutter_map">composite_clutter_map() (in module rca.composite_clutter_map)</a>, <a href="rca-mod.html#rca.composite_clutter_map.composite_clutter_map">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/rca.html#rca.composite_clutter_map.composite_clutter_map">composite_clutter_map() (in module rca.composite_clutter_map)</a>
+      <li><a href="aux.html#rca.aux.create_masks.create_az_mask_hsrhi">create_az_mask_hsrhi() (in module rca.aux.create_masks)</a>
 </li>
-      <li><a href="api/rca.html#rca.create_rca_csv.create_rca_csv">create_rca_csv() (in module rca.create_rca_csv)</a>
+      <li><a href="aux.html#rca.aux.create_masks.create_az_mask_ppi">create_az_mask_ppi() (in module rca.aux.create_masks)</a>
+</li>
+      <li><a href="api/rca.html#rca.create_clutter_flag.create_clutter_flag_hsrhi">create_clutter_flag_hsrhi() (in module rca.create_clutter_flag)</a>, <a href="rca-mod.html#rca.create_clutter_flag.create_clutter_flag_hsrhi">[1]</a>
+</li>
+      <li><a href="api/rca.html#rca.create_clutter_flag.create_clutter_flag_ppi">create_clutter_flag_ppi() (in module rca.create_clutter_flag)</a>, <a href="rca-mod.html#rca.create_clutter_flag.create_clutter_flag_ppi">[1]</a>
+</li>
+      <li><a href="aux.html#rca.aux.create_rca_csv.create_rca_csv">create_rca_csv() (in module rca.aux.create_rca_csv)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -185,7 +201,45 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/rca.html#rca.daily_rca.daily_rca">daily_rca() (in module rca.daily_rca)</a>
+      <li><a href="api/rca.html#rca.daily_rca.daily_rca">daily_rca() (in module rca.daily_rca)</a>, <a href="rca-mod.html#rca.daily_rca.daily_rca">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="aux.html#rca.aux.file_to_radar_object.file_to_radar_object">file_to_radar_object() (in module rca.aux.file_to_radar_object)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/rca.html#rca.get_pct_on_clutter_map.get_pct_on_clutter_map_hsrhi">get_pct_on_clutter_map_hsrhi() (in module rca.get_pct_on_clutter_map)</a>, <a href="rca-mod.html#rca.get_pct_on_clutter_map.get_pct_on_clutter_map_hsrhi">[1]</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/rca.html#rca.get_pct_on_clutter_map.get_pct_on_clutter_map_ppi">get_pct_on_clutter_map_ppi() (in module rca.get_pct_on_clutter_map)</a>, <a href="rca-mod.html#rca.get_pct_on_clutter_map.get_pct_on_clutter_map_ppi">[1]</a>
+</li>
+      <li><a href="aux.html#rca.aux.get_var_arrays_from_radar_object.get_var_arrays_from_radar_object">get_var_arrays_from_radar_object() (in module rca.aux.get_var_arrays_from_radar_object)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="plot.html#rca.plot.plot_clutter_map.plot_clutter_map">plot_clutter_map() (in module rca.plot.plot_clutter_map)</a>
+</li>
+      <li><a href="plot.html#rca.plot.plot_rca_timeseries.plot_rca_timeseries_oneradar">plot_rca_timeseries_oneradar() (in module rca.plot.plot_rca_timeseries)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="plot.html#rca.plot.plot_rca_timeseries.plot_rca_timeseries_threeradar">plot_rca_timeseries_threeradar() (in module rca.plot.plot_rca_timeseries)</a>
+</li>
+      <li><a href="plot.html#rca.plot.plot_rca_timeseries.plot_rca_timeseries_tworadar">plot_rca_timeseries_tworadar() (in module rca.plot.plot_rca_timeseries)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -195,17 +249,33 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/rca.html#module-rca">rca (module)</a>
 </li>
-      <li><a href="api/rca.html#module-rca.baseline">rca.baseline (module)</a>
+      <li><a href="aux.html#module-rca.aux.create_masks">rca.aux.create_masks (module)</a>
 </li>
-      <li><a href="api/rca.html#module-rca.clutter_map">rca.clutter_map (module)</a>
+      <li><a href="aux.html#module-rca.aux.create_rca_csv">rca.aux.create_rca_csv (module)</a>
+</li>
+      <li><a href="aux.html#module-rca.aux.file_to_radar_object">rca.aux.file_to_radar_object (module)</a>
+</li>
+      <li><a href="aux.html#module-rca.aux.get_var_arrays_from_radar_object">rca.aux.get_var_arrays_from_radar_object (module)</a>
+</li>
+      <li><a href="api/rca.html#module-rca.baseline">rca.baseline (module)</a>, <a href="rca-mod.html#module-rca.baseline">[1]</a>
+</li>
+      <li><a href="api/rca.html#module-rca.calculate_dbz95">rca.calculate_dbz95 (module)</a>, <a href="rca-mod.html#module-rca.calculate_dbz95">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/rca.html#module-rca.composite_clutter_map">rca.composite_clutter_map (module)</a>
+      <li><a href="api/rca.html#module-rca.clutter_map">rca.clutter_map (module)</a>, <a href="rca-mod.html#module-rca.clutter_map">[1]</a>
 </li>
-      <li><a href="api/rca.html#module-rca.create_rca_csv">rca.create_rca_csv (module)</a>
+      <li><a href="api/rca.html#module-rca.composite_clutter_map">rca.composite_clutter_map (module)</a>, <a href="rca-mod.html#module-rca.composite_clutter_map">[1]</a>
 </li>
-      <li><a href="api/rca.html#module-rca.daily_rca">rca.daily_rca (module)</a>
+      <li><a href="api/rca.html#module-rca.create_clutter_flag">rca.create_clutter_flag (module)</a>, <a href="rca-mod.html#module-rca.create_clutter_flag">[1]</a>
+</li>
+      <li><a href="api/rca.html#module-rca.daily_rca">rca.daily_rca (module)</a>, <a href="rca-mod.html#module-rca.daily_rca">[1]</a>
+</li>
+      <li><a href="api/rca.html#module-rca.get_pct_on_clutter_map">rca.get_pct_on_clutter_map (module)</a>, <a href="rca-mod.html#module-rca.get_pct_on_clutter_map">[1]</a>
+</li>
+      <li><a href="plot.html#module-rca.plot.plot_clutter_map">rca.plot.plot_clutter_map (module)</a>
+</li>
+      <li><a href="plot.html#module-rca.plot.plot_rca_timeseries">rca.plot.plot_rca_timeseries (module)</a>
 </li>
   </ul></td>
 </tr></table>

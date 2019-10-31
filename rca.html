@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Changelog &mdash; RCA for Weather Radar 0.0.post0.dev68+gf91dc48 documentation</title>
+  <title>rca package &mdash; RCA for Weather Radar 0.0.post0.dev68+gf91dc48 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="rca package" href="rca.html" />
-    <link rel="prev" title="Contributors" href="authors.html" /> 
+    <link rel="next" title="rca" href="rca-mod.html" />
+    <link rel="prev" title="Changelog" href="changelog.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -87,11 +87,13 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-1">Version 0.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Package Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rca-mod.html">rca</a></li>
+<li class="toctree-l2"><a class="reference internal" href="aux.html">rca.aux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot.html">rca.plot</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="rca.html">Package Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
@@ -138,13 +140,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Changelog</li>
+      <li>rca package</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/changelog.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/rca.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -157,14 +159,32 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="changelog">
-<span id="changes"></span><h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="version-0-1">
-<h2>Version 0.1<a class="headerlink" href="#version-0-1" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Feature A added</p></li>
-<li><p>FIX: nasty bug #1729 fixed</p></li>
-<li><p>add your changes here!</p></li>
+  <div class="section" id="rca-package">
+<h1>rca package<a class="headerlink" href="#rca-package" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="rca-mod.html">rca</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rca-mod.html#module-rca.baseline">rca.baseline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rca-mod.html#module-rca.calculate_dbz95">rca.calculate_dbz95</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rca-mod.html#module-rca.clutter_map">rca.clutter_map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rca-mod.html#module-rca.composite_clutter_map">rca.composite_clutter_map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rca-mod.html#module-rca.create_clutter_flag">rca.create_clutter_flag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rca-mod.html#module-rca.daily_rca">rca.daily_rca</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rca-mod.html#module-rca.get_pct_on_clutter_map">rca.get_pct_on_clutter_map</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="aux.html">rca.aux</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="aux.html#module-rca.aux.create_masks">rca.aux.create_masks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="aux.html#module-rca.aux.create_rca_csv">rca.aux.create_rca_csv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="aux.html#module-rca.aux.file_to_radar_object">rca.aux.file_to_radar_object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="aux.html#module-rca.aux.get_var_arrays_from_radar_object">rca.aux.get_var_arrays_from_radar_object</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plot.html">rca.plot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plot.html#module-rca.plot.plot_clutter_map">rca.plot.plot_clutter_map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot.html#module-rca.plot.plot_rca_timeseries">rca.plot.plot_rca_timeseries</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -177,10 +197,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="rca.html" class="btn btn-neutral float-right" title="rca package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="rca-mod.html" class="btn btn-neutral float-right" title="rca" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="authors.html" class="btn btn-neutral float-left" title="Contributors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="changelog.html" class="btn btn-neutral float-left" title="Changelog" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

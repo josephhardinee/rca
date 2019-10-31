@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rca.clutter_map &mdash; rca 0.0.post0.dev70+g1b57ea9 documentation</title>
+  <title>rca.clutter_map &mdash; RCA for Weather Radar 0.0.post0.dev68+gf91dc48 documentation</title>
   
 
   
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> rca
+            <a href="../../index.html" class="icon icon-home"> RCA for Weather Radar
           
 
           
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.0.post0.dev70+g1b57ea9
+                0.0.post0.dev68+gf91dc48
               </div>
             
           
@@ -86,7 +86,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../license.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../authors.html">Authors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">Module Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rca.html">Package Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
 </ul>
 
             
@@ -101,7 +102,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">rca</a>
+          <a href="../../index.html">RCA for Weather Radar</a>
         
       </nav>
 
@@ -156,47 +157,28 @@
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">netCDF4</span> <span class="k">import</span> <span class="n">Dataset</span>
-<span class="kn">from</span> <span class="nn">rca.modules.create_clutter_flag</span> <span class="k">import</span> <span class="p">(</span>
-    <span class="n">create_clutter_flag_ppi</span><span class="p">,</span>
-    <span class="n">create_clutter_flag_hsrhi</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span> <span class="nn">rca.modules.file_to_radar_object</span> <span class="k">import</span> <span class="n">file_to_radar_object</span>
-<span class="kn">from</span> <span class="nn">rca.modules.get_var_arrays_from_radar_object</span> <span class="k">import</span> <span class="p">(</span>
-    <span class="n">get_var_arrays_from_radar_object</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.create_clutter_flag</span> <span class="k">import</span> <span class="n">create_clutter_flag_ppi</span><span class="p">,</span> <span class="n">create_clutter_flag_hsrhi</span>
+<span class="kn">from</span> <span class="nn">.aux.file_to_radar_object</span> <span class="k">import</span> <span class="n">file_to_radar_object</span>
+<span class="kn">from</span> <span class="nn">.aux.get_var_arrays_from_radar_object</span> <span class="k">import</span> <span class="n">get_var_arrays_from_radar_object</span>
 
 
-<div class="viewcode-block" id="clutter_map"><a class="viewcode-back" href="../../api/rca.html#rca.clutter_map.clutter_map">[docs]</a><span class="k">def</span> <span class="nf">clutter_map</span><span class="p">(</span><span class="n">radar_config_file</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+<div class="viewcode-block" id="clutter_map"><a class="viewcode-back" href="../../rca-mod.html#rca.clutter_map.clutter_map">[docs]</a><span class="k">def</span> <span class="nf">clutter_map</span><span class="p">(</span><span class="n">radar_config_file</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    clutter_map loops through a day&#39;s worth of radar files (specify PPI or HSRHI, dual or horizontal polarization)</span>
 <span class="sd">    utilizes the create_clutter_flag function to flag clutter points for each scan. If more than 50% of the day&#39;s </span>
 <span class="sd">    scans have a gate identified, it is considered a clutter point and saved to the resulting clutter map.</span>
 <span class="sd">    The clutter map (array) is written to a netCDF.</span>
 <span class="sd">    </span>
-<span class="sd">    Parameters:</span>
-<span class="sd">    --------------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    radar_config_file: str</span>
-<span class="sd">                path to JSON file containing specifications:</span>
-<span class="sd">                    data directory</span>
-<span class="sd">                    file extension</span>
-<span class="sd">                    output directory for clutter map</span>
-<span class="sd">                    date of clutter map</span>
-<span class="sd">                    scan type</span>
-<span class="sd">                    polarization</span>
-<span class="sd">                    site</span>
-<span class="sd">                    instrument</span>
-<span class="sd">                    range limit</span>
-<span class="sd">                    reflectivity threshold</span>
+<span class="sd">        path to JSON file containing specifications: data directory, file extension, output directory for clutter map, date of clutter map, scan type, polarization, site, instrument, range limit, reflectivity threshold</span>
 <span class="sd">    date: str</span>
 <span class="sd">        date used for clutter map day</span>
 <span class="sd">        in YYYYMMDD format (overrides what&#39;s in config file)</span>
 <span class="sd">                    </span>
-<span class="sd">    Returns:</span>
-<span class="sd">    --------------</span>
-<span class="sd">    (no specific return)</span>
-<span class="sd">    however, a netCDF file is written out</span>
-<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">config_vars</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">radar_config_file</span><span class="p">))</span>
     <span class="n">datadir</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s2">&quot;data_directory&quot;</span><span class="p">]</span>
     <span class="n">extension</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s2">&quot;file_extension&quot;</span><span class="p">]</span>

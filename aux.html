@@ -1,0 +1,344 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rca.aux &mdash; RCA for Weather Radar 0.0.post0.dev68+gf91dc48 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="rca.plot" href="plot.html" />
+    <link rel="prev" title="rca" href="rca-mod.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> RCA for Weather Radar
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.post0.dev68+gf91dc48
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="rca.html">Package Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="rca-mod.html">rca</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">rca.aux</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-rca.aux.create_masks">rca.aux.create_masks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-rca.aux.create_rca_csv">rca.aux.create_rca_csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-rca.aux.file_to_radar_object">rca.aux.file_to_radar_object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-rca.aux.get_var_arrays_from_radar_object">rca.aux.get_var_arrays_from_radar_object</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plot.html">rca.plot</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">RCA for Weather Radar</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="rca.html">rca package</a> &raquo;</li>
+        
+      <li>rca.aux</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/aux.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="rca-aux">
+<h1>rca.aux<a class="headerlink" href="#rca-aux" title="Permalink to this headline">¶</a></h1>
+<p>Functions used in clutter map creation and RCA calculation that handle simple tasks such as:
+Reading file in and converting to radar object
+Grabbing arrays of radar variables from radar object
+Create masks based on desired radar azimuths
+Create CSV file to store RCA values for a particular instrument</p>
+<div class="section" id="module-rca.aux.create_masks">
+<span id="rca-aux-create-masks"></span><h2>rca.aux.create_masks<a class="headerlink" href="#module-rca.aux.create_masks" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="rca.aux.create_masks.create_az_mask_hsrhi">
+<code class="sig-prename descclassname">rca.aux.create_masks.</code><code class="sig-name descname">create_az_mask_hsrhi</code><span class="sig-paren">(</span><em class="sig-param">azimuth_value</em>, <em class="sig-param">azimuth_array</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/aux/create_masks.html#create_az_mask_hsrhi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.aux.create_masks.create_az_mask_hsrhi" title="Permalink to this definition">¶</a></dt>
+<dd><p>create_az_mask_hsrhi creates a mask for a desired azimuth angle for an array of azimuth from a radar HSRHI file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>azimuth_value</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – value of the radar azimuth of interest
+i.e. 30., 60., 120., etc.</p></li>
+<li><p><strong>azimuth_array</strong> (<em>array_like</em>) – array of azimuth values to search through and find the appropriate azimuth</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>az_mask</strong> – array of same shape as azimuth_array, masked to highlight the desried azimuth value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>MaskedArray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="rca.aux.create_masks.create_az_mask_ppi">
+<code class="sig-prename descclassname">rca.aux.create_masks.</code><code class="sig-name descname">create_az_mask_ppi</code><span class="sig-paren">(</span><em class="sig-param">azimuth_value</em>, <em class="sig-param">azimuth_array</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/aux/create_masks.html#create_az_mask_ppi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.aux.create_masks.create_az_mask_ppi" title="Permalink to this definition">¶</a></dt>
+<dd><p>create_az_mask_ppi creates a mask for a desired azimuth angle for an array of azimuth from a radar PPI file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>azimuth_value</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – value of the radar azimuth of interest
+i.e. 0., 27., 60., 120., etc.</p></li>
+<li><p><strong>azimuth_array</strong> (<em>array_like</em>) – array of azimuth values to search through and find the appropriate azimuth</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>az_mask</strong> – array of same shape as azimuth_array, masked to highlight the desried azimuth value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>MaskedArray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-rca.aux.create_rca_csv">
+<span id="rca-aux-create-rca-csv"></span><h2>rca.aux.create_rca_csv<a class="headerlink" href="#module-rca.aux.create_rca_csv" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="rca.aux.create_rca_csv.create_rca_csv">
+<code class="sig-prename descclassname">rca.aux.create_rca_csv.</code><code class="sig-name descname">create_rca_csv</code><span class="sig-paren">(</span><em class="sig-param">radar_config_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/aux/create_rca_csv.html#create_rca_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.aux.create_rca_csv.create_rca_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>create_rca_csv creates a CSV file specifically for keeping track of daily RCA values generated by daily_rca.py</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>radar_config_file</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to JSON file containing specifications: data directory, file extension, clutter map directory, output directory for baseline netCDF, baseline date, scan type, polarization, site, instrument, range limit</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-rca.aux.file_to_radar_object">
+<span id="rca-aux-file-to-radar-object"></span><h2>rca.aux.file_to_radar_object<a class="headerlink" href="#module-rca.aux.file_to_radar_object" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="rca.aux.file_to_radar_object.file_to_radar_object">
+<code class="sig-prename descclassname">rca.aux.file_to_radar_object.</code><code class="sig-name descname">file_to_radar_object</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">extension</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/aux/file_to_radar_object.html#file_to_radar_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.aux.file_to_radar_object.file_to_radar_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input radar filename and use appropriate PyART functions to read file and return radar object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path and filename of the radar data file</p></li>
+<li><p><strong>extension</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – file extension of radar data file
+i.e. ‘.nc’, ‘.h5’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>radar</strong> – radar object derived from PyART readers</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#object" title="(in Python v3.6)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-rca.aux.get_var_arrays_from_radar_object">
+<span id="rca-aux-get-var-arrays-from-radar-object"></span><h2>rca.aux.get_var_arrays_from_radar_object<a class="headerlink" href="#module-rca.aux.get_var_arrays_from_radar_object" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="rca.aux.get_var_arrays_from_radar_object.get_var_arrays_from_radar_object">
+<code class="sig-prename descclassname">rca.aux.get_var_arrays_from_radar_object.</code><code class="sig-name descname">get_var_arrays_from_radar_object</code><span class="sig-paren">(</span><em class="sig-param">radar</em>, <em class="sig-param">radar_config_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/aux/get_var_arrays_from_radar_object.html#get_var_arrays_from_radar_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.aux.get_var_arrays_from_radar_object.get_var_arrays_from_radar_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input radar object and radar configuration (.json) file
+to use PyART to extract variables to be used in calculations
+Returns variables in arrays or strings in a single dictionary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>radar</strong> (<em>radar object</em>) – radar object (often from PyART) contains all radar data and info</p></li>
+<li><p><strong>radar_config_file</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to and .json configuration file specific to the radar and scan type used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>var_dict</strong> – dictionary or relevant variables needed for the rest of clutter mapa nd RCA calculation
+var_dict = {
+“date_time”: date_time,
+“range”: r,
+“azimuth”: theta,
+“elevation”: elev,
+“reflectivity_h”: zh,
+“reflectivity_v”: zv
+}</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="plot.html" class="btn btn-neutral float-right" title="rca.plot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rca-mod.html" class="btn btn-neutral float-left" title="rca" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Alexis Hunzinger
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

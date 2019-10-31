@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rca.plot &mdash; RCA for Weather Radar 0.0.post0.dev68+gf91dc48 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="rca.aux" href="aux.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> RCA for Weather Radar
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.post0.dev68+gf91dc48
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="rca.html">Package Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="rca-mod.html">rca</a></li>
+<li class="toctree-l2"><a class="reference internal" href="aux.html">rca.aux</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">rca.plot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-rca.plot.plot_clutter_map">rca.plot.plot_clutter_map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-rca.plot.plot_rca_timeseries">rca.plot.plot_rca_timeseries</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">RCA for Weather Radar</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="rca.html">rca package</a> &raquo;</li>
+        
+      <li>rca.plot</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/plot.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="rca-plot">
+<h1>rca.plot<a class="headerlink" href="#rca-plot" title="Permalink to this headline">¶</a></h1>
+<p>Plotting routines for RCA</p>
+<div class="section" id="module-rca.plot.plot_clutter_map">
+<span id="rca-plot-plot-clutter-map"></span><h2>rca.plot.plot_clutter_map<a class="headerlink" href="#module-rca.plot.plot_clutter_map" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="rca.plot.plot_clutter_map.plot_clutter_map">
+<code class="sig-prename descclassname">rca.plot.plot_clutter_map.</code><code class="sig-name descname">plot_clutter_map</code><span class="sig-paren">(</span><em class="sig-param">clutter_map_netcdf</em>, <em class="sig-param">output_directory</em>, <em class="sig-param">scan_type</em>, <em class="sig-param">map_type</em>, <em class="sig-param">polarization</em>, <em class="sig-param">max_range</em>, <em class="sig-param">site</em>, <em class="sig-param">inst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/plot/plot_clutter_map.html#plot_clutter_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.plot.plot_clutter_map.plot_clutter_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a clutter map of either PPI of RHI data. Must first calculate the clutter map using clutter_map module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clutter_map_netcdf</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to clutter map netCDF</p></li>
+<li><p><strong>output_directory</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to directory for output .png file</p></li>
+<li><p><strong>scan_type</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – specify if the map is for PPI or RHI
+‘ppi’
+‘rhi’</p></li>
+<li><p><strong>map_type</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – specify if a daily or composite clutter map
+‘daily’
+‘composite’</p></li>
+<li><p><strong>polarization</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – specify the polarization(s) desired
+‘horizontal’
+‘dual’</p></li>
+<li><p><strong>max_range</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – maximum range to plot, in km
+i.e. 5, 10, 40</p></li>
+<li><p><strong>site</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – 3-letter site abbreviation
+i.e. ‘cor’, ‘ena’</p></li>
+<li><p><strong>inst</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – instrument name
+i.e. ‘csapr2’, ‘kasacr’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-rca.plot.plot_rca_timeseries">
+<span id="rca-plot-plot-rca-timeseries"></span><h2>rca.plot.plot_rca_timeseries<a class="headerlink" href="#module-rca.plot.plot_rca_timeseries" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="rca.plot.plot_rca_timeseries.plot_rca_timeseries_oneradar">
+<code class="sig-prename descclassname">rca.plot.plot_rca_timeseries.</code><code class="sig-name descname">plot_rca_timeseries_oneradar</code><span class="sig-paren">(</span><em class="sig-param">rca_file</em>, <em class="sig-param">output_directory</em>, <em class="sig-param">baseline_date</em>, <em class="sig-param">polarization</em>, <em class="sig-param">scan_type</em>, <em class="sig-param">site</em>, <em class="sig-param">inst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/plot/plot_rca_timeseries.html#plot_rca_timeseries_oneradar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.plot.plot_rca_timeseries.plot_rca_timeseries_oneradar" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rca_file</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to RCA CSV file</p></li>
+<li><p><strong>output_directory</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to directory for output .png file(s)</p></li>
+<li><p><strong>baseline_date</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – YYYY-MM-DD format of baseline date in this dataset</p></li>
+<li><p><strong>polarization</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – specify the polarization(s) desired
+‘horizontal’
+‘dual’</p></li>
+<li><p><strong>scan_type</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – specify if the map is for PPI or RHI
+‘ppi’
+‘rhi’</p></li>
+<li><p><strong>site</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – site abbreviation</p></li>
+<li><p><strong>inst</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – instrument name</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="rca.plot.plot_rca_timeseries.plot_rca_timeseries_threeradar">
+<code class="sig-prename descclassname">rca.plot.plot_rca_timeseries.</code><code class="sig-name descname">plot_rca_timeseries_threeradar</code><span class="sig-paren">(</span><em class="sig-param">rca_file1</em>, <em class="sig-param">rca_file2</em>, <em class="sig-param">rca_file3</em>, <em class="sig-param">output_directory</em>, <em class="sig-param">baseline_date</em>, <em class="sig-param">polarization</em>, <em class="sig-param">scan_type</em>, <em class="sig-param">site</em>, <em class="sig-param">inst1</em>, <em class="sig-param">inst2</em>, <em class="sig-param">inst3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/plot/plot_rca_timeseries.html#plot_rca_timeseries_threeradar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.plot.plot_rca_timeseries.plot_rca_timeseries_threeradar" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rca_file1</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to RCA CSV file for radar 1</p></li>
+<li><p><strong>rca_file2</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to RCA CSV file for radar 2</p></li>
+<li><p><strong>rca_file3</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to RCA CSV file for radar 3</p></li>
+<li><p><strong>output_directory</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to directory for output .png file(s)</p></li>
+<li><p><strong>baseline_date</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – YYYY-MM-DD format of baseline date in this dataset</p></li>
+<li><p><strong>polarization</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – specify the polarization(s) desired
+‘horizontal’
+‘dual’</p></li>
+<li><p><strong>scan_type</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – specify if the map is for PPI or RHI
+‘ppi’
+‘rhi’</p></li>
+<li><p><strong>site</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – site abbreviation</p></li>
+<li><p><strong>inst1</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – instrument name for radar 1</p></li>
+<li><p><strong>inst2</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – instrument name for radar 2</p></li>
+<li><p><strong>inst3</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – instrument name for radar 3</p></li>
+<li><p><strong>location</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – site and instrument (use for plot title)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="rca.plot.plot_rca_timeseries.plot_rca_timeseries_tworadar">
+<code class="sig-prename descclassname">rca.plot.plot_rca_timeseries.</code><code class="sig-name descname">plot_rca_timeseries_tworadar</code><span class="sig-paren">(</span><em class="sig-param">rca_file1</em>, <em class="sig-param">rca_file2</em>, <em class="sig-param">output_directory</em>, <em class="sig-param">baseline_date</em>, <em class="sig-param">polarization</em>, <em class="sig-param">scan_type</em>, <em class="sig-param">site</em>, <em class="sig-param">inst1</em>, <em class="sig-param">inst2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/plot/plot_rca_timeseries.html#plot_rca_timeseries_tworadar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.plot.plot_rca_timeseries.plot_rca_timeseries_tworadar" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rca_file1</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to RCA CSV file for radar 1</p></li>
+<li><p><strong>rca_file2</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to RCA CSV file for radar 2</p></li>
+<li><p><strong>output_directory</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to directory for output .png file(s)</p></li>
+<li><p><strong>baseline_date</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – YYYY-MM-DD format of baseline date in this dataset</p></li>
+<li><p><strong>polarization</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – specify the polarization(s) desired
+‘horizontal’
+‘dual’</p></li>
+<li><p><strong>scan_type</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – specify if the map is for PPI or RHI
+‘ppi’
+‘rhi’
+‘ppirhi’</p></li>
+<li><p><strong>site</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – site abbreviation</p></li>
+<li><p><strong>inst1</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – instrument name for radar 1</p></li>
+<li><p><strong>inst2</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – instrument name for radar 2</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="aux.html" class="btn btn-neutral float-left" title="rca.aux" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Alexis Hunzinger
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

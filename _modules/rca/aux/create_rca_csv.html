@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rca.create_rca_csv &mdash; rca 0.0.post0.dev70+g1b57ea9 documentation</title>
+  <title>rca.aux.create_rca_csv &mdash; RCA for Weather Radar 0.0.post0.dev68+gf91dc48 documentation</title>
   
 
   
@@ -17,24 +17,24 @@
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
     
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
     
 
   
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> rca
+            <a href="../../../index.html" class="icon icon-home"> RCA for Weather Radar
           
 
           
@@ -58,14 +58,14 @@
             
             
               <div class="version">
-                0.0.post0.dev70+g1b57ea9
+                0.0.post0.dev68+gf91dc48
               </div>
             
           
 
           
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -83,10 +83,11 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../license.html">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Authors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">Module Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rca.html">Package Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
 </ul>
 
             
@@ -101,7 +102,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">rca</a>
+          <a href="../../../index.html">RCA for Weather Radar</a>
         
       </nav>
 
@@ -130,11 +131,11 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>rca.create_rca_csv</li>
+      <li>rca.aux.create_rca_csv</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -149,7 +150,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for rca.create_rca_csv</h1><div class="highlight"><pre>
+  <h1>Source code for rca.aux.create_rca_csv</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -158,29 +159,15 @@
 <span class="kn">import</span> <span class="nn">csv</span>
 
 
-<div class="viewcode-block" id="create_rca_csv"><a class="viewcode-back" href="../../api/rca.html#rca.create_rca_csv.create_rca_csv">[docs]</a><span class="k">def</span> <span class="nf">create_rca_csv</span><span class="p">(</span><span class="n">radar_config_file</span><span class="p">):</span>
+<div class="viewcode-block" id="create_rca_csv"><a class="viewcode-back" href="../../../aux.html#rca.aux.create_rca_csv.create_rca_csv">[docs]</a><span class="k">def</span> <span class="nf">create_rca_csv</span><span class="p">(</span><span class="n">radar_config_file</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    create_rca_csv creates a CSV file specifically for keeping track of daily</span>
-<span class="sd">RCA values generated by daily_rca.py </span>
-<span class="sd">    Parameters:</span>
-<span class="sd">    --------------</span>
+<span class="sd">    create_rca_csv creates a CSV file specifically for keeping track of daily RCA values generated by daily_rca.py </span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    radar_config_file: str</span>
-<span class="sd">                path to JSON file containing specifications:</span>
-<span class="sd">                    data directory</span>
-<span class="sd">                    file extension</span>
-<span class="sd">                    clutter map directory</span>
-<span class="sd">                    output directory for baseline netCDF</span>
-<span class="sd">                    baseline date</span>
-<span class="sd">                    scan type</span>
-<span class="sd">                    polarization</span>
-<span class="sd">                    site</span>
-<span class="sd">                    instrument</span>
-<span class="sd">                    range limit</span>
+<span class="sd">        path to JSON file containing specifications: data directory, file extension, clutter map directory, output directory for baseline netCDF, baseline date, scan type, polarization, site, instrument, range limit</span>
 <span class="sd">                    </span>
-<span class="sd">    Returns:</span>
-<span class="sd">    --------------</span>
-<span class="sd">    (no specific return)</span>
-<span class="sd">    however, a CSV file is written out</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">config_vars</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">radar_config_file</span><span class="p">))</span>

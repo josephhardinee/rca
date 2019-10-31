@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rca.daily_rca &mdash; rca 0.0.post0.dev70+g1b57ea9 documentation</title>
+  <title>rca.daily_rca &mdash; RCA for Weather Radar 0.0.post0.dev68+gf91dc48 documentation</title>
   
 
   
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> rca
+            <a href="../../index.html" class="icon icon-home"> RCA for Weather Radar
           
 
           
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.0.post0.dev70+g1b57ea9
+                0.0.post0.dev68+gf91dc48
               </div>
             
           
@@ -86,7 +86,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../license.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../authors.html">Authors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">Module Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rca.html">Package Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
 </ul>
 
             
@@ -101,7 +102,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">rca</a>
+          <a href="../../index.html">RCA for Weather Radar</a>
         
       </nav>
 
@@ -157,14 +158,12 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">netCDF4</span> <span class="k">import</span> <span class="n">Dataset</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">rca.modules.file_to_radar_object</span> <span class="k">import</span> <span class="n">file_to_radar_object</span>
-<span class="kn">from</span> <span class="nn">rca.modules.get_var_arrays_from_radar_object</span> <span class="k">import</span> <span class="p">(</span>
-    <span class="n">get_var_arrays_from_radar_object</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span> <span class="nn">rca.modules.calculate_dbz95</span> <span class="k">import</span> <span class="n">calculate_dbz95_ppi</span><span class="p">,</span> <span class="n">calculate_dbz95_hsrhi</span>
+<span class="kn">from</span> <span class="nn">.aux.file_to_radar_object</span> <span class="k">import</span> <span class="n">file_to_radar_object</span>
+<span class="kn">from</span> <span class="nn">.aux.get_var_arrays_from_radar_object</span> <span class="k">import</span> <span class="n">get_var_arrays_from_radar_object</span>
+<span class="kn">from</span> <span class="nn">.calculate_dbz95</span> <span class="k">import</span> <span class="n">calculate_dbz95_ppi</span><span class="p">,</span> <span class="n">calculate_dbz95_hsrhi</span>
 
 
-<div class="viewcode-block" id="daily_rca"><a class="viewcode-back" href="../../api/rca.html#rca.daily_rca.daily_rca">[docs]</a><span class="k">def</span> <span class="nf">daily_rca</span><span class="p">(</span><span class="n">radar_config_file</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+<div class="viewcode-block" id="daily_rca"><a class="viewcode-back" href="../../rca-mod.html#rca.daily_rca.daily_rca">[docs]</a><span class="k">def</span> <span class="nf">daily_rca</span><span class="p">(</span><span class="n">radar_config_file</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    daily_rca loops through a day&#39;s worth of radar files (specify PPI or HSRHI, dual or horizontal polarization),</span>
 <span class="sd">    calculates the median daily 95th percentile clutter area reflectivity,</span>
@@ -172,29 +171,15 @@
 <span class="sd">    </span>
 <span class="sd">    A running CSV is ammended to include the daily median RCA values.</span>
 <span class="sd">    </span>
-<span class="sd">    Parameters:</span>
-<span class="sd">    --------------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    radar_config_file: str</span>
-<span class="sd">                path to JSON file containing specifications:</span>
-<span class="sd">                    data directory</span>
-<span class="sd">                    file extension</span>
-<span class="sd">                    clutter map directory</span>
-<span class="sd">                    baseline directory</span>
-<span class="sd">                    baseline date</span>
-<span class="sd">                    daily CSV directory</span>
-<span class="sd">                    scan type</span>
-<span class="sd">                    polarization</span>
-<span class="sd">                    site</span>
-<span class="sd">                    instrument</span>
-<span class="sd">                    range limit</span>
+<span class="sd">        path to JSON file containing specifications: data directory, file extension, clutter map directory, baseline directory, baseline date, daily CSV directory, scan type, polarization, site, instrument, range limit</span>
 <span class="sd">    date: str</span>
 <span class="sd">        YYYYMMDD specifying date of interest</span>
 <span class="sd">                    </span>
-<span class="sd">    Returns:</span>
-<span class="sd">    --------------</span>
-<span class="sd">    (no specific return)</span>
-<span class="sd">    however, RCA value is written to a CSV file</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">config_vars</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">radar_config_file</span><span class="p">))</span>
     <span class="n">datadir</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s2">&quot;data_directory&quot;</span><span class="p">]</span>
     <span class="n">extension</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s2">&quot;file_extension&quot;</span><span class="p">]</span>

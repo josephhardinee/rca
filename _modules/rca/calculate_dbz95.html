@@ -1,0 +1,544 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rca.calculate_dbz95 &mdash; RCA for Weather Radar 0.0.post0.dev68+gf91dc48 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> RCA for Weather Radar
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.post0.dev68+gf91dc48
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rca.html">Package Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">RCA for Weather Radar</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>rca.calculate_dbz95</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rca.calculate_dbz95</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">.aux.create_masks</span> <span class="k">import</span> <span class="n">create_az_mask_ppi</span><span class="p">,</span> <span class="n">create_az_mask_hsrhi</span>
+
+<div class="viewcode-block" id="calculate_dbz95_ppi"><a class="viewcode-back" href="../../rca-mod.html#rca.calculate_dbz95.calculate_dbz95_ppi">[docs]</a><span class="k">def</span> <span class="nf">calculate_dbz95_ppi</span><span class="p">(</span>
+    <span class="n">variable_dictionary</span><span class="p">,</span> <span class="n">polarization</span><span class="p">,</span> <span class="n">range_limit</span><span class="p">,</span> <span class="n">clutter_mask_h</span><span class="p">,</span> <span class="n">clutter_mask_v</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    calculate_dbz95_hsrhi calculates the 95th percentile reflectivity for a given radar HSRHI file</span>
+<span class="sd">    using the input HSRHI cluter map masks (H and/or V). Returns the date and time of the file,</span>
+<span class="sd">    95th percentile reflectivity value for Zh and/or Zv, and dictionaries of statistics,</span>
+<span class="sd">    including number of points, histogram/PDF, bins, CDF.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    variable_dictionary: dict</span>
+<span class="sd">        dictionary with values, strings, and arrays of relevant radar data</span>
+<span class="sd">        i.e. &#39;reflectivity_h&#39;, &#39;reflectivity_v&#39;, &#39;azimuth&#39;, &#39;range&#39;, &#39;date_time&#39;</span>
+<span class="sd">    polarization: str</span>
+<span class="sd">        specifies for which polarization user wants to create clutter flag array</span>
+<span class="sd">        &#39;dual&#39;: calculate for both H and V</span>
+<span class="sd">        &#39;horizontal&#39;: calculate only for H</span>
+<span class="sd">    range_limit: int</span>
+<span class="sd">        value of desired radar gate range limit</span>
+<span class="sd">    clutter_mask_h: MaskedArray</span>
+<span class="sd">        masked array denotes which elements are considered clutter</span>
+<span class="sd">        used to extract reflectivity values from overlapping radar gates</span>
+<span class="sd">        for H polarization</span>
+<span class="sd">    clutter_mask_h: MaskedArray</span>
+<span class="sd">        masked array denotes which elements are considered clutter</span>
+<span class="sd">        used to extract reflectivity values from overlapping radar gates</span>
+<span class="sd">        for V polarization</span>
+<span class="sd">        default is None, array must be provided if calculating for V polarization</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    date_time: str</span>
+<span class="sd">        date and time of the file</span>
+<span class="sd">    dbz95_h: float (or array?)</span>
+<span class="sd">        value of the 95th percentile clutter area reflectivity for H polarization</span>
+<span class="sd">    stats_h: dict</span>
+<span class="sd">        contains statistics from the PDF and CDF of the clutter area reflectivity in H polarization</span>
+<span class="sd">        num_pts_h: number of points</span>
+<span class="sd">        hn: number of histogram bins</span>
+<span class="sd">        hbins: bin edges of histogram</span>
+<span class="sd">        hp: CDF</span>
+<span class="sd">        dbz95_h: 95th percentile reflectivity</span>
+<span class="sd">    dbz95_v: float (or array?)</span>
+<span class="sd">        value of the 95th percentile clutter area reflectivity for V polarization</span>
+<span class="sd">    stats_v: dict</span>
+<span class="sd">        contains statistics from the PDF and CDF of the clutter area reflectivity in V polarization</span>
+<span class="sd">        num_pts_v: number of points</span>
+<span class="sd">        vn: number of histogram bins</span>
+<span class="sd">        vbins: bin edges of histogram</span>
+<span class="sd">        vp: CDF</span>
+<span class="sd">        dbz95_v: 95th percentile reflectivity</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">date_time</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;date_time&quot;</span><span class="p">]</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">]</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;azimuth&quot;</span><span class="p">]</span>
+    <span class="n">zh</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;reflectivity_h&quot;</span><span class="p">]</span>
+
+    <span class="n">range_shape</span> <span class="o">=</span> <span class="n">range_limit</span> <span class="o">/</span> <span class="mi">1000</span>
+    <span class="n">theta_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">360</span><span class="p">)</span>
+    <span class="n">r_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">range_shape</span><span class="p">)</span>
+
+    <span class="c1"># H POLARIZATION</span>
+    <span class="n">zh_from_mask</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">idx_az</span><span class="p">,</span> <span class="n">az</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">theta_list</span><span class="p">):</span>
+        <span class="n">az_mask</span> <span class="o">=</span> <span class="n">create_az_mask_ppi</span><span class="p">(</span><span class="n">az</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+        <span class="n">zh_rays</span> <span class="o">=</span> <span class="n">zh</span><span class="p">[</span><span class="n">az_mask</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">zh_rays</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">getdata</span><span class="p">(</span><span class="n">zh_rays</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx_ra</span><span class="p">,</span> <span class="n">ra</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">r_list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">clutter_mask_h</span><span class="p">[</span><span class="n">idx_az</span><span class="p">,</span> <span class="n">idx_ra</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">ra</span> <span class="o">==</span> <span class="n">range_shape</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">rstart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="p">(</span><span class="n">ra</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">rstop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="p">(</span><span class="n">r_list</span><span class="p">[</span><span class="n">idx_ra</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                        <span class="n">rstop</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                    <span class="n">zh_from_mask</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zh_rays</span><span class="p">[:,</span> <span class="n">rstart</span><span class="p">:</span><span class="n">rstop</span><span class="p">])</span>
+
+    <span class="n">all_zh</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zh_from_mask</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">zh_from_mask</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zh_from_mask</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zh_from_mask</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])):</span>
+                    <span class="n">all_zh</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zh_from_mask</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="n">k</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;num pts = &quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_zh</span><span class="p">))</span>
+
+    <span class="n">num_pts_h</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_zh</span><span class="p">)</span>
+    <span class="n">hn</span><span class="p">,</span> <span class="n">hbins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">all_zh</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">525</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">40.0</span><span class="p">,</span> <span class="mf">65.0</span><span class="p">))</span>
+    <span class="c1"># Calculate CDF of clutter area reflectivity</span>
+    <span class="n">hcdf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">hn</span><span class="p">)</span>
+    <span class="n">hp</span> <span class="o">=</span> <span class="n">hcdf</span> <span class="o">/</span> <span class="n">hcdf</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">525</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-</span> <span class="mi">40</span>
+    <span class="c1"># Find the value of reflectivity at the 95th percentile of CDF</span>
+    <span class="n">idx95</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">hp</span> <span class="o">-</span> <span class="mf">95.0</span><span class="p">))</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+    <span class="n">dbz95_h</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">idx95</span><span class="p">]</span>
+
+    <span class="n">stats_h</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;num_points&quot;</span><span class="p">:</span> <span class="n">num_pts_h</span><span class="p">,</span>
+        <span class="s2">&quot;histo_n&quot;</span><span class="p">:</span> <span class="n">hn</span><span class="p">,</span>
+        <span class="s2">&quot;histo_bins&quot;</span><span class="p">:</span> <span class="n">hbins</span><span class="p">,</span>
+        <span class="s2">&quot;cdf&quot;</span><span class="p">:</span> <span class="n">hp</span><span class="p">,</span>
+        <span class="s2">&quot;reflectivity_95&quot;</span><span class="p">:</span> <span class="n">dbz95_h</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;dbz95H = &quot;</span><span class="p">,</span> <span class="n">dbz95_h</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">polarization</span> <span class="o">==</span> <span class="s2">&quot;horizontal&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">date_time</span><span class="p">,</span> <span class="n">dbz95_h</span><span class="p">,</span> <span class="n">stats_h</span>
+
+    <span class="k">elif</span> <span class="n">polarization</span> <span class="o">==</span> <span class="s2">&quot;dual&quot;</span><span class="p">:</span>
+        <span class="n">zv</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;reflectivity_v&quot;</span><span class="p">]</span>
+
+        <span class="c1"># V POLARIZATION</span>
+        <span class="n">zv_from_mask</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx_az</span><span class="p">,</span> <span class="n">az</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">theta_list</span><span class="p">):</span>
+            <span class="n">az_mask</span> <span class="o">=</span> <span class="n">create_az_mask_ppi</span><span class="p">(</span><span class="n">az</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+            <span class="n">zv_rays</span> <span class="o">=</span> <span class="n">zv</span><span class="p">[</span><span class="n">az_mask</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">zv_rays</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">getdata</span><span class="p">(</span><span class="n">zv_rays</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">idx_ra</span><span class="p">,</span> <span class="n">ra</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">r_list</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">clutter_mask_v</span><span class="p">[</span><span class="n">idx_az</span><span class="p">,</span> <span class="n">idx_ra</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">ra</span> <span class="o">==</span> <span class="n">range_shape</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">rstart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="p">(</span><span class="n">ra</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">rstop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="p">(</span><span class="n">r_list</span><span class="p">[</span><span class="n">idx_ra</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">)[</span>
+                                <span class="mi">0</span>
+                            <span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                            <span class="n">rstop</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                        <span class="n">zv_from_mask</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zv_rays</span><span class="p">[:,</span> <span class="n">rstart</span><span class="p">:</span><span class="n">rstop</span><span class="p">])</span>
+
+        <span class="n">all_zv</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zv_from_mask</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">zv_from_mask</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zv_from_mask</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zv_from_mask</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])):</span>
+                        <span class="n">all_zh</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zv_from_mask</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="n">k</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;num pts = &quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_zv</span><span class="p">))</span>
+
+        <span class="n">num_pts_v</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_zv</span><span class="p">)</span>
+        <span class="n">vn</span><span class="p">,</span> <span class="n">vbins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">all_zv</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">525</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">40.0</span><span class="p">,</span> <span class="mf">65.0</span><span class="p">))</span>
+        <span class="c1"># Calculate CDF of clutter area reflectivity</span>
+        <span class="n">vcdf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">vn</span><span class="p">)</span>
+        <span class="n">vp</span> <span class="o">=</span> <span class="n">vcdf</span> <span class="o">/</span> <span class="n">vcdf</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">525</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-</span> <span class="mi">40</span>
+        <span class="c1"># Find the value of reflectivity at the 95th percentile of CDF</span>
+        <span class="n">idx95</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vp</span> <span class="o">-</span> <span class="mf">95.0</span><span class="p">))</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+        <span class="n">dbz95_v</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">idx95</span><span class="p">]</span>
+
+        <span class="n">stats_v</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;num_points&quot;</span><span class="p">:</span> <span class="n">num_pts_v</span><span class="p">,</span>
+            <span class="s2">&quot;histo_n&quot;</span><span class="p">:</span> <span class="n">vn</span><span class="p">,</span>
+            <span class="s2">&quot;histo_bins&quot;</span><span class="p">:</span> <span class="n">vbins</span><span class="p">,</span>
+            <span class="s2">&quot;cdf&quot;</span><span class="p">:</span> <span class="n">vp</span><span class="p">,</span>
+            <span class="s2">&quot;reflectivity_95&quot;</span><span class="p">:</span> <span class="n">dbz95_v</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;dbz95V = &quot;</span><span class="p">,</span> <span class="n">dbz95_v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">date_time</span><span class="p">,</span> <span class="n">dbz95_h</span><span class="p">,</span> <span class="n">dbz95_v</span><span class="p">,</span> <span class="n">stats_h</span><span class="p">,</span> <span class="n">stats_v</span></div>
+
+
+<div class="viewcode-block" id="calculate_dbz95_hsrhi"><a class="viewcode-back" href="../../rca-mod.html#rca.calculate_dbz95.calculate_dbz95_hsrhi">[docs]</a><span class="k">def</span> <span class="nf">calculate_dbz95_hsrhi</span><span class="p">(</span>
+    <span class="n">variable_dictionary</span><span class="p">,</span> <span class="n">polarization</span><span class="p">,</span> <span class="n">range_limit</span><span class="p">,</span> <span class="n">clutter_mask_h</span><span class="p">,</span> <span class="n">clutter_mask_v</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    calculate_dbz95_hsrhi calculates the 95th percentile reflectivity for a given radar HSRHI file</span>
+<span class="sd">    using the input HSRHI cluter map masks (H and/or V). Returns the date and time of the file,</span>
+<span class="sd">    95th percentile reflectivity value for Zh and/or Zv, and dictionaries of statistics,</span>
+<span class="sd">    including number of points, histogram/PDF, bins, CDF.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    variable_dictionary: dict</span>
+<span class="sd">        dictionary with values, strings, and arrays of relevant radar data</span>
+<span class="sd">        i.e. &#39;reflectivity_h&#39;, &#39;reflectivity_v&#39;, &#39;azimuth&#39;, &#39;range&#39;, &#39;date_time&#39;, &#39;elevation&#39;</span>
+<span class="sd">    polarization: str</span>
+<span class="sd">        specifies for which polarization user wants to create clutter flag array</span>
+<span class="sd">        &#39;dual&#39;: calculate for both H and V</span>
+<span class="sd">        &#39;horizontal&#39;: calculate only for H</span>
+<span class="sd">    range_limit: int</span>
+<span class="sd">        value of desired radar gate range limit</span>
+<span class="sd">    clutter_mask_h: MaskedArray</span>
+<span class="sd">        masked array denotes which elements are considered clutter</span>
+<span class="sd">        used to extract reflectivity values from overlapping radar gates</span>
+<span class="sd">        for H polarization</span>
+<span class="sd">    clutter_mask_h: MaskedArray</span>
+<span class="sd">        masked array denotes which elements are considered clutter</span>
+<span class="sd">        used to extract reflectivity values from overlapping radar gates</span>
+<span class="sd">        for V polarization</span>
+<span class="sd">        default is None, array must be provided if calculating for V polarization</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    date_time: str</span>
+<span class="sd">        date and time of the file</span>
+<span class="sd">    dbz95_h: float (or array?)</span>
+<span class="sd">        value of the 95th percentile clutter area reflectivity for H polarization</span>
+<span class="sd">    stats_h: dict</span>
+<span class="sd">        contains statistics from the PDF and CDF of the clutter area reflectivity in H polarization</span>
+<span class="sd">        num_pts_h: number of points</span>
+<span class="sd">        hn: number of histogram bins</span>
+<span class="sd">        hbins: bin edges of histogram</span>
+<span class="sd">        hp: CDF</span>
+<span class="sd">        dbz95_h: 95th percentile reflectivity</span>
+<span class="sd">    dbz95_v: float (or array?)</span>
+<span class="sd">        value of the 95th percentile clutter area reflectivity for V polarization</span>
+<span class="sd">    stats_v: dict</span>
+<span class="sd">        contains statistics from the PDF and CDF of the clutter area reflectivity in V polarization</span>
+<span class="sd">        num_pts_v: number of points</span>
+<span class="sd">        vn: number of histogram bins</span>
+<span class="sd">        vbins: bin edges of histogram</span>
+<span class="sd">        vp: CDF</span>
+<span class="sd">        dbz95_v: 95th percentile reflectivity</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">date_time</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;date_time&quot;</span><span class="p">]</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">]</span>
+    <span class="n">elev</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;elevation&quot;</span><span class="p">]</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;azimuth&quot;</span><span class="p">]</span>
+    <span class="n">zh</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;reflectivity_h&quot;</span><span class="p">]</span>
+
+    <span class="c1">###########################</span>
+    <span class="c1"># Special case</span>
+    <span class="c1">#    KASACR calibration constant during CACTI</span>
+    <span class="c1">#    zh(corrected) = zh(in_file) + zh_offset</span>
+    <span class="c1">#    BEFORE 2019-03-18 16:42:33 UTC</span>
+    <span class="c1">#        dirt on waveguide, reflectivity low</span>
+    <span class="c1">#        zh_offset = 10.6 + difference of RCA going backward in time</span>
+    <span class="c1">#    AFTER 2019-03-18 16:42:33 UTC</span>
+    <span class="c1">#        waveguide cleaned</span>
+    <span class="c1">#        zh_offset = 10.6</span>
+    <span class="n">zh_offset</span> <span class="o">=</span> <span class="mf">10.6</span>
+    <span class="n">zh</span> <span class="o">=</span> <span class="n">zh</span> <span class="o">+</span> <span class="n">zh_offset</span>
+    <span class="c1">###########################</span>
+
+    <span class="n">range_shape</span> <span class="o">=</span> <span class="n">range_limit</span> <span class="o">/</span> <span class="mi">1000</span>
+    <span class="n">elev_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">175</span><span class="p">,</span> <span class="mi">176</span><span class="p">,</span> <span class="mi">177</span><span class="p">,</span> <span class="mi">178</span><span class="p">,</span> <span class="mi">179</span><span class="p">]</span>
+    <span class="n">theta_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">150</span><span class="p">]</span>
+    <span class="n">r_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">range_shape</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># H POLARIZATION</span>
+    <span class="n">zh_from_mask</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">idx_az</span><span class="p">,</span> <span class="n">az</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">theta_list</span><span class="p">):</span>
+        <span class="n">az_mask</span> <span class="o">=</span> <span class="n">create_az_mask_hsrhi</span><span class="p">(</span><span class="n">az</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx_el</span><span class="p">,</span> <span class="n">el</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">elev_list</span><span class="p">):</span>
+            <span class="n">el_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">elev</span> <span class="o">-</span> <span class="n">el</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.5</span>
+            <span class="n">zh_rays</span> <span class="o">=</span> <span class="n">zh</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">az_mask</span><span class="p">,</span> <span class="n">el_mask</span><span class="p">),</span> <span class="p">:]</span>
+            <span class="n">zh_rays</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">getdata</span><span class="p">(</span><span class="n">zh_rays</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">idx_ra</span><span class="p">,</span> <span class="n">ra</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">r_list</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">clutter_mask_h</span><span class="p">[</span><span class="n">idx_az</span><span class="p">,</span> <span class="n">idx_el</span><span class="p">,</span> <span class="n">idx_ra</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">ra</span> <span class="o">==</span> <span class="n">range_shape</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">rstart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="p">(</span><span class="n">ra</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">rstop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="p">(</span><span class="n">r_list</span><span class="p">[</span><span class="n">idx_ra</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">)[</span>
+                                <span class="mi">0</span>
+                            <span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                            <span class="n">rstop</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                        <span class="n">zh_from_mask</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zh_rays</span><span class="p">[:,</span> <span class="n">rstart</span><span class="p">:</span><span class="n">rstop</span><span class="p">])</span>
+
+    <span class="n">all_zh</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zh_from_mask</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">zh_from_mask</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zh_from_mask</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zh_from_mask</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])):</span>
+                    <span class="n">all_zh</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zh_from_mask</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="n">k</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;num pts = &quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_zh</span><span class="p">))</span>
+
+    <span class="n">num_pts_h</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_zh</span><span class="p">)</span>
+    <span class="n">hn</span><span class="p">,</span> <span class="n">hbins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">all_zh</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">525</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">40.0</span><span class="p">,</span> <span class="mf">65.0</span><span class="p">))</span>
+    <span class="c1"># Calculate CDF of clutter area reflectivity</span>
+    <span class="n">hcdf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">hn</span><span class="p">)</span>
+    <span class="n">hp</span> <span class="o">=</span> <span class="n">hcdf</span> <span class="o">/</span> <span class="n">hcdf</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">525</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-</span> <span class="mi">40</span>
+    <span class="c1"># Find the value of reflectivity at the 95th percentile of CDF</span>
+    <span class="n">idx95</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">hp</span> <span class="o">-</span> <span class="mf">95.0</span><span class="p">))</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+    <span class="n">dbz95_h</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">idx95</span><span class="p">]</span>
+
+    <span class="n">stats_h</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;num_points&quot;</span><span class="p">:</span> <span class="n">num_pts_h</span><span class="p">,</span>
+        <span class="s2">&quot;histo_n&quot;</span><span class="p">:</span> <span class="n">hn</span><span class="p">,</span>
+        <span class="s2">&quot;histo_bins&quot;</span><span class="p">:</span> <span class="n">hbins</span><span class="p">,</span>
+        <span class="s2">&quot;cdf&quot;</span><span class="p">:</span> <span class="n">hp</span><span class="p">,</span>
+        <span class="s2">&quot;reflectivity_95&quot;</span><span class="p">:</span> <span class="n">dbz95_h</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;dbz95H = &quot;</span><span class="p">,</span> <span class="n">dbz95_h</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">polarization</span> <span class="o">==</span> <span class="s2">&quot;horizontal&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">date_time</span><span class="p">,</span> <span class="n">dbz95_h</span><span class="p">,</span> <span class="n">stats_h</span>
+
+    <span class="k">elif</span> <span class="n">polarization</span> <span class="o">==</span> <span class="s2">&quot;dual&quot;</span><span class="p">:</span>
+        <span class="n">zv</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;reflectivity_v&quot;</span><span class="p">]</span>
+
+        <span class="c1"># V POLARIZATION</span>
+        <span class="n">zv_from_mask</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx_az</span><span class="p">,</span> <span class="n">az</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">theta_list</span><span class="p">):</span>
+            <span class="n">az_mask</span> <span class="o">=</span> <span class="n">create_az_mask_hsrhi</span><span class="p">(</span><span class="n">az</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">idx_el</span><span class="p">,</span> <span class="n">el</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">elev_list</span><span class="p">):</span>
+                <span class="n">el_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">elev</span> <span class="o">-</span> <span class="n">el</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.5</span>
+                <span class="n">zv_rays</span> <span class="o">=</span> <span class="n">zv</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">az_mask</span><span class="p">,</span> <span class="n">el_mask</span><span class="p">),</span> <span class="p">:]</span>
+                <span class="n">zv_rays</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">getdata</span><span class="p">(</span><span class="n">zv_rays</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">idx_ra</span><span class="p">,</span> <span class="n">ra</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">r_list</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">clutter_mask_v</span><span class="p">[</span><span class="n">idx_az</span><span class="p">,</span> <span class="n">idx_el</span><span class="p">,</span> <span class="n">idx_ra</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="n">ra</span> <span class="o">==</span> <span class="n">range_shape</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">rstart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="p">(</span><span class="n">ra</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="n">rstop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                                    <span class="n">r</span> <span class="o">-</span> <span class="p">(</span><span class="n">r_list</span><span class="p">[</span><span class="n">idx_ra</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">0.0</span>
+                                <span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                                <span class="n">rstop</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                            <span class="n">zv_from_mask</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zv_rays</span><span class="p">[:,</span> <span class="n">rstart</span><span class="p">:</span><span class="n">rstop</span><span class="p">])</span>
+
+        <span class="n">all_zv</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zv_from_mask</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">zv_from_mask</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zv_from_mask</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">zv_from_mask</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])):</span>
+                        <span class="n">all_zh</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zv_from_mask</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="n">k</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;num pts = &quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_zv</span><span class="p">))</span>
+
+        <span class="n">num_pts_v</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_zv</span><span class="p">)</span>
+        <span class="n">vn</span><span class="p">,</span> <span class="n">vbins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">all_zv</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">525</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">40.0</span><span class="p">,</span> <span class="mf">65.0</span><span class="p">))</span>
+        <span class="c1"># Calculate CDF of clutter area reflectivity</span>
+        <span class="n">vcdf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">vn</span><span class="p">)</span>
+        <span class="n">vp</span> <span class="o">=</span> <span class="n">vcdf</span> <span class="o">/</span> <span class="n">vcdf</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">525</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-</span> <span class="mi">40</span>
+        <span class="c1"># Find the value of reflectivity at the 95th percentile of CDF</span>
+        <span class="n">idx95</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vp</span> <span class="o">-</span> <span class="mf">95.0</span><span class="p">))</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+        <span class="n">dbz95_v</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">idx95</span><span class="p">]</span>
+
+        <span class="n">stats_v</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;num_points&quot;</span><span class="p">:</span> <span class="n">num_pts_v</span><span class="p">,</span>
+            <span class="s2">&quot;histo_n&quot;</span><span class="p">:</span> <span class="n">vn</span><span class="p">,</span>
+            <span class="s2">&quot;histo_bins&quot;</span><span class="p">:</span> <span class="n">vbins</span><span class="p">,</span>
+            <span class="s2">&quot;cdf&quot;</span><span class="p">:</span> <span class="n">vp</span><span class="p">,</span>
+            <span class="s2">&quot;reflectivity_95&quot;</span><span class="p">:</span> <span class="n">dbz95_v</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;dbz95V = &quot;</span><span class="p">,</span> <span class="n">dbz95_v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">date_time</span><span class="p">,</span> <span class="n">dbz95_h</span><span class="p">,</span> <span class="n">dbz95_v</span><span class="p">,</span> <span class="n">stats_h</span><span class="p">,</span> <span class="n">stats_v</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Alexis Hunzinger
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

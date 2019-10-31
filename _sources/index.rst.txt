@@ -17,18 +17,17 @@ Contents
 ========
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    License <license>
    Authors <authors>
    Changelog <changelog>
-   Module Reference <api/modules>
-   
-   rca/src/rca/
-   rca/src/rca/modules/   
+   Package Reference <rca>
+   Examples <examples>
 
-Indices and tables
-==================
+
+Indices
+=======
 
 * :ref:`genindex`
 * :ref:`modindex`

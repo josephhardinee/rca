@@ -1,0 +1,734 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rca.plot.plot_clutter_map &mdash; RCA for Weather Radar 0.0.post0.dev68+gf91dc48 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> RCA for Weather Radar
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.post0.dev68+gf91dc48
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rca.html">Package Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">RCA for Weather Radar</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>rca.plot.plot_clutter_map</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rca.plot.plot_clutter_map</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">netCDF4</span> <span class="k">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="k">import</span> <span class="n">ListedColormap</span><span class="p">,</span> <span class="n">LinearSegmentedColormap</span>
+<span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="k">import</span> <span class="n">BoundaryNorm</span>
+<span class="kn">import</span> <span class="nn">string</span>
+
+
+<div class="viewcode-block" id="plot_clutter_map"><a class="viewcode-back" href="../../../plot.html#rca.plot.plot_clutter_map.plot_clutter_map">[docs]</a><span class="k">def</span> <span class="nf">plot_clutter_map</span><span class="p">(</span>
+    <span class="n">clutter_map_netcdf</span><span class="p">,</span>
+    <span class="n">output_directory</span><span class="p">,</span>
+    <span class="n">scan_type</span><span class="p">,</span>
+    <span class="n">map_type</span><span class="p">,</span>
+    <span class="n">polarization</span><span class="p">,</span>
+    <span class="n">max_range</span><span class="p">,</span>
+    <span class="n">site</span><span class="p">,</span>
+    <span class="n">inst</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot a clutter map of either PPI of RHI data. Must first calculate the clutter map using clutter_map module.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    clutter_map_netcdf: str</span>
+<span class="sd">        path to clutter map netCDF</span>
+<span class="sd">    output_directory: str</span>
+<span class="sd">        path to directory for output .png file</span>
+<span class="sd">    scan_type: str</span>
+<span class="sd">        specify if the map is for PPI or RHI</span>
+<span class="sd">        &#39;ppi&#39;</span>
+<span class="sd">        &#39;rhi&#39;</span>
+<span class="sd">    map_type: str</span>
+<span class="sd">        specify if a daily or composite clutter map</span>
+<span class="sd">        &#39;daily&#39;</span>
+<span class="sd">        &#39;composite&#39;</span>
+<span class="sd">    polarization: str</span>
+<span class="sd">        specify the polarization(s) desired</span>
+<span class="sd">        &#39;horizontal&#39;</span>
+<span class="sd">        &#39;dual&#39;</span>
+<span class="sd">    max_range: int</span>
+<span class="sd">        maximum range to plot, in km</span>
+<span class="sd">        i.e. 5, 10, 40</span>
+<span class="sd">    site: str</span>
+<span class="sd">        3-letter site abbreviation</span>
+<span class="sd">        i.e. &#39;cor&#39;, &#39;ena&#39;</span>
+<span class="sd">    inst: str</span>
+<span class="sd">        instrument name</span>
+<span class="sd">        i.e. &#39;csapr2&#39;, &#39;kasacr&#39;</span>
+<span class="sd">                       </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># Formatting specifications</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mathtext.default&quot;</span><span class="p">:</span> <span class="s2">&quot;regular&quot;</span><span class="p">}</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="n">d</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">clutter_map_netcdf</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">scan_type</span> <span class="o">==</span> <span class="s2">&quot;ppi&quot;</span><span class="p">:</span>
+        <span class="n">azimuth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">360</span><span class="p">)</span>
+        <span class="n">range_km</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">max_range</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">range_m</span> <span class="o">=</span> <span class="n">range_km</span> <span class="o">*</span> <span class="mi">1000</span>
+        <span class="n">range_min</span> <span class="o">=</span> <span class="n">max_range</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">range_max</span> <span class="o">=</span> <span class="n">max_range</span> <span class="o">*</span> <span class="mi">1000</span>
+        <span class="n">labs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">((</span><span class="n">max_range</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">max_range</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+        <span class="n">labs</span> <span class="o">=</span> <span class="n">labs</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+        <span class="n">r</span><span class="p">,</span> <span class="n">az</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">range_m</span><span class="p">,</span> <span class="n">azimuth</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">az</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">az</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">polarization</span> <span class="o">==</span> <span class="s2">&quot;horizontal&quot;</span><span class="p">:</span>
+            <span class="n">clutter_map_mask_h_ppi</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;clutter_map_mask_zh&quot;</span><span class="p">][:,</span> <span class="p">:]</span>
+            <span class="n">clutter_map_pcts_h_ppi</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;clutter_gate_pcts_zh&quot;</span><span class="p">][:,</span> <span class="p">:]</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">map_type</span> <span class="o">==</span> <span class="s2">&quot;daily&quot;</span><span class="p">:</span>
+                <span class="n">title_date</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># THIS NEEDS TO BE SPECIFIED SOMEHOW</span>
+                <span class="n">levels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">cmap_name</span> <span class="o">=</span> <span class="s2">&quot;daily_clutter&quot;</span>
+                <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;lightgrey&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#73D055FF&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#20A387FF&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#287D8EFF&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#404788FF&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#440154FF&quot;</span><span class="p">,</span>
+                <span class="p">]</span>  <span class="c1"># Viridis color codes</span>
+                <span class="n">n_bins</span> <span class="o">=</span> <span class="mi">7</span>  <span class="c1"># Discretizes the interpolation into bins</span>
+                <span class="n">cbar_label</span> <span class="o">=</span> <span class="s2">&quot;Clutter flag percentage occurrence (PCT_ON)&quot;</span>
+
+            <span class="k">elif</span> <span class="n">map_type</span> <span class="o">==</span> <span class="s2">&quot;composite&quot;</span><span class="p">:</span>
+                <span class="n">title_date</span> <span class="o">=</span> <span class="s2">&quot;Composite&quot;</span>
+                <span class="n">levels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">cmap_name</span> <span class="o">=</span> <span class="s2">&quot;comp_clutter&quot;</span>
+                <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;lightgrey&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">]</span>  <span class="c1"># Specify desired colors</span>
+                <span class="n">n_bins</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Discretizes the interpolation into bins</span>
+                <span class="n">cbar_label</span> <span class="o">=</span> <span class="s2">&quot;Clutter point percentage occurrence (CMAP_ON)&quot;</span>
+
+            <span class="c1"># Horizontal polarization</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="n">cmap_name</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">n_bins</span><span class="p">)</span>
+            <span class="n">norm</span> <span class="o">=</span> <span class="n">BoundaryNorm</span><span class="p">(</span><span class="n">levels</span><span class="p">,</span> <span class="n">ncolors</span><span class="o">=</span><span class="n">cmap</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">y</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;darkgrey&quot;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">y</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;darkgrey&quot;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">range_min</span><span class="p">,</span> <span class="n">range_max</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">range_min</span><span class="p">,</span> <span class="n">range_max</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">clutter_map_pcts_h_ppi</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">labs</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">labs</span><span class="p">)</span>
+            <span class="n">cbar</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">)</span>
+            <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">cbar_label</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+                <span class="s2">&quot;Clutter map ($Z_H$) at &quot;</span>
+                <span class="o">+</span> <span class="n">site</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+                <span class="o">+</span> <span class="n">inst</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                <span class="o">+</span> <span class="s2">&quot; </span><span class="se">\n</span><span class="s2"> &quot;</span>
+                <span class="o">+</span> <span class="n">title_date</span>
+            <span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;W-E dist. from radar (km)&quot;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;N-S dist. from radar (km)&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+                <span class="n">output_directory</span>
+                <span class="o">+</span> <span class="s2">&quot;cluttermap_ppi_h_&quot;</span>
+                <span class="o">+</span> <span class="n">site</span>
+                <span class="o">+</span> <span class="n">inst</span>
+                <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+                <span class="o">+</span> <span class="n">title_date</span>
+                <span class="o">+</span> <span class="s2">&quot;.png&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">polarization</span> <span class="o">==</span> <span class="s2">&quot;dual&quot;</span><span class="p">:</span>
+            <span class="n">clutter_map_mask_h_ppi</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;clutter_map_mask_zh&quot;</span><span class="p">][:,</span> <span class="p">:]</span>
+            <span class="n">clutter_map_pcts_h_ppi</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;clutter_gate_pcts_zh&quot;</span><span class="p">][:,</span> <span class="p">:]</span>
+            <span class="n">clutter_map_mask_v_ppi</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;clutter_map_mask_zv&quot;</span><span class="p">][:,</span> <span class="p">:]</span>
+            <span class="n">clutter_map_pcts_v_ppi</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;clutter_gate_pcts_zv&quot;</span><span class="p">][:,</span> <span class="p">:]</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">map_type</span> <span class="o">==</span> <span class="s2">&quot;daily&quot;</span><span class="p">:</span>
+                <span class="n">title_date</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># THIS NEEDS TO BE SPECIFIED SOMEHOW</span>
+                <span class="n">levels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">cmap_name</span> <span class="o">=</span> <span class="s2">&quot;daily_clutter&quot;</span>
+                <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;lightgrey&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#73D055FF&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#20A387FF&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#287D8EFF&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#404788FF&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#440154FF&quot;</span><span class="p">,</span>
+                <span class="p">]</span>  <span class="c1"># Viridis color codes</span>
+                <span class="n">n_bins</span> <span class="o">=</span> <span class="mi">7</span>  <span class="c1"># Discretizes the interpolation into bins</span>
+                <span class="n">cbar_label</span> <span class="o">=</span> <span class="s2">&quot;Clutter flag percentage occurrence (PCT_ON)&quot;</span>
+
+            <span class="k">elif</span> <span class="n">map_type</span> <span class="o">==</span> <span class="s2">&quot;composite&quot;</span><span class="p">:</span>
+                <span class="n">title_date</span> <span class="o">=</span> <span class="s2">&quot;Composite&quot;</span>
+                <span class="n">levels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">cmap_name</span> <span class="o">=</span> <span class="s2">&quot;comp_clutter&quot;</span>
+                <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;lightgrey&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">]</span>  <span class="c1"># Specify desired colors</span>
+                <span class="n">n_bins</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Discretizes the interpolation into bins</span>
+                <span class="n">cbar_label</span> <span class="o">=</span> <span class="s2">&quot;Clutter point percentage occurrence (CMAP_ON)&quot;</span>
+
+            <span class="c1"># Horizontal polarization</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="n">cmap_name</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">n_bins</span><span class="p">)</span>
+            <span class="n">norm</span> <span class="o">=</span> <span class="n">BoundaryNorm</span><span class="p">(</span><span class="n">levels</span><span class="p">,</span> <span class="n">ncolors</span><span class="o">=</span><span class="n">cmap</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">y</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;darkgrey&quot;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">y</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;darkgrey&quot;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">range_min</span><span class="p">,</span> <span class="n">range_max</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">range_min</span><span class="p">,</span> <span class="n">range_max</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">clutter_map_pcts_h_ppi</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">labs</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">labs</span><span class="p">)</span>
+            <span class="n">cbar</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">)</span>
+            <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">cbar_label</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+                <span class="s2">&quot;Clutter map ($Z_H$) at &quot;</span>
+                <span class="o">+</span> <span class="n">site</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+                <span class="o">+</span> <span class="n">inst</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                <span class="o">+</span> <span class="s2">&quot; </span><span class="se">\n</span><span class="s2"> &quot;</span>
+                <span class="o">+</span> <span class="n">title_date</span>
+            <span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;W-E dist. from radar (km)&quot;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;N-S dist. from radar (km)&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+                <span class="n">output_directory</span>
+                <span class="o">+</span> <span class="s2">&quot;cluttermap_ppi_h_&quot;</span>
+                <span class="o">+</span> <span class="n">site</span>
+                <span class="o">+</span> <span class="n">inst</span>
+                <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+                <span class="o">+</span> <span class="n">title_date</span>
+                <span class="o">+</span> <span class="s2">&quot;.png&quot;</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Vertical polarization</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">y</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;darkgrey&quot;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">y</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;darkgrey&quot;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">range_min</span><span class="p">,</span> <span class="n">range_max</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">range_min</span><span class="p">,</span> <span class="n">range_max</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">clutter_map_pcts_v_ppi</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">labs</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">labs</span><span class="p">)</span>
+            <span class="n">cbar</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">)</span>
+            <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">cbar_label</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+                <span class="s2">&quot;Clutter map ($Z_V$) at &quot;</span>
+                <span class="o">+</span> <span class="n">site</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+                <span class="o">+</span> <span class="n">inst</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                <span class="o">+</span> <span class="s2">&quot; </span><span class="se">\n</span><span class="s2"> &quot;</span>
+                <span class="o">+</span> <span class="n">title_date</span>
+            <span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;W-E dist. from radar (km)&quot;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;N-S dist. from radar (km)&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+                <span class="n">output_directory</span>
+                <span class="o">+</span> <span class="s2">&quot;cluttermap_ppi_v_&quot;</span>
+                <span class="o">+</span> <span class="n">site</span>
+                <span class="o">+</span> <span class="n">inst</span>
+                <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+                <span class="o">+</span> <span class="n">title_date</span>
+                <span class="o">+</span> <span class="s2">&quot;.png&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># ----------------------------------------------------------------------------------------</span>
+
+    <span class="c1"># FOR RHIS</span>
+
+    <span class="c1"># Use caution here and adjust code for the different RHI azimuths you have</span>
+
+    <span class="c1"># By default, this works with 12 different azimuths (every 30 degrees)</span>
+
+    <span class="c1"># Need to adjust the following:</span>
+    <span class="c1"># plt.subplots(nrows=6,ncols=2, ...)</span>
+    <span class="c1"># az_list_w</span>
+    <span class="c1"># az_list_e</span>
+    <span class="c1"># west</span>
+    <span class="c1"># numbering of az_idx</span>
+
+    <span class="c1"># ----------------------------------------------------------------------------------------</span>
+    <span class="k">elif</span> <span class="n">scan_type</span> <span class="o">==</span> <span class="s2">&quot;rhi&quot;</span><span class="p">:</span>
+        <span class="n">elev_e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># elevation is lowest 5 degrees</span>
+        <span class="n">elev_w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">range_e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">max_range</span><span class="p">)</span>
+        <span class="n">range_w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">max_range</span><span class="p">)</span>
+
+        <span class="n">r_e</span><span class="p">,</span> <span class="n">el_e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">range_e</span><span class="p">,</span> <span class="n">elev_e</span><span class="p">)</span>
+        <span class="n">r_w</span><span class="p">,</span> <span class="n">el_w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">range_w</span><span class="p">,</span> <span class="n">elev_w</span><span class="p">)</span>
+
+        <span class="n">x_e</span> <span class="o">=</span> <span class="n">r_e</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">el_e</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">)</span>
+        <span class="n">y_e</span> <span class="o">=</span> <span class="n">r_e</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">el_e</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">)</span>
+        <span class="n">x_w</span> <span class="o">=</span> <span class="n">r_w</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">el_w</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">)</span>
+        <span class="n">y_w</span> <span class="o">=</span> <span class="n">r_w</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">el_w</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">polarization</span> <span class="o">==</span> <span class="s2">&quot;horizontal&quot;</span><span class="p">:</span>
+            <span class="n">clutter_map_mask_h</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;clutter_map_mask_zh&quot;</span><span class="p">][:,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="n">clutter_map_pcts_h</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;clutter_gate_pcts_zh&quot;</span><span class="p">][:,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">map_type</span> <span class="o">==</span> <span class="s2">&quot;daily&quot;</span><span class="p">:</span>
+                <span class="n">title_date</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># THIS NEEDS TO BE SPECIFIED SOMEHOW</span>
+                <span class="n">levels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">cmap_name</span> <span class="o">=</span> <span class="s2">&quot;daily_clutter&quot;</span>
+                <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;lightgrey&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#73D055FF&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#20A387FF&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#287D8EFF&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#404788FF&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#440154FF&quot;</span><span class="p">,</span>
+                <span class="p">]</span>
+                <span class="n">n_bins</span> <span class="o">=</span> <span class="mi">7</span>
+                <span class="n">cbar_label</span> <span class="o">=</span> <span class="s2">&quot;Clutter flag percentage occurrence (PCT_ON)&quot;</span>
+
+            <span class="k">elif</span> <span class="n">map_type</span> <span class="o">==</span> <span class="s2">&quot;composite&quot;</span><span class="p">:</span>
+                <span class="n">title_date</span> <span class="o">=</span> <span class="s2">&quot;Composite&quot;</span>
+                <span class="n">levels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">cmap_name</span> <span class="o">=</span> <span class="s2">&quot;comp_clutter&quot;</span>
+                <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;lightgrey&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">]</span>
+                <span class="n">n_bins</span> <span class="o">=</span> <span class="mi">3</span>
+                <span class="n">cbar_label</span> <span class="o">=</span> <span class="s2">&quot;Clutter point percentage occurrence (CMAP_ON)&quot;</span>
+
+            <span class="c1"># Horizontal polarization</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="n">cmap_name</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">n_bins</span><span class="p">)</span>
+            <span class="n">norm</span> <span class="o">=</span> <span class="n">BoundaryNorm</span><span class="p">(</span><span class="n">levels</span><span class="p">,</span> <span class="n">ncolors</span><span class="o">=</span><span class="n">cmap</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># EAST and WEST: 2 column, 6 row plot</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+                <span class="n">nrows</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">],</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">az_list_w</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;180&quot;</span><span class="p">,</span> <span class="s2">&quot;210&quot;</span><span class="p">,</span> <span class="s2">&quot;240&quot;</span><span class="p">,</span> <span class="s2">&quot;270&quot;</span><span class="p">,</span> <span class="s2">&quot;300&quot;</span><span class="p">,</span> <span class="s2">&quot;330&quot;</span><span class="p">]</span>
+            <span class="n">az_list_e</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;30&quot;</span><span class="p">,</span> <span class="s2">&quot;60&quot;</span><span class="p">,</span> <span class="s2">&quot;90&quot;</span><span class="p">,</span> <span class="s2">&quot;120&quot;</span><span class="p">,</span> <span class="s2">&quot;150&quot;</span><span class="p">]</span>
+            <span class="c1"># WEST column 0</span>
+            <span class="k">for</span> <span class="n">az_idx</span><span class="p">,</span> <span class="n">az</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">az_list_w</span><span class="p">):</span>
+                <span class="n">west</span> <span class="o">=</span> <span class="n">clutter_map_pcts_h</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">west</span> <span class="o">=</span> <span class="n">west</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">im</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">y_w</span><span class="p">,</span> <span class="n">x_w</span><span class="p">,</span> <span class="n">west</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_range</span><span class="p">])</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+                        <span class="n">title_date</span>
+                        <span class="o">+</span> <span class="s2">&quot; clutter map ($Z_H$) at &quot;</span>
+                        <span class="o">+</span> <span class="n">site</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                        <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+                        <span class="o">+</span> <span class="n">inst</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                        <span class="o">+</span> <span class="s2">&quot; </span><span class="se">\n</span><span class="s2"> &quot;</span>
+                        <span class="o">+</span> <span class="n">az</span>
+                        <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Dist. from radar (km)&quot;</span><span class="p">)</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Height (km)&quot;</span><span class="p">)</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+            <span class="c1"># EAST column 1</span>
+            <span class="k">for</span> <span class="n">az_idx</span><span class="p">,</span> <span class="n">az</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">az_list_e</span><span class="p">):</span>
+                <span class="n">east</span> <span class="o">=</span> <span class="n">clutter_map_pcts_h</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">im</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">y_e</span><span class="p">,</span> <span class="n">x_e</span><span class="p">,</span> <span class="n">east</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+                        <span class="n">title_date</span>
+                        <span class="o">+</span> <span class="s2">&quot; clutter map ($Z_H$) at &quot;</span>
+                        <span class="o">+</span> <span class="n">site</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                        <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+                        <span class="o">+</span> <span class="n">inst</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                        <span class="o">+</span> <span class="s2">&quot; </span><span class="se">\n</span><span class="s2"> &quot;</span>
+                        <span class="o">+</span> <span class="n">az</span>
+                        <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Dist. from radar (km)&quot;</span><span class="p">)</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Height (km)&quot;</span><span class="p">)</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">right</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+            <span class="n">cbar_ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
+            <span class="n">cbar</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="n">cbar_ax</span><span class="p">)</span>
+            <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">cbar_label</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+                <span class="n">output_directory</span>
+                <span class="o">+</span> <span class="s2">&quot;cluttermap_hsrhi_h_&quot;</span>
+                <span class="o">+</span> <span class="n">site</span>
+                <span class="o">+</span> <span class="n">inst</span>
+                <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+                <span class="o">+</span> <span class="n">title_date</span>
+                <span class="o">+</span> <span class="s2">&quot;.png&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">polarization</span> <span class="o">==</span> <span class="s2">&quot;dual&quot;</span><span class="p">:</span>
+            <span class="n">clutter_map_mask_h</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;clutter_map_mask_zh&quot;</span><span class="p">][:,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="n">clutter_map_pcts_h</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;clutter_gate_pcts_zh&quot;</span><span class="p">][:,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="n">clutter_map_mask_v</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;clutter_map_mask_zv&quot;</span><span class="p">][:,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="n">clutter_map_pcts_v</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;clutter_gate_pcts_zv&quot;</span><span class="p">][:,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">map_type</span> <span class="o">==</span> <span class="s2">&quot;daily&quot;</span><span class="p">:</span>
+                <span class="n">title_date</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># THIS NEEDS TO BE SPECIFIED SOMEHOW</span>
+                <span class="n">levels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">cmap_name</span> <span class="o">=</span> <span class="s2">&quot;daily_clutter&quot;</span>
+                <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;lightgrey&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#73D055FF&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#20A387FF&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#287D8EFF&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#404788FF&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;#440154FF&quot;</span><span class="p">,</span>
+                <span class="p">]</span>
+                <span class="n">n_bins</span> <span class="o">=</span> <span class="mi">7</span>
+                <span class="n">cbar_label</span> <span class="o">=</span> <span class="s2">&quot;Clutter flag percentage occurrence (PCT_ON)&quot;</span>
+
+            <span class="k">elif</span> <span class="n">map_type</span> <span class="o">==</span> <span class="s2">&quot;composite&quot;</span><span class="p">:</span>
+                <span class="n">title_date</span> <span class="o">=</span> <span class="s2">&quot;Composite&quot;</span>
+                <span class="n">levels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">cmap_name</span> <span class="o">=</span> <span class="s2">&quot;comp_clutter&quot;</span>
+                <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;lightgrey&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">]</span>
+                <span class="n">n_bins</span> <span class="o">=</span> <span class="mi">3</span>
+                <span class="n">cbar_label</span> <span class="o">=</span> <span class="s2">&quot;Clutter point percentage occurrence (CMAP_ON)&quot;</span>
+
+            <span class="c1"># Horizontal polarization</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="n">cmap_name</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">n_bins</span><span class="p">)</span>
+            <span class="n">norm</span> <span class="o">=</span> <span class="n">BoundaryNorm</span><span class="p">(</span><span class="n">levels</span><span class="p">,</span> <span class="n">ncolors</span><span class="o">=</span><span class="n">cmap</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># EAST and WEST: 2 column, 6 row plot</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+                <span class="n">nrows</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">],</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">az_list_w</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;180&quot;</span><span class="p">,</span> <span class="s2">&quot;210&quot;</span><span class="p">,</span> <span class="s2">&quot;240&quot;</span><span class="p">,</span> <span class="s2">&quot;270&quot;</span><span class="p">,</span> <span class="s2">&quot;300&quot;</span><span class="p">,</span> <span class="s2">&quot;330&quot;</span><span class="p">]</span>
+            <span class="n">az_list_e</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;30&quot;</span><span class="p">,</span> <span class="s2">&quot;60&quot;</span><span class="p">,</span> <span class="s2">&quot;90&quot;</span><span class="p">,</span> <span class="s2">&quot;120&quot;</span><span class="p">,</span> <span class="s2">&quot;150&quot;</span><span class="p">]</span>
+            <span class="c1"># WEST column 0</span>
+            <span class="k">for</span> <span class="n">az_idx</span><span class="p">,</span> <span class="n">az</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">az_list_w</span><span class="p">):</span>
+                <span class="n">west</span> <span class="o">=</span> <span class="n">clutter_map_pcts_h</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">west</span> <span class="o">=</span> <span class="n">west</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">im</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">y_w</span><span class="p">,</span> <span class="n">x_w</span><span class="p">,</span> <span class="n">west</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_range</span><span class="p">])</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+                        <span class="n">title_date</span>
+                        <span class="o">+</span> <span class="s2">&quot; clutter map ($Z_H$) at &quot;</span>
+                        <span class="o">+</span> <span class="n">site</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                        <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+                        <span class="o">+</span> <span class="n">inst</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                        <span class="o">+</span> <span class="s2">&quot; </span><span class="se">\n</span><span class="s2"> &quot;</span>
+                        <span class="o">+</span> <span class="n">az</span>
+                        <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Dist. from radar (km)&quot;</span><span class="p">)</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Height (km)&quot;</span><span class="p">)</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+            <span class="c1"># EAST column 1</span>
+            <span class="k">for</span> <span class="n">az_idx</span><span class="p">,</span> <span class="n">az</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">az_list_e</span><span class="p">):</span>
+                <span class="n">east</span> <span class="o">=</span> <span class="n">clutter_map_pcts_h</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">im</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">y_e</span><span class="p">,</span> <span class="n">x_e</span><span class="p">,</span> <span class="n">east</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+                        <span class="n">title_date</span>
+                        <span class="o">+</span> <span class="s2">&quot; clutter map ($Z_H$) at &quot;</span>
+                        <span class="o">+</span> <span class="n">site</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                        <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+                        <span class="o">+</span> <span class="n">inst</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                        <span class="o">+</span> <span class="s2">&quot; </span><span class="se">\n</span><span class="s2"> &quot;</span>
+                        <span class="o">+</span> <span class="n">az</span>
+                        <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Dist. from radar (km)&quot;</span><span class="p">)</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Height (km)&quot;</span><span class="p">)</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">right</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+            <span class="n">cbar_ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
+            <span class="n">cbar</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="n">cbar_ax</span><span class="p">)</span>
+            <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">cbar_label</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+                <span class="n">output_directory</span>
+                <span class="o">+</span> <span class="s2">&quot;cluttermap_hsrhi_h_&quot;</span>
+                <span class="o">+</span> <span class="n">site</span>
+                <span class="o">+</span> <span class="n">inst</span>
+                <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+                <span class="o">+</span> <span class="n">title_date</span>
+                <span class="o">+</span> <span class="s2">&quot;.png&quot;</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Vertical polarization</span>
+            <span class="c1"># EAST and WEST: 2 column, 6 row plot</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+                <span class="n">nrows</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">],</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">az_list_w</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;180&quot;</span><span class="p">,</span> <span class="s2">&quot;210&quot;</span><span class="p">,</span> <span class="s2">&quot;240&quot;</span><span class="p">,</span> <span class="s2">&quot;270&quot;</span><span class="p">,</span> <span class="s2">&quot;300&quot;</span><span class="p">,</span> <span class="s2">&quot;330&quot;</span><span class="p">]</span>
+            <span class="n">az_list_e</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;30&quot;</span><span class="p">,</span> <span class="s2">&quot;60&quot;</span><span class="p">,</span> <span class="s2">&quot;90&quot;</span><span class="p">,</span> <span class="s2">&quot;120&quot;</span><span class="p">,</span> <span class="s2">&quot;150&quot;</span><span class="p">]</span>
+            <span class="c1"># WEST column 0</span>
+            <span class="k">for</span> <span class="n">az_idx</span><span class="p">,</span> <span class="n">az</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">az_list_w</span><span class="p">):</span>
+                <span class="n">west</span> <span class="o">=</span> <span class="n">clutter_map_pcts_v</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">west</span> <span class="o">=</span> <span class="n">west</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">im</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">y_w</span><span class="p">,</span> <span class="n">x_w</span><span class="p">,</span> <span class="n">west</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_range</span><span class="p">])</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+                        <span class="n">title_date</span>
+                        <span class="o">+</span> <span class="s2">&quot; clutter map ($Z_V$) at &quot;</span>
+                        <span class="o">+</span> <span class="n">site</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                        <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+                        <span class="o">+</span> <span class="n">inst</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                        <span class="o">+</span> <span class="s2">&quot; </span><span class="se">\n</span><span class="s2"> &quot;</span>
+                        <span class="o">+</span> <span class="n">az</span>
+                        <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Dist. from radar (km)&quot;</span><span class="p">)</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Height (km)&quot;</span><span class="p">)</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+            <span class="c1"># EAST column 1</span>
+            <span class="k">for</span> <span class="n">az_idx</span><span class="p">,</span> <span class="n">az</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">az_list_e</span><span class="p">):</span>
+                <span class="n">east</span> <span class="o">=</span> <span class="n">clutter_map_pcts_v</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">im</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">y_e</span><span class="p">,</span> <span class="n">x_e</span><span class="p">,</span> <span class="n">east</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+                        <span class="n">title_date</span>
+                        <span class="o">+</span> <span class="s2">&quot; clutter map ($Z_V$) at &quot;</span>
+                        <span class="o">+</span> <span class="n">site</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                        <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+                        <span class="o">+</span> <span class="n">inst</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                        <span class="o">+</span> <span class="s2">&quot; </span><span class="se">\n</span><span class="s2"> &quot;</span>
+                        <span class="o">+</span> <span class="n">az</span>
+                        <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Dist. from radar (km)&quot;</span><span class="p">)</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">az_idx</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Height (km)&quot;</span><span class="p">)</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">axes</span><span class="p">[</span><span class="n">az_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">az</span> <span class="o">+</span> <span class="s2">&quot; deg.&quot;</span><span class="p">)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">right</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+            <span class="n">cbar_ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
+            <span class="n">cbar</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="n">cbar_ax</span><span class="p">)</span>
+            <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">cbar_label</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+                <span class="n">output_directory</span>
+                <span class="o">+</span> <span class="s2">&quot;cluttermap_hsrhi_v_&quot;</span>
+                <span class="o">+</span> <span class="n">site</span>
+                <span class="o">+</span> <span class="n">inst</span>
+                <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+                <span class="o">+</span> <span class="n">title_date</span>
+                <span class="o">+</span> <span class="s2">&quot;.png&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Must specify either &#39;ppi&#39; or &#39;rhi&#39; for scan_type&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Alexis Hunzinger
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

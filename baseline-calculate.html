@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Changelog &mdash; RCA for Weather Radar 0.0.post0.dev68+gf91dc48 documentation</title>
+  <title>Calculate a baseline &mdash; RCA for Weather Radar 0.0.post0.dev68+gf91dc48 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="rca package" href="rca.html" />
-    <link rel="prev" title="Contributors" href="authors.html" /> 
+    <link rel="next" title="Calculate RCA values" href="rca-calculate.html" />
+    <link rel="prev" title="Plot a clutter map" href="plot-clutter-map.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -87,12 +87,16 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-1">Version 0.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rca.html">Package Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="clutter-map.html">Create a clutter map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot-clutter-map.html">Plot a clutter map</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Calculate a baseline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rca-calculate.html">Calculate RCA values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot-rca.html">Plot a time series of RCA</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="rca.html">Package Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
             
@@ -138,13 +142,15 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Changelog</li>
+          <li><a href="examples.html">Examples</a> &raquo;</li>
+        
+      <li>Calculate a baseline</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/changelog.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/baseline-calculate.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -157,15 +163,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="changelog">
-<span id="changes"></span><h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="version-0-1">
-<h2>Version 0.1<a class="headerlink" href="#version-0-1" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Feature A added</p></li>
-<li><p>FIX: nasty bug #1729 fixed</p></li>
-<li><p>add your changes here!</p></li>
-</ul>
+  <div class="section" id="calculate-a-baseline">
+<h1>Calculate a baseline<a class="headerlink" href="#calculate-a-baseline" title="Permalink to this headline">¶</a></h1>
+<p>A baseline value represents the 95th percentile of clutter area reflectivity for a selected “baseline day”. A wisely-chosen baseline day is a day with no precipitation or anomolous propagation. This day and calculated value will be used to compare with all other days’ values to ultimately calculate the relative calibration adjustment (RCA) value.</p>
+<p>To calculate a baseline value, a day’s worth of radar files and a previously-generated clutter map are required. The baseline function returns the 95th percentile clutter area reflectivity and writes out a netCDF file containing the value.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># import commands</span>
+<span class="kn">from</span> <span class="nn">.baseline</span> <span class="kn">import</span> <span class="n">baseline</span>
+
+<span class="c1"># select baseline date and edit your desired radar_config_file</span>
+<span class="n">radar_config_file</span> <span class="o">=</span> <span class="s1">&#39;/__your_path_to/rca/src/rca/config/__band_scan.json__&#39;</span>
+
+<span class="c1"># baseline function will write a netCDF containing the 95th percentile reflectivity and will also return that value</span>
+<span class="n">dbz95_h</span> <span class="o">=</span> <span class="n">baseline</span><span class="p">(</span><span class="n">radar_config_file</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Baseline 95th percentile clutter area reflectivity = &#39;</span><span class="p">,</span><span class="n">dbz95_h</span><span class="p">,</span><span class="s1">&#39; dBZ&#39;</span><span class="p">)</span>
+</pre></div>
 </div>
 </div>
 
@@ -177,10 +188,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="rca.html" class="btn btn-neutral float-right" title="rca package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="rca-calculate.html" class="btn btn-neutral float-right" title="Calculate RCA values" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="authors.html" class="btn btn-neutral float-left" title="Contributors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="plot-clutter-map.html" class="btn btn-neutral float-left" title="Plot a clutter map" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

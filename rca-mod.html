@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rca package &mdash; RCA for Weather Radar 0.0.post0.dev68+gf91dc48 documentation</title>
+  <title>rca &mdash; RCA for Weather Radar 0.0.post0.dev68+gf91dc48 documentation</title>
   
 
   
@@ -17,24 +17,26 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
 
   
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="rca.aux" href="aux.html" />
+    <link rel="prev" title="rca package" href="rca.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -48,7 +50,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> RCA for Weather Radar
+            <a href="index.html" class="icon icon-home"> RCA for Weather Radar
           
 
           
@@ -65,7 +67,7 @@
 
           
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -82,12 +84,26 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../authors.html">Authors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../rca.html">Package Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="rca.html">Package Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">rca</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-rca.baseline">rca.baseline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-rca.calculate_dbz95">rca.calculate_dbz95</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-rca.clutter_map">rca.clutter_map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-rca.composite_clutter_map">rca.composite_clutter_map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-rca.create_clutter_flag">rca.create_clutter_flag</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-rca.daily_rca">rca.daily_rca</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-rca.get_pct_on_clutter_map">rca.get_pct_on_clutter_map</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="aux.html">rca.aux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot.html">rca.plot</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
             
@@ -102,7 +118,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">RCA for Weather Radar</a>
+          <a href="index.html">RCA for Weather Radar</a>
         
       </nav>
 
@@ -131,15 +147,17 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>rca package</li>
+          <li><a href="rca.html">rca package</a> &raquo;</li>
+        
+      <li>rca</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/api/rca.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/rca-mod.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -152,16 +170,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="rca-package">
-<h1>rca package<a class="headerlink" href="#rca-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
+  <div class="section" id="rca">
+<h1>rca<a class="headerlink" href="#rca" title="Permalink to this headline">¶</a></h1>
+<p>Routines and functions for RCA development</p>
 <div class="section" id="module-rca.baseline">
-<span id="rca-baseline-module"></span><h2>rca.baseline module<a class="headerlink" href="#module-rca.baseline" title="Permalink to this headline">¶</a></h2>
+<span id="rca-baseline"></span><h2>rca.baseline<a class="headerlink" href="#module-rca.baseline" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="rca.baseline.baseline">
-<code class="sig-prename descclassname">rca.baseline.</code><code class="sig-name descname">baseline</code><span class="sig-paren">(</span><em class="sig-param">radar_config_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rca/baseline.html#baseline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.baseline.baseline" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rca.baseline.</code><code class="sig-name descname">baseline</code><span class="sig-paren">(</span><em class="sig-param">radar_config_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/baseline.html#baseline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.baseline.baseline" title="Permalink to this definition">¶</a></dt>
 <dd><p>baseline loops through a day’s worth of radar files (specify PPI or HSRHI),
 calculates the median daily 95th percentile clutter area reflectivity,
 and saves the value to a netCDF as the baseline 95th percentile clutter area reflectivity.</p>
@@ -174,10 +190,10 @@ and saves the value to a netCDF as the baseline 95th percentile clutter area ref
 
 </div>
 <div class="section" id="module-rca.calculate_dbz95">
-<span id="rca-calculate-dbz95-module"></span><h2>rca.calculate_dbz95 module<a class="headerlink" href="#module-rca.calculate_dbz95" title="Permalink to this headline">¶</a></h2>
+<span id="rca-calculate-dbz95"></span><h2>rca.calculate_dbz95<a class="headerlink" href="#module-rca.calculate_dbz95" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="rca.calculate_dbz95.calculate_dbz95_hsrhi">
-<code class="sig-prename descclassname">rca.calculate_dbz95.</code><code class="sig-name descname">calculate_dbz95_hsrhi</code><span class="sig-paren">(</span><em class="sig-param">variable_dictionary</em>, <em class="sig-param">polarization</em>, <em class="sig-param">range_limit</em>, <em class="sig-param">clutter_mask_h</em>, <em class="sig-param">clutter_mask_v=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rca/calculate_dbz95.html#calculate_dbz95_hsrhi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.calculate_dbz95.calculate_dbz95_hsrhi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rca.calculate_dbz95.</code><code class="sig-name descname">calculate_dbz95_hsrhi</code><span class="sig-paren">(</span><em class="sig-param">variable_dictionary</em>, <em class="sig-param">polarization</em>, <em class="sig-param">range_limit</em>, <em class="sig-param">clutter_mask_h</em>, <em class="sig-param">clutter_mask_v=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/calculate_dbz95.html#calculate_dbz95_hsrhi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.calculate_dbz95.calculate_dbz95_hsrhi" title="Permalink to this definition">¶</a></dt>
 <dd><p>calculate_dbz95_hsrhi calculates the 95th percentile reflectivity for a given radar HSRHI file
 using the input HSRHI cluter map masks (H and/or V). Returns the date and time of the file,
 95th percentile reflectivity value for Zh and/or Zv, and dictionaries of statistics,
@@ -225,7 +241,7 @@ dbz95_v: 95th percentile reflectivity</p></li>
 
 <dl class="function">
 <dt id="rca.calculate_dbz95.calculate_dbz95_ppi">
-<code class="sig-prename descclassname">rca.calculate_dbz95.</code><code class="sig-name descname">calculate_dbz95_ppi</code><span class="sig-paren">(</span><em class="sig-param">variable_dictionary</em>, <em class="sig-param">polarization</em>, <em class="sig-param">range_limit</em>, <em class="sig-param">clutter_mask_h</em>, <em class="sig-param">clutter_mask_v=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rca/calculate_dbz95.html#calculate_dbz95_ppi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.calculate_dbz95.calculate_dbz95_ppi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rca.calculate_dbz95.</code><code class="sig-name descname">calculate_dbz95_ppi</code><span class="sig-paren">(</span><em class="sig-param">variable_dictionary</em>, <em class="sig-param">polarization</em>, <em class="sig-param">range_limit</em>, <em class="sig-param">clutter_mask_h</em>, <em class="sig-param">clutter_mask_v=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/calculate_dbz95.html#calculate_dbz95_ppi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.calculate_dbz95.calculate_dbz95_ppi" title="Permalink to this definition">¶</a></dt>
 <dd><p>calculate_dbz95_hsrhi calculates the 95th percentile reflectivity for a given radar HSRHI file
 using the input HSRHI cluter map masks (H and/or V). Returns the date and time of the file,
 95th percentile reflectivity value for Zh and/or Zv, and dictionaries of statistics,
@@ -273,10 +289,10 @@ dbz95_v: 95th percentile reflectivity</p></li>
 
 </div>
 <div class="section" id="module-rca.clutter_map">
-<span id="rca-clutter-map-module"></span><h2>rca.clutter_map module<a class="headerlink" href="#module-rca.clutter_map" title="Permalink to this headline">¶</a></h2>
+<span id="rca-clutter-map"></span><h2>rca.clutter_map<a class="headerlink" href="#module-rca.clutter_map" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="rca.clutter_map.clutter_map">
-<code class="sig-prename descclassname">rca.clutter_map.</code><code class="sig-name descname">clutter_map</code><span class="sig-paren">(</span><em class="sig-param">radar_config_file</em>, <em class="sig-param">date</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rca/clutter_map.html#clutter_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.clutter_map.clutter_map" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rca.clutter_map.</code><code class="sig-name descname">clutter_map</code><span class="sig-paren">(</span><em class="sig-param">radar_config_file</em>, <em class="sig-param">date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/clutter_map.html#clutter_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.clutter_map.clutter_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>clutter_map loops through a day’s worth of radar files (specify PPI or HSRHI, dual or horizontal polarization)
 utilizes the create_clutter_flag function to flag clutter points for each scan. If more than 50% of the day’s
 scans have a gate identified, it is considered a clutter point and saved to the resulting clutter map.
@@ -294,10 +310,10 @@ in YYYYMMDD format (overrides what’s in config file)</p></li>
 
 </div>
 <div class="section" id="module-rca.composite_clutter_map">
-<span id="rca-composite-clutter-map-module"></span><h2>rca.composite_clutter_map module<a class="headerlink" href="#module-rca.composite_clutter_map" title="Permalink to this headline">¶</a></h2>
+<span id="rca-composite-clutter-map"></span><h2>rca.composite_clutter_map<a class="headerlink" href="#module-rca.composite_clutter_map" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="rca.composite_clutter_map.composite_clutter_map">
-<code class="sig-prename descclassname">rca.composite_clutter_map.</code><code class="sig-name descname">composite_clutter_map</code><span class="sig-paren">(</span><em class="sig-param">radar_config_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rca/composite_clutter_map.html#composite_clutter_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.composite_clutter_map.composite_clutter_map" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rca.composite_clutter_map.</code><code class="sig-name descname">composite_clutter_map</code><span class="sig-paren">(</span><em class="sig-param">radar_config_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/composite_clutter_map.html#composite_clutter_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.composite_clutter_map.composite_clutter_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>composite_clutter_map combines all daily clutter maps available or specified into a single composite clutter map for use in baseline and RCA calculation later. If more than 80% of the daily clutter points occur for all the daily clutter maps, that is considered a composite clutter point. The composite clutter map (array) is written to a netCDF.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -308,10 +324,10 @@ in YYYYMMDD format (overrides what’s in config file)</p></li>
 
 </div>
 <div class="section" id="module-rca.create_clutter_flag">
-<span id="rca-create-clutter-flag-module"></span><h2>rca.create_clutter_flag module<a class="headerlink" href="#module-rca.create_clutter_flag" title="Permalink to this headline">¶</a></h2>
+<span id="rca-create-clutter-flag"></span><h2>rca.create_clutter_flag<a class="headerlink" href="#module-rca.create_clutter_flag" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="rca.create_clutter_flag.create_clutter_flag_hsrhi">
-<code class="sig-prename descclassname">rca.create_clutter_flag.</code><code class="sig-name descname">create_clutter_flag_hsrhi</code><span class="sig-paren">(</span><em class="sig-param">variable_dictionary</em>, <em class="sig-param">polarization</em>, <em class="sig-param">range_limit</em>, <em class="sig-param">z_thresh</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rca/create_clutter_flag.html#create_clutter_flag_hsrhi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.create_clutter_flag.create_clutter_flag_hsrhi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rca.create_clutter_flag.</code><code class="sig-name descname">create_clutter_flag_hsrhi</code><span class="sig-paren">(</span><em class="sig-param">variable_dictionary</em>, <em class="sig-param">polarization</em>, <em class="sig-param">range_limit</em>, <em class="sig-param">z_thresh</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/create_clutter_flag.html#create_clutter_flag_hsrhi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.create_clutter_flag.create_clutter_flag_hsrhi" title="Permalink to this definition">¶</a></dt>
 <dd><p>create_clutter_flag_hsrhi creates a clutter flag array for a particular HSRHI radar file (using a precipitation-free day) that will be used for
 clutter map creation. It returns the datetime of the file and the clutter flag arrays for reflectivity in the chosen polarizations (H and V or just H)</p>
 <dl class="field-list simple">
@@ -344,7 +360,7 @@ no clutter present: 0</p></li>
 
 <dl class="function">
 <dt id="rca.create_clutter_flag.create_clutter_flag_ppi">
-<code class="sig-prename descclassname">rca.create_clutter_flag.</code><code class="sig-name descname">create_clutter_flag_ppi</code><span class="sig-paren">(</span><em class="sig-param">variable_dictionary</em>, <em class="sig-param">polarization</em>, <em class="sig-param">range_limit</em>, <em class="sig-param">z_thresh</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rca/create_clutter_flag.html#create_clutter_flag_ppi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.create_clutter_flag.create_clutter_flag_ppi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rca.create_clutter_flag.</code><code class="sig-name descname">create_clutter_flag_ppi</code><span class="sig-paren">(</span><em class="sig-param">variable_dictionary</em>, <em class="sig-param">polarization</em>, <em class="sig-param">range_limit</em>, <em class="sig-param">z_thresh</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/create_clutter_flag.html#create_clutter_flag_ppi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.create_clutter_flag.create_clutter_flag_ppi" title="Permalink to this definition">¶</a></dt>
 <dd><p>create_clutter_flag_ppi creates a clutter flag array for a particular PPI radar file (using a precipitation-free day) that will be used for
 clutter map creation. It returns the datetime of the file and the clutter flag arrays for reflectivity in the chosen polarizations (H and V or just H)</p>
 <dl class="field-list simple">
@@ -377,10 +393,10 @@ no clutter present: 0</p></li>
 
 </div>
 <div class="section" id="module-rca.daily_rca">
-<span id="rca-daily-rca-module"></span><h2>rca.daily_rca module<a class="headerlink" href="#module-rca.daily_rca" title="Permalink to this headline">¶</a></h2>
+<span id="rca-daily-rca"></span><h2>rca.daily_rca<a class="headerlink" href="#module-rca.daily_rca" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="rca.daily_rca.daily_rca">
-<code class="sig-prename descclassname">rca.daily_rca.</code><code class="sig-name descname">daily_rca</code><span class="sig-paren">(</span><em class="sig-param">radar_config_file</em>, <em class="sig-param">date</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rca/daily_rca.html#daily_rca"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.daily_rca.daily_rca" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rca.daily_rca.</code><code class="sig-name descname">daily_rca</code><span class="sig-paren">(</span><em class="sig-param">radar_config_file</em>, <em class="sig-param">date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/daily_rca.html#daily_rca"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.daily_rca.daily_rca" title="Permalink to this definition">¶</a></dt>
 <dd><p>daily_rca loops through a day’s worth of radar files (specify PPI or HSRHI, dual or horizontal polarization),
 calculates the median daily 95th percentile clutter area reflectivity,
 computes the RCA value using the established baseline 95h percentile clutter area reflectivity.</p>
@@ -397,10 +413,10 @@ computes the RCA value using the established baseline 95h percentile clutter are
 
 </div>
 <div class="section" id="module-rca.get_pct_on_clutter_map">
-<span id="rca-get-pct-on-clutter-map-module"></span><h2>rca.get_pct_on_clutter_map module<a class="headerlink" href="#module-rca.get_pct_on_clutter_map" title="Permalink to this headline">¶</a></h2>
+<span id="rca-get-pct-on-clutter-map"></span><h2>rca.get_pct_on_clutter_map<a class="headerlink" href="#module-rca.get_pct_on_clutter_map" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="rca.get_pct_on_clutter_map.get_pct_on_clutter_map_hsrhi">
-<code class="sig-prename descclassname">rca.get_pct_on_clutter_map.</code><code class="sig-name descname">get_pct_on_clutter_map_hsrhi</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">polarization</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rca/get_pct_on_clutter_map.html#get_pct_on_clutter_map_hsrhi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.get_pct_on_clutter_map.get_pct_on_clutter_map_hsrhi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rca.get_pct_on_clutter_map.</code><code class="sig-name descname">get_pct_on_clutter_map_hsrhi</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">polarization</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/get_pct_on_clutter_map.html#get_pct_on_clutter_map_hsrhi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.get_pct_on_clutter_map.get_pct_on_clutter_map_hsrhi" title="Permalink to this definition">¶</a></dt>
 <dd><p>get_pct_on_clutter_map_ppi grabs and returns clutter map point percentage occurrences and clutter map
 masks from daily HSRHI clutter maps (in either H or H and V polarizations).</p>
 <dl class="field-list simple">
@@ -430,7 +446,7 @@ masks from daily HSRHI clutter maps (in either H or H and V polarizations).</p>
 
 <dl class="function">
 <dt id="rca.get_pct_on_clutter_map.get_pct_on_clutter_map_ppi">
-<code class="sig-prename descclassname">rca.get_pct_on_clutter_map.</code><code class="sig-name descname">get_pct_on_clutter_map_ppi</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">polarization</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rca/get_pct_on_clutter_map.html#get_pct_on_clutter_map_ppi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.get_pct_on_clutter_map.get_pct_on_clutter_map_ppi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rca.get_pct_on_clutter_map.</code><code class="sig-name descname">get_pct_on_clutter_map_ppi</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">polarization</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/get_pct_on_clutter_map.html#get_pct_on_clutter_map_ppi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.get_pct_on_clutter_map.get_pct_on_clutter_map_ppi" title="Permalink to this definition">¶</a></dt>
 <dd><p>get_pct_on_clutter_map_ppi grabs and returns clutter map point percentage occurrences and clutter map
 masks from daily PPI clutter maps (in either H or H and V polarizations).</p>
 <dl class="field-list simple">
@@ -459,19 +475,6 @@ masks from daily PPI clutter maps (in either H or H and V polarizations).</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-rca">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-rca" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="mapping-rca">
-<h3>Mapping (<a class="reference internal" href="#module-rca" title="rca"><code class="xref py py-mod docutils literal notranslate"><span class="pre">rca</span></code></a>)<a class="headerlink" href="#mapping-rca" title="Permalink to this headline">¶</a></h3>
-<p>Py-ART has a robust function for mapping radar data from the collected radar
-coordinates to Cartesian coordinates.
-.. autosummary:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">toctree</span><span class="p">:</span> <span class="n">generated</span><span class="o">/</span>
-<span class="n">plot</span>
-</pre></div>
-</div>
-</div>
-</div>
 </div>
 
 
@@ -479,6 +482,15 @@ coordinates to Cartesian coordinates.
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="aux.html" class="btn btn-neutral float-right" title="rca.aux" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rca.html" class="btn btn-neutral float-left" title="rca package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
