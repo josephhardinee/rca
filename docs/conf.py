@@ -92,7 +92,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"RCA for Weather Radar"
+project = u"eRCA for Weather Radar"
 copyright = u"2019, Alexis Hunzinger"
 
 # The version info for the project you're documenting, acts as replacement for
