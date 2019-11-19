@@ -22,7 +22,7 @@ def file_to_radar_object(filename, extension):
     
     """
 
-    if extension == ".nc":
+    if extension == ".nc" or ".v0":
         radar = pyart.io.cfradial.read_cfradial(filename, delay_field_loading=True)
     elif extension == ".h5":
         radar = pyart.aux_io.read_gamic(filename, file_field_names=True)

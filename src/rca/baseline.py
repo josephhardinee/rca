@@ -33,6 +33,13 @@ def baseline(radar_config_file):
     site = config_vars["site_abbrev"]
     inst = config_vars["instrument_abbrev"]
     range_limit = config_vars["range_limit"]
+    
+    # Identify which radar band you are using (change if statement as needed)
+    # Most important to identify Ka-band radars
+    if inst == 'kasacr':
+        radar_band = 'ka'
+    else:
+        radar_band = inst[0]
 
     # Read in clutter map netCDF
     dataset = Dataset(

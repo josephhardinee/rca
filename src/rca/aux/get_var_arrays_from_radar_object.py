@@ -18,7 +18,7 @@ def get_var_arrays_from_radar_object(radar, radar_config_file):
     Returns
     -------
     var_dict: dict
-        dictionary or relevant variables needed for the rest of clutter mapa nd RCA calculation
+        dictionary or relevant variables needed for the rest of clutter map and RCA calculation
         var_dict = {
         "date_time": date_time,
         "range": r,
@@ -45,6 +45,12 @@ def get_var_arrays_from_radar_object(radar, radar_config_file):
     elif inst == "xsacr" or inst == "kasacr":
         ref_h = "reflectivity"
         diff_ref = "differential_reflectivity"
+    #*******Add your instrument name here with variables names from file********
+    # example:
+    # elif inst == "your_inst":
+    #     ref_h = "your_variable_name"
+    #     diff_ref = "your_variable_name"
+    #***************************************************************************
 
     if scantype == "ppi":
         date_time = radar.time["units"].replace("seconds since ", "")
