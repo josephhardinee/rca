@@ -14,8 +14,8 @@ Important Links
 ===============
 
 - Source Code Repository: https://github.com/josephhardinee/rca
-- Documentation: http://josephhardinee.github.io/rca
-- Examples: http://josephhardinee.github.io/rca/src/auto_examples/index.html TODO: fix this link
+- Documentation: https://josephhardinee.github.io/rca
+- Examples: https://josephhardinee.github.io/rca/examples.html
 - Issues: https://github.com/josephhardinee/rca/issues 
 
 Citing

@@ -1,5 +1,6 @@
 import numpy as np
-from .aux.create_masks import create_az_mask_ppi, create_az_mask_hsrhi
+from .aux.create_masks import create_az_mask_ppi, create_az_mask_rhi
+
 
 def create_clutter_flag_ppi(variable_dictionary, polarization, range_limit, z_thresh):
     """
@@ -114,9 +115,9 @@ def create_clutter_flag_ppi(variable_dictionary, polarization, range_limit, z_th
         return date_time, clutter_flag_h, clutter_flag_v
 
 
-def create_clutter_flag_hsrhi(variable_dictionary, polarization, range_limit, z_thresh):
+def create_clutter_flag_rhi(variable_dictionary, polarization, range_limit, z_thresh):
     """
-    create_clutter_flag_hsrhi creates a clutter flag array for a particular HSRHI radar file (using a precipitation-free day) that will be used for
+    create_clutter_flag_rhi creates a clutter flag array for a particular HSRHI radar file (using a precipitation-free day) that will be used for
     clutter map creation. It returns the datetime of the file and the clutter flag arrays for reflectivity in the chosen polarizations (H and V or just H)
     
     Parameters

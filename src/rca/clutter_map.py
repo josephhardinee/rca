@@ -4,7 +4,7 @@ import os
 import glob
 import json
 from netCDF4 import Dataset
-from .create_clutter_flag import create_clutter_flag_ppi, create_clutter_flag_hsrhi
+from .create_clutter_flag import create_clutter_flag_ppi, create_clutter_flag_rhi
 from .aux.file_to_radar_object import file_to_radar_object
 from .aux.get_var_arrays_from_radar_object import get_var_arrays_from_radar_object
 
@@ -92,7 +92,7 @@ def clutter_map(radar_config_file, date):
             print(f)
             radar = file_to_radar_object(f, extension)
             var_dict = get_var_arrays_from_radar_object(radar, radar_config_file)
-            dt, cflag_h = create_clutter_flag_hsrhi(
+            dt, cflag_h = create_clutter_flag_rhi(
                 var_dict, polarization, range_limit, z_thresh
             )
             clutter_flag_h.append(cflag_h)
@@ -192,7 +192,7 @@ def clutter_map(radar_config_file, date):
             print(f)
             radar = file_to_radar_object(f, extension)
             var_dict = get_var_arrays_from_radar_object(radar, radar_config_file)
-            dt, cflag_h, cflag_v = create_clutter_flag_hsrhi(
+            dt, cflag_h, cflag_v = create_clutter_flag_rhi(
                 var_dict, polarization, range_limit, z_thresh
             )
             clutter_flag_h.append(cflag_h)

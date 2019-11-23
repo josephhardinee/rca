@@ -6,7 +6,7 @@ import json
 from netCDF4 import Dataset
 from .aux.file_to_radar_object import file_to_radar_object
 from .aux.get_var_arrays_from_radar_object import get_var_arrays_from_radar_object
-from .calculate_dbz95 import calculate_dbz95_ppi, calculate_dbz95_hsrhi
+from .calculate_dbz95 import calculate_dbz95_ppi, calculate_dbz95_rhi
 
 
 def baseline(radar_config_file):
@@ -34,6 +34,13 @@ def baseline(radar_config_file):
     inst = config_vars["instrument_abbrev"]
     range_limit = config_vars["range_limit"]
 
+    # Identify which radar band you are using (change if statement as needed)
+    # Most important to identify Ka-band radars
+    if inst == "kasacr":
+        radar_band = "ka"
+    else:
+        radar_band = inst[0]
+
     # Read in clutter map netCDF
     dataset = Dataset(
         cluttermap_dir
@@ -60,8 +67,7 @@ def baseline(radar_config_file):
     date_time = []  # date and time strings
     dbz95_h = []  # 95th percentile reflectivity in H
     dbz95_v = []  # 95th percentile reflectivity in V
-    stats_h = []  # dictionary of statistics in H
-    stats_v = []  # dictionary of statistics in V
+    pass_filter = []
 
     # Read in each radar file and turn into radar object and use function to
     # calculate 95th percentile clutter area reflectivity
@@ -71,31 +77,35 @@ def baseline(radar_config_file):
             radar = file_to_radar_object(f, extension)
             var_dict = get_var_arrays_from_radar_object(radar, radar_config_file)
             if scantype == "ppi":
-                dt, d95_h, s_h = calculate_dbz95_ppi(
+                dt, s_h = calculate_dbz95_ppi(
                     var_dict,
                     polarization,
                     range_limit,
+                    radar_band,
                     clutter_map_mask_h,
                     clutter_mask_v=None,
                 )
             elif scantype == "rhi":
-                dt, d95_h, s_h = calculate_dbz95_hsrhi(
+                dt, s_h = calculate_dbz95_rhi(
                     var_dict,
                     polarization,
                     range_limit,
+                    radar_band,
                     clutter_map_mask_h,
                     clutter_mask_v=None,
                 )
             date_time.append(dt)
-            dbz95_h.append(d95_h)
-            stats_h.append(s_h)
+            dbz95_h.append(s_h["reflectivity_95"])
+
+            if radar_band == "ka":
+                pass_filter.append(s_h["pass_filter"])
+
         # Calculate median 95th percentile clutter area reflecitivty from all times in day
-        dbz95_h_baseline = np.nanmedian(dbz95_h)
-        # Calculate total number of radar gates used in calculation
-        total_num_pts_h = []
-        for i in range(0, len(stats_h)):
-            total_num_pts_h.append(stats_h[i]["num_points"])
-        total_num_pts_h = np.sum(total_num_pts_h)
+        if radar_band == "ka":
+            dbz95_h_baseline = np.nanmedian(dbz95_h[pass_filter > 0])
+        else:
+            dbz95_h_baseline = np.nanmedian(dbz95_h)
+
         # Write baseline 95th reflectivity values to a netCDF file
         d = Dataset(
             baseline_dir
@@ -124,39 +134,31 @@ def baseline(radar_config_file):
             radar = file_to_radar_object(f, extension)
             var_dict = get_var_arrays_from_radar_object(radar, radar_config_file)
             if scantype == "ppi":
-                dt, d95_h, d95_v, s_h, s_v = calculate_dbz95_ppi(
+                dt, s_h, s_v = calculate_dbz95_ppi(
                     var_dict,
                     polarization,
                     range_limit,
+                    radar_band,
                     clutter_map_mask_h,
                     clutter_mask_v=clutter_map_mask_v,
                 )
             elif scantype == "rhi":
-                dt, d95_h, d95_v, s_h, s_v = calculate_dbz95_hsrhi(
+                dt, s_h, s_v = calculate_dbz95_rhi(
                     var_dict,
                     polarization,
                     range_limit,
+                    radar_band,
                     clutter_map_mask_h,
                     clutter_mask_v=clutter_map_mask_v,
                 )
             date_time.append(dt)
-            dbz95_h.append(d95_h)
-            stats_h.append(s_h)
-            dbz95_v.append(d95_v)
-            stats_v.append(s_v)
+            dbz95_h.append(s_h["reflectivity_95"])
+            dbz95_v.append(s_v["reflectivity_95"])
 
         # Calculate median 95th percentile clutter area reflecitivty from all times in day
         dbz95_h_baseline = np.nanmedian(dbz95_h)
         dbz95_v_baseline = np.nanmedian(dbz95_v)
-        # Calculate total number of radar gates used in calculation
-        total_num_pts_h = []
-        for i in range(0, len(stats_h)):
-            total_num_pts_h.append(stats_h[i]["num_points"])
-        total_num_pts_h = np.sum(total_num_pts_h)
-        total_num_pts_v = []
-        for i in range(0, len(stats_v)):
-            total_num_pts_v.append(stats_v[i]["num_points"])
-        total_num_pts_v = np.sum(total_num_pts_v)
+
         # Write baseline 95th reflectivity values to a netCDF file
         d = Dataset(
             baseline_dir

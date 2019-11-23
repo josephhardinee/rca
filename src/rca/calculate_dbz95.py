@@ -1,8 +1,14 @@
 import numpy as np
-from .aux.create_masks import create_az_mask_ppi, create_az_mask_hsrhi
+from .aux.create_masks import create_az_mask_ppi, create_az_mask_rhi
+
 
 def calculate_dbz95_ppi(
-    variable_dictionary, polarization, range_limit, clutter_mask_h, clutter_mask_v=None
+    variable_dictionary,
+    polarization,
+    range_limit,
+    radar_band,
+    clutter_mask_h,
+    clutter_mask_v=None,
 ):
     """
     calculate_dbz95_hsrhi calculates the 95th percentile reflectivity for a given radar HSRHI file
@@ -21,6 +27,8 @@ def calculate_dbz95_ppi(
         'horizontal': calculate only for H
     range_limit: int
         value of desired radar gate range limit
+    radar_band: str
+        one or two letter code for radar band
     clutter_mask_h: MaskedArray
         masked array denotes which elements are considered clutter
         used to extract reflectivity values from overlapping radar gates
@@ -61,27 +69,102 @@ def calculate_dbz95_ppi(
     theta = variable_dictionary["azimuth"]
     zh = variable_dictionary["reflectivity_h"]
 
+    ###########################
+    # Special case
+    #    KASACR calibration constant during CACTI
+    #    zh(corrected) = zh(in_file) + zh_offset
+    #    BEFORE 2019-03-18 16:42:33 UTC
+    #        dirt on waveguide, reflectivity low
+    #        zh_offset = 10.6 + difference of RCA going backward in time
+    #    AFTER 2019-03-18 16:42:33 UTC
+    #        waveguide cleaned
+    #        zh_offset = 10.6
+    zh_offset = 10.6
+    zh = zh + zh_offset
+    ###########################
+
+    #######################################
+    # Attenutation filtering
+    # If a ray surpasses a certain threshold of integrated attenutation
+    # (based on an Ah-Z relationship)
+    # the whole file is ignored and move on to next file
+    # i.e. dump out NaN for dbz95
+    # FOR TESTING, OUTPUT TYPICAL DBZ95, JUST FLAG AS *WOULD BE TRASHED*
+    # Ah = az^b, where z is in mm6m-3
+    # Z = 10log10(z)  mm6m-3 => dBZ
+    # z = 10^(Z/10)   dBZ => mm6m-3
+    # ah = a * (10**(zh/10)) **b
+    # a = 0.000631967738
+    # b = 0.971513669
+    a = 0.00115481  # new from JCH Nov 14 2019
+    b = 0.95361079
+    gate_width = 0.025  # km
+    iah_thresh = 0.1
+    ########################################
+
     range_shape = range_limit / 1000
     theta_list = np.arange(360)
     r_list = np.arange(range_shape)
 
     # H POLARIZATION
     zh_from_mask = []
-    for idx_az, az in enumerate(theta_list):
-        az_mask = create_az_mask_ppi(az, theta)
-        zh_rays = zh[az_mask, :]
-        zh_rays = np.ma.getdata(zh_rays)
-        for idx_ra, ra in enumerate(r_list):
-            if clutter_mask_h[idx_az, idx_ra]:
-                if ra == range_shape:
-                    continue
-                else:
-                    rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
-                    try:
-                        rstop = np.where(r - (r_list[idx_ra + 1] * 1000.0) >= 0.0)[0][0]
-                    except IndexError:
-                        rstop = -1
-                    zh_from_mask.append(zh_rays[:, rstart:rstop])
+
+    if radar_band == "ka":
+        iah = []
+        for idx_az, az in enumerate(theta_list):
+            az_mask = create_az_mask_hsrhi(az, theta)
+            zh_rays = zh[az_mask, :]
+            zh_rays = np.ma.getdata(zh_rays)
+            zh_rays_blank_clutter = zh_rays.copy()
+            zh_rays_blank_clutter = np.ma.getdata(zh_rays_blank_clutter)
+            for idx_ra, ra in enumerate(r_list):
+                if clutter_mask_h[idx_az, idx_ra]:
+                    if ra == range_shape:
+                        continue
+                    else:
+                        rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
+                        try:
+                            rstop = np.where(r - (r_list[idx_ra + 1] * 1000.0) >= 0.0)[
+                                0
+                            ][0]
+                        except IndexError:
+                            rstop = -1
+                        zh_from_mask.append(zh_rays[:, rstart:rstop])
+
+                        # Blank out clutter range gates
+                        zh_rays_blank_clutter[:, rstart:rstop] = -40.0
+            # Attenuation filtering
+            ah_rays = a * (10 ** (zh_rays_blank_clutter / 10)) ** b
+            zh_rays = np.ma.getdata(zh_rays)
+            iah_rays = np.empty(ah_rays.shape)
+            for idx_ray, ray in enumerate(ah_rays[:, 0]):
+                iah_rays[idx_ray, :] = np.cumsum(ah_rays[idx_ray, :]) * gate_width * 2
+            iah_pass = np.ones(ah_rays.shape)
+            iah_pass[iah_rays > iah_thresh] = 0
+            iah.append(np.nanmean(iah_pass))
+        if np.nanmean(iah) == 1:
+            pass_filter = 1
+        else:
+            pass_filter = 0
+
+    else:
+        for idx_az, az in enumerate(theta_list):
+            az_mask = create_az_mask_ppi(az, theta)
+            zh_rays = zh[az_mask, :]
+            zh_rays = np.ma.getdata(zh_rays)
+            for idx_ra, ra in enumerate(r_list):
+                if clutter_mask_h[idx_az, idx_ra]:
+                    if ra == range_shape:
+                        continue
+                    else:
+                        rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
+                        try:
+                            rstop = np.where(r - (r_list[idx_ra + 1] * 1000.0) >= 0.0)[
+                                0
+                            ][0]
+                        except IndexError:
+                            rstop = -1
+                        zh_from_mask.append(zh_rays[:, rstart:rstop])
 
     all_zh = []
     for i in range(0, len(zh_from_mask)):
@@ -89,28 +172,39 @@ def calculate_dbz95_ppi(
             for j in range(0, len(zh_from_mask[i])):
                 for k in range(0, len(zh_from_mask[i][j])):
                     all_zh.append(zh_from_mask[i][j][k])
-    print("num pts = ", len(all_zh))
 
     num_pts_h = len(all_zh)
     hn, hbins = np.histogram(all_zh, bins=525, range=(-40.0, 65.0))
+
     # Calculate CDF of clutter area reflectivity
     hcdf = np.cumsum(hn)
     hp = hcdf / hcdf[-1] * 100
     x = np.arange(525) * (1 / 5) - 40
+
     # Find the value of reflectivity at the 95th percentile of CDF
     idx95 = (np.abs(hp - 95.0)).argmin()
     dbz95_h = x[idx95]
 
-    stats_h = {
-        "num_points": num_pts_h,
-        "histo_n": hn,
-        "histo_bins": hbins,
-        "cdf": hp,
-        "reflectivity_95": dbz95_h,
-    }
-    print("dbz95H = ", dbz95_h)
+    if radar_band == "ka":
+        stats_h = {
+            "num_points": num_pts_h,
+            "histo_n": hn,
+            "histo_bins": hbins,
+            "cdf": hp,
+            "reflectivity_95": dbz95_h,
+            "pass_filter": pass_filter,
+        }
+    else:
+        stats_h = {
+            "num_points": num_pts_h,
+            "histo_n": hn,
+            "histo_bins": hbins,
+            "cdf": hp,
+            "reflectivity_95": dbz95_h,
+        }
+
     if polarization == "horizontal":
-        return date_time, dbz95_h, stats_h
+        return date_time, stats_h
 
     elif polarization == "dual":
         zv = variable_dictionary["reflectivity_v"]
@@ -141,14 +235,15 @@ def calculate_dbz95_ppi(
                 for j in range(0, len(zv_from_mask[i])):
                     for k in range(0, len(zv_from_mask[i][j])):
                         all_zh.append(zv_from_mask[i][j][k])
-        print("num pts = ", len(all_zv))
 
         num_pts_v = len(all_zv)
         vn, vbins = np.histogram(all_zv, bins=525, range=(-40.0, 65.0))
+
         # Calculate CDF of clutter area reflectivity
         vcdf = np.cumsum(vn)
         vp = vcdf / vcdf[-1] * 100
         x = np.arange(525) * (1 / 5) - 40
+
         # Find the value of reflectivity at the 95th percentile of CDF
         idx95 = (np.abs(vp - 95.0)).argmin()
         dbz95_v = x[idx95]
@@ -160,15 +255,20 @@ def calculate_dbz95_ppi(
             "cdf": vp,
             "reflectivity_95": dbz95_v,
         }
-        print("dbz95V = ", dbz95_v)
-        return date_time, dbz95_h, dbz95_v, stats_h, stats_v
+
+        return date_time, stats_h, stats_v
 
 
-def calculate_dbz95_hsrhi(
-    variable_dictionary, polarization, range_limit, clutter_mask_h, clutter_mask_v=None
+def calculate_dbz95_rhi(
+    variable_dictionary,
+    polarization,
+    range_limit,
+    radar_band,
+    clutter_mask_h,
+    clutter_mask_v=None,
 ):
     """
-    calculate_dbz95_hsrhi calculates the 95th percentile reflectivity for a given radar HSRHI file
+    calculate_dbz95_rhi calculates the 95th percentile reflectivity for a given radar HSRHI file
     using the input HSRHI cluter map masks (H and/or V). Returns the date and time of the file,
     95th percentile reflectivity value for Zh and/or Zv, and dictionaries of statistics,
     including number of points, histogram/PDF, bins, CDF.
@@ -184,6 +284,8 @@ def calculate_dbz95_hsrhi(
         'horizontal': calculate only for H
     range_limit: int
         value of desired radar gate range limit
+    radar_band: str
+        one or two letter code for radar band
     clutter_mask_h: MaskedArray
         masked array denotes which elements are considered clutter
         used to extract reflectivity values from overlapping radar gates
@@ -239,6 +341,25 @@ def calculate_dbz95_hsrhi(
     zh = zh + zh_offset
     ###########################
 
+    #######################################
+    # Attenutation filtering
+    # If a ray surpasses a certain threshold of integrated attenutation
+    # (based on an Ah-Z relationship)
+    # the whole file is ignored and move on to next file
+    # i.e. dump out NaN for dbz95
+    # FOR TESTING, OUTPUT TYPICAL DBZ95, JUST FLAG AS *WOULD BE TRASHED*
+    # Ah = az^b, where z is in mm6m-3
+    # Z = 10log10(z)  mm6m-3 => dBZ
+    # z = 10^(Z/10)   dBZ => mm6m-3
+    # ah = a * (10**(zh/10)) **b
+    # a = 0.000631967738
+    # b = 0.971513669
+    a = 0.00115481  # new from JCH Nov 14 2019
+    b = 0.95361079
+    gate_width = 0.025  # km
+    iah_thresh = 0.1
+    ########################################
+
     range_shape = range_limit / 1000
     elev_list = [1, 2, 3, 4, 5, 175, 176, 177, 178, 179]
     theta_list = [0, 30, 60, 90, 120, 150]
@@ -246,25 +367,74 @@ def calculate_dbz95_hsrhi(
 
     # H POLARIZATION
     zh_from_mask = []
-    for idx_az, az in enumerate(theta_list):
-        az_mask = create_az_mask_hsrhi(az, theta)
-        for idx_el, el in enumerate(elev_list):
-            el_mask = np.abs(elev - el) < 0.5
-            zh_rays = zh[np.logical_and(az_mask, el_mask), :]
-            zh_rays = np.ma.getdata(zh_rays)
-            for idx_ra, ra in enumerate(r_list):
-                if clutter_mask_h[idx_az, idx_el, idx_ra]:
-                    if ra == range_shape:
-                        continue
-                    else:
-                        rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
-                        try:
-                            rstop = np.where(r - (r_list[idx_ra + 1] * 1000.0) >= 0.0)[
-                                0
-                            ][0]
-                        except IndexError:
-                            rstop = -1
-                        zh_from_mask.append(zh_rays[:, rstart:rstop])
+    if radar_band == "ka":
+        iah = []
+        for idx_az, az in enumerate(theta_list):
+            if az == 0:
+                continue
+            else:
+                pass
+            az_mask = create_az_mask_hsrhi(az, theta)
+            for idx_el, el in enumerate(elev_list):
+                el_mask = np.abs(elev - el) < 0.5
+                zh_rays = zh[np.logical_and(az_mask, el_mask), :]
+                zh_rays_blank_clutter = zh_rays.copy()
+                zh_rays_blank_clutter = np.ma.getdata(zh_rays_blank_clutter)
+                for idx_ra, ra in enumerate(r_list):
+                    if clutter_mask_h[idx_az, idx_el, idx_ra]:
+                        if ra == range_shape:
+                            continue
+                        else:
+                            rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
+                            try:
+                                rstop = np.where(
+                                    r - (r_list[idx_ra + 1] * 1000.0) >= 0.0
+                                )[0][0]
+                            except IndexError:
+                                rstop = -1
+                            zh_from_mask.append(zh_rays[:, rstart:rstop])
+
+                            # Blank out clutter range gates
+                            zh_rays_blank_clutter[:, rstart:rstop] = -40.0
+
+                # Attenuation filtering
+                ah_rays = a * (10 ** (zh_rays_blank_clutter / 10)) ** b
+                zh_rays = np.ma.getdata(zh_rays)
+                iah_rays = np.empty(ah_rays.shape)
+                for idx_ray, ray in enumerate(ah_rays[:, 0]):
+                    iah_rays[idx_ray, :] = (
+                        np.cumsum(ah_rays[idx_ray, :]) * gate_width * 2
+                    )
+                iah_pass = np.ones(ah_rays.shape)
+                iah_pass[iah_rays > iah_thresh] = 0
+                iah.append(np.nanmean(iah_pass))
+
+        if np.nanmean(iah) == 1:
+            pass_filter = 1
+        else:
+            pass_filter = 0
+
+    # Now for any band that is not Ka (C, X)
+    else:
+        for idx_az, az in enumerate(theta_list):
+            az_mask = create_az_mask_hsrhi(az, theta)
+            for idx_el, el in enumerate(elev_list):
+                el_mask = np.abs(elev - el) < 0.5
+                zh_rays = zh[np.logical_and(az_mask, el_mask), :]
+                zh_rays = np.ma.getdata(zh_rays)
+                for idx_ra, ra in enumerate(r_list):
+                    if clutter_mask_h[idx_az, idx_el, idx_ra]:
+                        if ra == range_shape:
+                            continue
+                        else:
+                            rstart = np.where(r - (ra * 1000.0) >= 0.0)[0][0]
+                            try:
+                                rstop = np.where(
+                                    r - (r_list[idx_ra + 1] * 1000.0) >= 0.0
+                                )[0][0]
+                            except IndexError:
+                                rstop = -1
+                            zh_from_mask.append(zh_rays[:, rstart:rstop])
 
     all_zh = []
     for i in range(0, len(zh_from_mask)):
@@ -272,28 +442,39 @@ def calculate_dbz95_hsrhi(
             for j in range(0, len(zh_from_mask[i])):
                 for k in range(0, len(zh_from_mask[i][j])):
                     all_zh.append(zh_from_mask[i][j][k])
-    print("num pts = ", len(all_zh))
 
     num_pts_h = len(all_zh)
     hn, hbins = np.histogram(all_zh, bins=525, range=(-40.0, 65.0))
+
     # Calculate CDF of clutter area reflectivity
     hcdf = np.cumsum(hn)
     hp = hcdf / hcdf[-1] * 100
     x = np.arange(525) * (1 / 5) - 40
+
     # Find the value of reflectivity at the 95th percentile of CDF
     idx95 = (np.abs(hp - 95.0)).argmin()
     dbz95_h = x[idx95]
 
-    stats_h = {
-        "num_points": num_pts_h,
-        "histo_n": hn,
-        "histo_bins": hbins,
-        "cdf": hp,
-        "reflectivity_95": dbz95_h,
-    }
-    print("dbz95H = ", dbz95_h)
+    if radar_band == "ka":
+        stats_h = {
+            "num_points": num_pts_h,
+            "histo_n": hn,
+            "histo_bins": hbins,
+            "cdf": hp,
+            "reflectivity_95": dbz95_h,
+            "pass_filter": pass_filter,
+        }
+    else:
+        stats_h = {
+            "num_points": num_pts_h,
+            "histo_n": hn,
+            "histo_bins": hbins,
+            "cdf": hp,
+            "reflectivity_95": dbz95_h,
+        }
+
     if polarization == "horizontal":
-        return date_time, dbz95_h, stats_h
+        return date_time, stats_h
 
     elif polarization == "dual":
         zv = variable_dictionary["reflectivity_v"]
@@ -326,14 +507,15 @@ def calculate_dbz95_hsrhi(
                 for j in range(0, len(zv_from_mask[i])):
                     for k in range(0, len(zv_from_mask[i][j])):
                         all_zh.append(zv_from_mask[i][j][k])
-        print("num pts = ", len(all_zv))
 
         num_pts_v = len(all_zv)
         vn, vbins = np.histogram(all_zv, bins=525, range=(-40.0, 65.0))
+
         # Calculate CDF of clutter area reflectivity
         vcdf = np.cumsum(vn)
         vp = vcdf / vcdf[-1] * 100
         x = np.arange(525) * (1 / 5) - 40
+
         # Find the value of reflectivity at the 95th percentile of CDF
         idx95 = (np.abs(vp - 95.0)).argmin()
         dbz95_v = x[idx95]
@@ -345,5 +527,5 @@ def calculate_dbz95_hsrhi(
             "cdf": vp,
             "reflectivity_95": dbz95_v,
         }
-        print("dbz95V = ", dbz95_v)
-        return date_time, dbz95_h, dbz95_v, stats_h, stats_v
+
+        return date_time, stats_h, stats_v
