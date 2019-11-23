@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rca.clutter_map &mdash; eRCA for Weather Radar 0.0.post0.dev68+gc74f76a documentation</title>
+  <title>rca.clutter_map &mdash; eRCA for Weather Radar 0.0.post0.dev68+g33357ac documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.0.post0.dev68+gc74f76a
+                0.0.post0.dev68+g33357ac
               </div>
             
           
@@ -157,7 +157,7 @@
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">netCDF4</span> <span class="k">import</span> <span class="n">Dataset</span>
-<span class="kn">from</span> <span class="nn">.create_clutter_flag</span> <span class="k">import</span> <span class="n">create_clutter_flag_ppi</span><span class="p">,</span> <span class="n">create_clutter_flag_hsrhi</span>
+<span class="kn">from</span> <span class="nn">.create_clutter_flag</span> <span class="k">import</span> <span class="n">create_clutter_flag_ppi</span><span class="p">,</span> <span class="n">create_clutter_flag_rhi</span>
 <span class="kn">from</span> <span class="nn">.aux.file_to_radar_object</span> <span class="k">import</span> <span class="n">file_to_radar_object</span>
 <span class="kn">from</span> <span class="nn">.aux.get_var_arrays_from_radar_object</span> <span class="k">import</span> <span class="n">get_var_arrays_from_radar_object</span>
 
@@ -245,7 +245,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
             <span class="n">radar</span> <span class="o">=</span> <span class="n">file_to_radar_object</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">extension</span><span class="p">)</span>
             <span class="n">var_dict</span> <span class="o">=</span> <span class="n">get_var_arrays_from_radar_object</span><span class="p">(</span><span class="n">radar</span><span class="p">,</span> <span class="n">radar_config_file</span><span class="p">)</span>
-            <span class="n">dt</span><span class="p">,</span> <span class="n">cflag_h</span> <span class="o">=</span> <span class="n">create_clutter_flag_hsrhi</span><span class="p">(</span>
+            <span class="n">dt</span><span class="p">,</span> <span class="n">cflag_h</span> <span class="o">=</span> <span class="n">create_clutter_flag_rhi</span><span class="p">(</span>
                 <span class="n">var_dict</span><span class="p">,</span> <span class="n">polarization</span><span class="p">,</span> <span class="n">range_limit</span><span class="p">,</span> <span class="n">z_thresh</span>
             <span class="p">)</span>
             <span class="n">clutter_flag_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cflag_h</span><span class="p">)</span>
@@ -345,7 +345,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
             <span class="n">radar</span> <span class="o">=</span> <span class="n">file_to_radar_object</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">extension</span><span class="p">)</span>
             <span class="n">var_dict</span> <span class="o">=</span> <span class="n">get_var_arrays_from_radar_object</span><span class="p">(</span><span class="n">radar</span><span class="p">,</span> <span class="n">radar_config_file</span><span class="p">)</span>
-            <span class="n">dt</span><span class="p">,</span> <span class="n">cflag_h</span><span class="p">,</span> <span class="n">cflag_v</span> <span class="o">=</span> <span class="n">create_clutter_flag_hsrhi</span><span class="p">(</span>
+            <span class="n">dt</span><span class="p">,</span> <span class="n">cflag_h</span><span class="p">,</span> <span class="n">cflag_v</span> <span class="o">=</span> <span class="n">create_clutter_flag_rhi</span><span class="p">(</span>
                 <span class="n">var_dict</span><span class="p">,</span> <span class="n">polarization</span><span class="p">,</span> <span class="n">range_limit</span><span class="p">,</span> <span class="n">z_thresh</span>
             <span class="p">)</span>
             <span class="n">clutter_flag_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cflag_h</span><span class="p">)</span>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rca.aux &mdash; eRCA for Weather Radar 0.0.post0.dev68+gc74f76a documentation</title>
+  <title>rca.aux &mdash; eRCA for Weather Radar 0.0.post0.dev68+g33357ac documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.0.post0.dev68+gc74f76a
+                0.0.post0.dev68+g33357ac
               </div>
             
           
@@ -177,15 +177,16 @@ Create CSV file to store RCA values for a particular instrument</p>
 <div class="section" id="module-rca.aux.create_masks">
 <span id="rca-aux-create-masks"></span><h2>rca.aux.create_masks<a class="headerlink" href="#module-rca.aux.create_masks" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="rca.aux.create_masks.create_az_mask_hsrhi">
-<code class="sig-prename descclassname">rca.aux.create_masks.</code><code class="sig-name descname">create_az_mask_hsrhi</code><span class="sig-paren">(</span><em class="sig-param">azimuth_value</em>, <em class="sig-param">azimuth_array</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/aux/create_masks.html#create_az_mask_hsrhi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.aux.create_masks.create_az_mask_hsrhi" title="Permalink to this definition">¶</a></dt>
-<dd><p>create_az_mask_hsrhi creates a mask for a desired azimuth angle for an array of azimuth from a radar HSRHI file</p>
+<dt id="rca.aux.create_masks.create_az_mask_ppi">
+<code class="sig-prename descclassname">rca.aux.create_masks.</code><code class="sig-name descname">create_az_mask_ppi</code><span class="sig-paren">(</span><em class="sig-param">azimuth_value</em>, <em class="sig-param">azimuth_array</em>, <em class="sig-param">radar_band</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/aux/create_masks.html#create_az_mask_ppi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.aux.create_masks.create_az_mask_ppi" title="Permalink to this definition">¶</a></dt>
+<dd><p>create_az_mask_ppi creates a mask for a desired azimuth angle for an array of azimuth from a radar PPI file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>azimuth_value</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – value of the radar azimuth of interest
-i.e. 30., 60., 120., etc.</p></li>
+i.e. 0., 27., 60., 120., etc.</p></li>
 <li><p><strong>azimuth_array</strong> (<em>array_like</em>) – array of azimuth values to search through and find the appropriate azimuth</p></li>
+<li><p><strong>radar_band</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – one or two letter code noting radar band (used for thresholding depending on beam width)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -198,15 +199,16 @@ i.e. 30., 60., 120., etc.</p></li>
 </dd></dl>
 
 <dl class="function">
-<dt id="rca.aux.create_masks.create_az_mask_ppi">
-<code class="sig-prename descclassname">rca.aux.create_masks.</code><code class="sig-name descname">create_az_mask_ppi</code><span class="sig-paren">(</span><em class="sig-param">azimuth_value</em>, <em class="sig-param">azimuth_array</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/aux/create_masks.html#create_az_mask_ppi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.aux.create_masks.create_az_mask_ppi" title="Permalink to this definition">¶</a></dt>
-<dd><p>create_az_mask_ppi creates a mask for a desired azimuth angle for an array of azimuth from a radar PPI file</p>
+<dt id="rca.aux.create_masks.create_az_mask_rhi">
+<code class="sig-prename descclassname">rca.aux.create_masks.</code><code class="sig-name descname">create_az_mask_rhi</code><span class="sig-paren">(</span><em class="sig-param">azimuth_value</em>, <em class="sig-param">azimuth_array</em>, <em class="sig-param">radar_band</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/aux/create_masks.html#create_az_mask_rhi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.aux.create_masks.create_az_mask_rhi" title="Permalink to this definition">¶</a></dt>
+<dd><p>create_az_mask_rhi creates a mask for a desired azimuth angle for an array of azimuth from a radar RHI file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>azimuth_value</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – value of the radar azimuth of interest
-i.e. 0., 27., 60., 120., etc.</p></li>
+i.e. 30., 60., 120., etc.</p></li>
 <li><p><strong>azimuth_array</strong> (<em>array_like</em>) – array of azimuth values to search through and find the appropriate azimuth</p></li>
+<li><p><strong>radar_band</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – one or two letter code noting radar band (used for thresholding depending on beam width)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -273,7 +275,7 @@ Returns variables in arrays or strings in a single dictionary</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>var_dict</strong> – dictionary or relevant variables needed for the rest of clutter mapa nd RCA calculation
+<dd class="field-even"><p><strong>var_dict</strong> – dictionary or relevant variables needed for the rest of clutter map and RCA calculation
 var_dict = {
 “date_time”: date_time,
 “range”: r,

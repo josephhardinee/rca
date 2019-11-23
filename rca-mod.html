@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rca &mdash; eRCA for Weather Radar 0.0.post0.dev68+gc74f76a documentation</title>
+  <title>rca &mdash; eRCA for Weather Radar 0.0.post0.dev68+g33357ac documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.0.post0.dev68+gc74f76a
+                0.0.post0.dev68+g33357ac
               </div>
             
           
@@ -192,8 +192,8 @@ and saves the value to a netCDF as the baseline 95th percentile clutter area ref
 <div class="section" id="module-rca.calculate_dbz95">
 <span id="rca-calculate-dbz95"></span><h2>rca.calculate_dbz95<a class="headerlink" href="#module-rca.calculate_dbz95" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="rca.calculate_dbz95.calculate_dbz95_hsrhi">
-<code class="sig-prename descclassname">rca.calculate_dbz95.</code><code class="sig-name descname">calculate_dbz95_hsrhi</code><span class="sig-paren">(</span><em class="sig-param">variable_dictionary</em>, <em class="sig-param">polarization</em>, <em class="sig-param">range_limit</em>, <em class="sig-param">clutter_mask_h</em>, <em class="sig-param">clutter_mask_v=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/calculate_dbz95.html#calculate_dbz95_hsrhi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.calculate_dbz95.calculate_dbz95_hsrhi" title="Permalink to this definition">¶</a></dt>
+<dt id="rca.calculate_dbz95.calculate_dbz95_ppi">
+<code class="sig-prename descclassname">rca.calculate_dbz95.</code><code class="sig-name descname">calculate_dbz95_ppi</code><span class="sig-paren">(</span><em class="sig-param">variable_dictionary</em>, <em class="sig-param">polarization</em>, <em class="sig-param">range_limit</em>, <em class="sig-param">radar_band</em>, <em class="sig-param">clutter_mask_h</em>, <em class="sig-param">clutter_mask_v=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/calculate_dbz95.html#calculate_dbz95_ppi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.calculate_dbz95.calculate_dbz95_ppi" title="Permalink to this definition">¶</a></dt>
 <dd><p>calculate_dbz95_hsrhi calculates the 95th percentile reflectivity for a given radar HSRHI file
 using the input HSRHI cluter map masks (H and/or V). Returns the date and time of the file,
 95th percentile reflectivity value for Zh and/or Zv, and dictionaries of statistics,
@@ -202,11 +202,12 @@ including number of points, histogram/PDF, bins, CDF.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>variable_dictionary</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – dictionary with values, strings, and arrays of relevant radar data
-i.e. ‘reflectivity_h’, ‘reflectivity_v’, ‘azimuth’, ‘range’, ‘date_time’, ‘elevation’</p></li>
+i.e. ‘reflectivity_h’, ‘reflectivity_v’, ‘azimuth’, ‘range’, ‘date_time’</p></li>
 <li><p><strong>polarization</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – specifies for which polarization user wants to create clutter flag array
 ‘dual’: calculate for both H and V
 ‘horizontal’: calculate only for H</p></li>
 <li><p><strong>range_limit</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – value of desired radar gate range limit</p></li>
+<li><p><strong>radar_band</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – one or two letter code for radar band</p></li>
 <li><p><strong>clutter_mask_h</strong> (<em>MaskedArray</em>) – masked array denotes which elements are considered clutter
 used to extract reflectivity values from overlapping radar gates
 for H polarization</p></li>
@@ -240,9 +241,9 @@ dbz95_v: 95th percentile reflectivity</p></li>
 </dd></dl>
 
 <dl class="function">
-<dt id="rca.calculate_dbz95.calculate_dbz95_ppi">
-<code class="sig-prename descclassname">rca.calculate_dbz95.</code><code class="sig-name descname">calculate_dbz95_ppi</code><span class="sig-paren">(</span><em class="sig-param">variable_dictionary</em>, <em class="sig-param">polarization</em>, <em class="sig-param">range_limit</em>, <em class="sig-param">clutter_mask_h</em>, <em class="sig-param">clutter_mask_v=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/calculate_dbz95.html#calculate_dbz95_ppi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.calculate_dbz95.calculate_dbz95_ppi" title="Permalink to this definition">¶</a></dt>
-<dd><p>calculate_dbz95_hsrhi calculates the 95th percentile reflectivity for a given radar HSRHI file
+<dt id="rca.calculate_dbz95.calculate_dbz95_rhi">
+<code class="sig-prename descclassname">rca.calculate_dbz95.</code><code class="sig-name descname">calculate_dbz95_rhi</code><span class="sig-paren">(</span><em class="sig-param">variable_dictionary</em>, <em class="sig-param">polarization</em>, <em class="sig-param">range_limit</em>, <em class="sig-param">radar_band</em>, <em class="sig-param">clutter_mask_h</em>, <em class="sig-param">clutter_mask_v=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/calculate_dbz95.html#calculate_dbz95_rhi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.calculate_dbz95.calculate_dbz95_rhi" title="Permalink to this definition">¶</a></dt>
+<dd><p>calculate_dbz95_rhi calculates the 95th percentile reflectivity for a given radar HSRHI file
 using the input HSRHI cluter map masks (H and/or V). Returns the date and time of the file,
 95th percentile reflectivity value for Zh and/or Zv, and dictionaries of statistics,
 including number of points, histogram/PDF, bins, CDF.</p>
@@ -250,11 +251,12 @@ including number of points, histogram/PDF, bins, CDF.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>variable_dictionary</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – dictionary with values, strings, and arrays of relevant radar data
-i.e. ‘reflectivity_h’, ‘reflectivity_v’, ‘azimuth’, ‘range’, ‘date_time’</p></li>
+i.e. ‘reflectivity_h’, ‘reflectivity_v’, ‘azimuth’, ‘range’, ‘date_time’, ‘elevation’</p></li>
 <li><p><strong>polarization</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – specifies for which polarization user wants to create clutter flag array
 ‘dual’: calculate for both H and V
 ‘horizontal’: calculate only for H</p></li>
 <li><p><strong>range_limit</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – value of desired radar gate range limit</p></li>
+<li><p><strong>radar_band</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – one or two letter code for radar band</p></li>
 <li><p><strong>clutter_mask_h</strong> (<em>MaskedArray</em>) – masked array denotes which elements are considered clutter
 used to extract reflectivity values from overlapping radar gates
 for H polarization</p></li>
@@ -326,9 +328,9 @@ in YYYYMMDD format (overrides what’s in config file)</p></li>
 <div class="section" id="module-rca.create_clutter_flag">
 <span id="rca-create-clutter-flag"></span><h2>rca.create_clutter_flag<a class="headerlink" href="#module-rca.create_clutter_flag" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="rca.create_clutter_flag.create_clutter_flag_hsrhi">
-<code class="sig-prename descclassname">rca.create_clutter_flag.</code><code class="sig-name descname">create_clutter_flag_hsrhi</code><span class="sig-paren">(</span><em class="sig-param">variable_dictionary</em>, <em class="sig-param">polarization</em>, <em class="sig-param">range_limit</em>, <em class="sig-param">z_thresh</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/create_clutter_flag.html#create_clutter_flag_hsrhi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.create_clutter_flag.create_clutter_flag_hsrhi" title="Permalink to this definition">¶</a></dt>
-<dd><p>create_clutter_flag_hsrhi creates a clutter flag array for a particular HSRHI radar file (using a precipitation-free day) that will be used for
+<dt id="rca.create_clutter_flag.create_clutter_flag_ppi">
+<code class="sig-prename descclassname">rca.create_clutter_flag.</code><code class="sig-name descname">create_clutter_flag_ppi</code><span class="sig-paren">(</span><em class="sig-param">variable_dictionary</em>, <em class="sig-param">polarization</em>, <em class="sig-param">range_limit</em>, <em class="sig-param">z_thresh</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/create_clutter_flag.html#create_clutter_flag_ppi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.create_clutter_flag.create_clutter_flag_ppi" title="Permalink to this definition">¶</a></dt>
+<dd><p>create_clutter_flag_ppi creates a clutter flag array for a particular PPI radar file (using a precipitation-free day) that will be used for
 clutter map creation. It returns the datetime of the file and the clutter flag arrays for reflectivity in the chosen polarizations (H and V or just H)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -359,9 +361,9 @@ no clutter present: 0</p></li>
 </dd></dl>
 
 <dl class="function">
-<dt id="rca.create_clutter_flag.create_clutter_flag_ppi">
-<code class="sig-prename descclassname">rca.create_clutter_flag.</code><code class="sig-name descname">create_clutter_flag_ppi</code><span class="sig-paren">(</span><em class="sig-param">variable_dictionary</em>, <em class="sig-param">polarization</em>, <em class="sig-param">range_limit</em>, <em class="sig-param">z_thresh</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/create_clutter_flag.html#create_clutter_flag_ppi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.create_clutter_flag.create_clutter_flag_ppi" title="Permalink to this definition">¶</a></dt>
-<dd><p>create_clutter_flag_ppi creates a clutter flag array for a particular PPI radar file (using a precipitation-free day) that will be used for
+<dt id="rca.create_clutter_flag.create_clutter_flag_rhi">
+<code class="sig-prename descclassname">rca.create_clutter_flag.</code><code class="sig-name descname">create_clutter_flag_rhi</code><span class="sig-paren">(</span><em class="sig-param">variable_dictionary</em>, <em class="sig-param">polarization</em>, <em class="sig-param">range_limit</em>, <em class="sig-param">z_thresh</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/create_clutter_flag.html#create_clutter_flag_rhi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.create_clutter_flag.create_clutter_flag_rhi" title="Permalink to this definition">¶</a></dt>
+<dd><p>create_clutter_flag_rhi creates a clutter flag array for a particular HSRHI radar file (using a precipitation-free day) that will be used for
 clutter map creation. It returns the datetime of the file and the clutter flag arrays for reflectivity in the chosen polarizations (H and V or just H)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

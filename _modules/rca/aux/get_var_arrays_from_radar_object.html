@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rca.aux.get_var_arrays_from_radar_object &mdash; eRCA for Weather Radar 0.0.post0.dev68+gc74f76a documentation</title>
+  <title>rca.aux.get_var_arrays_from_radar_object &mdash; eRCA for Weather Radar 0.0.post0.dev68+g33357ac documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.0.post0.dev68+gc74f76a
+                0.0.post0.dev68+g33357ac
               </div>
             
           
@@ -171,7 +171,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    var_dict: dict</span>
-<span class="sd">        dictionary or relevant variables needed for the rest of clutter mapa nd RCA calculation</span>
+<span class="sd">        dictionary or relevant variables needed for the rest of clutter map and RCA calculation</span>
 <span class="sd">        var_dict = {</span>
 <span class="sd">        &quot;date_time&quot;: date_time,</span>
 <span class="sd">        &quot;range&quot;: r,</span>
@@ -198,6 +198,12 @@
     <span class="k">elif</span> <span class="n">inst</span> <span class="o">==</span> <span class="s2">&quot;xsacr&quot;</span> <span class="ow">or</span> <span class="n">inst</span> <span class="o">==</span> <span class="s2">&quot;kasacr&quot;</span><span class="p">:</span>
         <span class="n">ref_h</span> <span class="o">=</span> <span class="s2">&quot;reflectivity&quot;</span>
         <span class="n">diff_ref</span> <span class="o">=</span> <span class="s2">&quot;differential_reflectivity&quot;</span>
+    <span class="c1"># *******Add your instrument name here with variables names from file********</span>
+    <span class="c1"># example:</span>
+    <span class="c1"># elif inst == &quot;your_inst&quot;:</span>
+    <span class="c1">#     ref_h = &quot;your_variable_name&quot;</span>
+    <span class="c1">#     diff_ref = &quot;your_variable_name&quot;</span>
+    <span class="c1"># ***************************************************************************</span>
 
     <span class="k">if</span> <span class="n">scantype</span> <span class="o">==</span> <span class="s2">&quot;ppi&quot;</span><span class="p">:</span>
         <span class="n">date_time</span> <span class="o">=</span> <span class="n">radar</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;seconds since &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>

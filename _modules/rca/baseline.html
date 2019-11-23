@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rca.baseline &mdash; eRCA for Weather Radar 0.0.post0.dev68+gc74f76a documentation</title>
+  <title>rca.baseline &mdash; eRCA for Weather Radar 0.0.post0.dev68+g33357ac documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.0.post0.dev68+gc74f76a
+                0.0.post0.dev68+g33357ac
               </div>
             
           
@@ -159,7 +159,7 @@
 <span class="kn">from</span> <span class="nn">netCDF4</span> <span class="k">import</span> <span class="n">Dataset</span>
 <span class="kn">from</span> <span class="nn">.aux.file_to_radar_object</span> <span class="k">import</span> <span class="n">file_to_radar_object</span>
 <span class="kn">from</span> <span class="nn">.aux.get_var_arrays_from_radar_object</span> <span class="k">import</span> <span class="n">get_var_arrays_from_radar_object</span>
-<span class="kn">from</span> <span class="nn">.calculate_dbz95</span> <span class="k">import</span> <span class="n">calculate_dbz95_ppi</span><span class="p">,</span> <span class="n">calculate_dbz95_hsrhi</span>
+<span class="kn">from</span> <span class="nn">.calculate_dbz95</span> <span class="k">import</span> <span class="n">calculate_dbz95_ppi</span><span class="p">,</span> <span class="n">calculate_dbz95_rhi</span>
 
 
 <div class="viewcode-block" id="baseline"><a class="viewcode-back" href="../../rca-mod.html#rca.baseline.baseline">[docs]</a><span class="k">def</span> <span class="nf">baseline</span><span class="p">(</span><span class="n">radar_config_file</span><span class="p">):</span>
@@ -187,6 +187,13 @@
     <span class="n">inst</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s2">&quot;instrument_abbrev&quot;</span><span class="p">]</span>
     <span class="n">range_limit</span> <span class="o">=</span> <span class="n">config_vars</span><span class="p">[</span><span class="s2">&quot;range_limit&quot;</span><span class="p">]</span>
 
+    <span class="c1"># Identify which radar band you are using (change if statement as needed)</span>
+    <span class="c1"># Most important to identify Ka-band radars</span>
+    <span class="k">if</span> <span class="n">inst</span> <span class="o">==</span> <span class="s2">&quot;kasacr&quot;</span><span class="p">:</span>
+        <span class="n">radar_band</span> <span class="o">=</span> <span class="s2">&quot;ka&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">radar_band</span> <span class="o">=</span> <span class="n">inst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
     <span class="c1"># Read in clutter map netCDF</span>
     <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
         <span class="n">cluttermap_dir</span>
@@ -213,8 +220,7 @@
     <span class="n">date_time</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># date and time strings</span>
     <span class="n">dbz95_h</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 95th percentile reflectivity in H</span>
     <span class="n">dbz95_v</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 95th percentile reflectivity in V</span>
-    <span class="n">stats_h</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># dictionary of statistics in H</span>
-    <span class="n">stats_v</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># dictionary of statistics in V</span>
+    <span class="n">pass_filter</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="c1"># Read in each radar file and turn into radar object and use function to</span>
     <span class="c1"># calculate 95th percentile clutter area reflectivity</span>
@@ -224,31 +230,35 @@
             <span class="n">radar</span> <span class="o">=</span> <span class="n">file_to_radar_object</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">extension</span><span class="p">)</span>
             <span class="n">var_dict</span> <span class="o">=</span> <span class="n">get_var_arrays_from_radar_object</span><span class="p">(</span><span class="n">radar</span><span class="p">,</span> <span class="n">radar_config_file</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">scantype</span> <span class="o">==</span> <span class="s2">&quot;ppi&quot;</span><span class="p">:</span>
-                <span class="n">dt</span><span class="p">,</span> <span class="n">d95_h</span><span class="p">,</span> <span class="n">s_h</span> <span class="o">=</span> <span class="n">calculate_dbz95_ppi</span><span class="p">(</span>
+                <span class="n">dt</span><span class="p">,</span> <span class="n">s_h</span> <span class="o">=</span> <span class="n">calculate_dbz95_ppi</span><span class="p">(</span>
                     <span class="n">var_dict</span><span class="p">,</span>
                     <span class="n">polarization</span><span class="p">,</span>
                     <span class="n">range_limit</span><span class="p">,</span>
+                    <span class="n">radar_band</span><span class="p">,</span>
                     <span class="n">clutter_map_mask_h</span><span class="p">,</span>
                     <span class="n">clutter_mask_v</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">elif</span> <span class="n">scantype</span> <span class="o">==</span> <span class="s2">&quot;rhi&quot;</span><span class="p">:</span>
-                <span class="n">dt</span><span class="p">,</span> <span class="n">d95_h</span><span class="p">,</span> <span class="n">s_h</span> <span class="o">=</span> <span class="n">calculate_dbz95_hsrhi</span><span class="p">(</span>
+                <span class="n">dt</span><span class="p">,</span> <span class="n">s_h</span> <span class="o">=</span> <span class="n">calculate_dbz95_rhi</span><span class="p">(</span>
                     <span class="n">var_dict</span><span class="p">,</span>
                     <span class="n">polarization</span><span class="p">,</span>
                     <span class="n">range_limit</span><span class="p">,</span>
+                    <span class="n">radar_band</span><span class="p">,</span>
                     <span class="n">clutter_map_mask_h</span><span class="p">,</span>
                     <span class="n">clutter_mask_v</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="n">date_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-            <span class="n">dbz95_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d95_h</span><span class="p">)</span>
-            <span class="n">stats_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_h</span><span class="p">)</span>
+            <span class="n">dbz95_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_h</span><span class="p">[</span><span class="s2">&quot;reflectivity_95&quot;</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">radar_band</span> <span class="o">==</span> <span class="s2">&quot;ka&quot;</span><span class="p">:</span>
+                <span class="n">pass_filter</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_h</span><span class="p">[</span><span class="s2">&quot;pass_filter&quot;</span><span class="p">])</span>
+
         <span class="c1"># Calculate median 95th percentile clutter area reflecitivty from all times in day</span>
-        <span class="n">dbz95_h_baseline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">dbz95_h</span><span class="p">)</span>
-        <span class="c1"># Calculate total number of radar gates used in calculation</span>
-        <span class="n">total_num_pts_h</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">stats_h</span><span class="p">)):</span>
-            <span class="n">total_num_pts_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stats_h</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;num_points&quot;</span><span class="p">])</span>
-        <span class="n">total_num_pts_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">total_num_pts_h</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">radar_band</span> <span class="o">==</span> <span class="s2">&quot;ka&quot;</span><span class="p">:</span>
+            <span class="n">dbz95_h_baseline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">dbz95_h</span><span class="p">[</span><span class="n">pass_filter</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dbz95_h_baseline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">dbz95_h</span><span class="p">)</span>
+
         <span class="c1"># Write baseline 95th reflectivity values to a netCDF file</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
             <span class="n">baseline_dir</span>
@@ -277,39 +287,31 @@
             <span class="n">radar</span> <span class="o">=</span> <span class="n">file_to_radar_object</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">extension</span><span class="p">)</span>
             <span class="n">var_dict</span> <span class="o">=</span> <span class="n">get_var_arrays_from_radar_object</span><span class="p">(</span><span class="n">radar</span><span class="p">,</span> <span class="n">radar_config_file</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">scantype</span> <span class="o">==</span> <span class="s2">&quot;ppi&quot;</span><span class="p">:</span>
-                <span class="n">dt</span><span class="p">,</span> <span class="n">d95_h</span><span class="p">,</span> <span class="n">d95_v</span><span class="p">,</span> <span class="n">s_h</span><span class="p">,</span> <span class="n">s_v</span> <span class="o">=</span> <span class="n">calculate_dbz95_ppi</span><span class="p">(</span>
+                <span class="n">dt</span><span class="p">,</span> <span class="n">s_h</span><span class="p">,</span> <span class="n">s_v</span> <span class="o">=</span> <span class="n">calculate_dbz95_ppi</span><span class="p">(</span>
                     <span class="n">var_dict</span><span class="p">,</span>
                     <span class="n">polarization</span><span class="p">,</span>
                     <span class="n">range_limit</span><span class="p">,</span>
+                    <span class="n">radar_band</span><span class="p">,</span>
                     <span class="n">clutter_map_mask_h</span><span class="p">,</span>
                     <span class="n">clutter_mask_v</span><span class="o">=</span><span class="n">clutter_map_mask_v</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">elif</span> <span class="n">scantype</span> <span class="o">==</span> <span class="s2">&quot;rhi&quot;</span><span class="p">:</span>
-                <span class="n">dt</span><span class="p">,</span> <span class="n">d95_h</span><span class="p">,</span> <span class="n">d95_v</span><span class="p">,</span> <span class="n">s_h</span><span class="p">,</span> <span class="n">s_v</span> <span class="o">=</span> <span class="n">calculate_dbz95_hsrhi</span><span class="p">(</span>
+                <span class="n">dt</span><span class="p">,</span> <span class="n">s_h</span><span class="p">,</span> <span class="n">s_v</span> <span class="o">=</span> <span class="n">calculate_dbz95_rhi</span><span class="p">(</span>
                     <span class="n">var_dict</span><span class="p">,</span>
                     <span class="n">polarization</span><span class="p">,</span>
                     <span class="n">range_limit</span><span class="p">,</span>
+                    <span class="n">radar_band</span><span class="p">,</span>
                     <span class="n">clutter_map_mask_h</span><span class="p">,</span>
                     <span class="n">clutter_mask_v</span><span class="o">=</span><span class="n">clutter_map_mask_v</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="n">date_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-            <span class="n">dbz95_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d95_h</span><span class="p">)</span>
-            <span class="n">stats_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_h</span><span class="p">)</span>
-            <span class="n">dbz95_v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d95_v</span><span class="p">)</span>
-            <span class="n">stats_v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_v</span><span class="p">)</span>
+            <span class="n">dbz95_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_h</span><span class="p">[</span><span class="s2">&quot;reflectivity_95&quot;</span><span class="p">])</span>
+            <span class="n">dbz95_v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_v</span><span class="p">[</span><span class="s2">&quot;reflectivity_95&quot;</span><span class="p">])</span>
 
         <span class="c1"># Calculate median 95th percentile clutter area reflecitivty from all times in day</span>
         <span class="n">dbz95_h_baseline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">dbz95_h</span><span class="p">)</span>
         <span class="n">dbz95_v_baseline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">dbz95_v</span><span class="p">)</span>
-        <span class="c1"># Calculate total number of radar gates used in calculation</span>
-        <span class="n">total_num_pts_h</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">stats_h</span><span class="p">)):</span>
-            <span class="n">total_num_pts_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stats_h</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;num_points&quot;</span><span class="p">])</span>
-        <span class="n">total_num_pts_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">total_num_pts_h</span><span class="p">)</span>
-        <span class="n">total_num_pts_v</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">stats_v</span><span class="p">)):</span>
-            <span class="n">total_num_pts_v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stats_v</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;num_points&quot;</span><span class="p">])</span>
-        <span class="n">total_num_pts_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">total_num_pts_v</span><span class="p">)</span>
+
         <span class="c1"># Write baseline 95th reflectivity values to a netCDF file</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
             <span class="n">baseline_dir</span>

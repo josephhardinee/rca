@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rca.create_clutter_flag &mdash; eRCA for Weather Radar 0.0.post0.dev68+gc74f76a documentation</title>
+  <title>rca.create_clutter_flag &mdash; eRCA for Weather Radar 0.0.post0.dev68+g33357ac documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.0.post0.dev68+gc74f76a
+                0.0.post0.dev68+g33357ac
               </div>
             
           
@@ -152,7 +152,8 @@
             
   <h1>Source code for rca.create_clutter_flag</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">.aux.create_masks</span> <span class="k">import</span> <span class="n">create_az_mask_ppi</span><span class="p">,</span> <span class="n">create_az_mask_hsrhi</span>
+<span class="kn">from</span> <span class="nn">.aux.create_masks</span> <span class="k">import</span> <span class="n">create_az_mask_ppi</span><span class="p">,</span> <span class="n">create_az_mask_rhi</span>
+
 
 <div class="viewcode-block" id="create_clutter_flag_ppi"><a class="viewcode-back" href="../../rca-mod.html#rca.create_clutter_flag.create_clutter_flag_ppi">[docs]</a><span class="k">def</span> <span class="nf">create_clutter_flag_ppi</span><span class="p">(</span><span class="n">variable_dictionary</span><span class="p">,</span> <span class="n">polarization</span><span class="p">,</span> <span class="n">range_limit</span><span class="p">,</span> <span class="n">z_thresh</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -267,9 +268,9 @@
         <span class="k">return</span> <span class="n">date_time</span><span class="p">,</span> <span class="n">clutter_flag_h</span><span class="p">,</span> <span class="n">clutter_flag_v</span></div>
 
 
-<div class="viewcode-block" id="create_clutter_flag_hsrhi"><a class="viewcode-back" href="../../rca-mod.html#rca.create_clutter_flag.create_clutter_flag_hsrhi">[docs]</a><span class="k">def</span> <span class="nf">create_clutter_flag_hsrhi</span><span class="p">(</span><span class="n">variable_dictionary</span><span class="p">,</span> <span class="n">polarization</span><span class="p">,</span> <span class="n">range_limit</span><span class="p">,</span> <span class="n">z_thresh</span><span class="p">):</span>
+<div class="viewcode-block" id="create_clutter_flag_rhi"><a class="viewcode-back" href="../../rca-mod.html#rca.create_clutter_flag.create_clutter_flag_rhi">[docs]</a><span class="k">def</span> <span class="nf">create_clutter_flag_rhi</span><span class="p">(</span><span class="n">variable_dictionary</span><span class="p">,</span> <span class="n">polarization</span><span class="p">,</span> <span class="n">range_limit</span><span class="p">,</span> <span class="n">z_thresh</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    create_clutter_flag_hsrhi creates a clutter flag array for a particular HSRHI radar file (using a precipitation-free day) that will be used for</span>
+<span class="sd">    create_clutter_flag_rhi creates a clutter flag array for a particular HSRHI radar file (using a precipitation-free day) that will be used for</span>
 <span class="sd">    clutter map creation. It returns the datetime of the file and the clutter flag arrays for reflectivity in the chosen polarizations (H and V or just H)</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
