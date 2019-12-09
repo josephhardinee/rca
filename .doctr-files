@@ -11,9 +11,13 @@
 ./_modules/rca/composite_clutter_map.html
 ./_modules/rca/create_clutter_flag.html
 ./_modules/rca/daily_rca.html
+./_modules/rca/filters.html
+./_modules/rca/get_closest_time.html
 ./_modules/rca/get_pct_on_clutter_map.html
+./_modules/rca/iah_filter.html
 ./_modules/rca/plot/plot_clutter_map.html
 ./_modules/rca/plot/plot_rca_timeseries.html
+./_modules/rca/rh_filter.html
 ./_sources/api/modules.rst.txt
 ./_sources/api/rca.rst.txt
 ./_sources/authors.rst.txt

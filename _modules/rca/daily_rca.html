@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rca.daily_rca &mdash; eRCA for Weather Radar 0.0.post0.dev68+g33357ac documentation</title>
+  <title>rca.daily_rca &mdash; eRCA for Weather Radar 0.0.post0.dev68+g4709ebf documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.0.post0.dev68+g33357ac
+                0.0.post0.dev68+g4709ebf
               </div>
             
           
@@ -156,14 +156,14 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">netCDF4</span> <span class="k">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">netCDF4</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">.aux.file_to_radar_object</span> <span class="k">import</span> <span class="n">file_to_radar_object</span>
-<span class="kn">from</span> <span class="nn">.aux.get_var_arrays_from_radar_object</span> <span class="k">import</span> <span class="n">get_var_arrays_from_radar_object</span>
-<span class="kn">from</span> <span class="nn">.calculate_dbz95</span> <span class="k">import</span> <span class="n">calculate_dbz95_ppi</span><span class="p">,</span> <span class="n">calculate_dbz95_rhi</span>
+<span class="kn">from</span> <span class="nn">.aux.file_to_radar_object</span> <span class="kn">import</span> <span class="n">file_to_radar_object</span>
+<span class="kn">from</span> <span class="nn">.aux.get_var_arrays_from_radar_object</span> <span class="kn">import</span> <span class="n">get_var_arrays_from_radar_object</span>
+<span class="kn">from</span> <span class="nn">.calculate_dbz95</span> <span class="kn">import</span> <span class="n">calculate_dbz95_ppi</span><span class="p">,</span> <span class="n">calculate_dbz95_rhi</span>
 
 
-<div class="viewcode-block" id="daily_rca"><a class="viewcode-back" href="../../rca-mod.html#rca.daily_rca.daily_rca">[docs]</a><span class="k">def</span> <span class="nf">daily_rca</span><span class="p">(</span><span class="n">radar_config_file</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+<div class="viewcode-block" id="daily_rca"><a class="viewcode-back" href="../../rca-mod.html#rca.daily_rca.daily_rca">[docs]</a><span class="k">def</span> <span class="nf">daily_rca</span><span class="p">(</span><span class="n">radar_config_file</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    daily_rca loops through a day&#39;s worth of radar files (specify PPI or HSRHI, dual or horizontal polarization),</span>
 <span class="sd">    calculates the median daily 95th percentile clutter area reflectivity,</span>
@@ -177,6 +177,8 @@
 <span class="sd">        path to JSON file containing specifications: data directory, file extension, clutter map directory, baseline directory, baseline date, daily CSV directory, scan type, polarization, site, instrument, range limit</span>
 <span class="sd">    date: str</span>
 <span class="sd">        YYYYMMDD specifying date of interest</span>
+<span class="sd">    filters: boolean</span>
+<span class="sd">        Include IAH and RH filters</span>
 <span class="sd">                    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -202,6 +204,10 @@
 
     <span class="n">daily_csv_fullpath</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">dailycsvdir</span> <span class="o">+</span> <span class="s2">&quot;daily_rca_&quot;</span> <span class="o">+</span> <span class="n">scantype</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">site</span> <span class="o">+</span> <span class="n">inst</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">hourly_csv_fullpath</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">dailycsvdir</span> <span class="o">+</span> <span class="s2">&quot;hourlies/&quot;</span>  <span class="o">+</span> <span class="s2">&quot;hourly_rca_&quot;</span> <span class="o">+</span> <span class="n">scantype</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">site</span> <span class="o">+</span> <span class="n">inst</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">date</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span>
     <span class="p">)</span>
 
     <span class="c1"># Read in clutter map netCDF and baseline value netCDF</span>
@@ -242,6 +248,25 @@
     <span class="n">dataset</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="n">dataset_b</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
+    <span class="c1"># Prep for filters, if argument is set to True (read in and grab variables)</span>
+    <span class="k">if</span> <span class="n">filters</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+        <span class="n">dataset_f</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
+                    <span class="n">dailycsvdir</span><span class="o">+</span><span class="s2">&quot;/filters/&quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;filters_&quot;</span>
+                    <span class="o">+</span> <span class="n">scantype</span>
+                    <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+                    <span class="o">+</span> <span class="n">site</span>
+                    <span class="o">+</span> <span class="n">inst</span>
+                    <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+                    <span class="o">+</span> <span class="n">date</span>
+                    <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">total_filter</span> <span class="o">=</span> <span class="n">dataset_f</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;iah_and_rh_filter&quot;</span><span class="p">][:]</span>
+        <span class="n">rh_value</span> <span class="o">=</span> <span class="n">dataset_f</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;rh_value&quot;</span><span class="p">][:]</span>
+        <span class="c1">#datetime = dataset_f.variables[&quot;datetime&quot;][:]</span>
+        <span class="n">dataset_f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
     <span class="c1"># Empty lists to fill in loops below</span>
     <span class="n">date_time</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># date and time strings</span>
     <span class="n">dbz95_h</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 95th percentile reflectivity in H</span>
@@ -252,8 +277,15 @@
 
     <span class="c1"># Read in each radar file and turn into radar object and use function to</span>
     <span class="c1"># calculate 95th percentile clutter area reflectivity</span>
+
+    <span class="c1"># Will use glob, so grab all files and then sort by datetime</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datadir</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span> <span class="o">+</span> <span class="n">date</span> <span class="o">+</span> <span class="s2">&quot;*.??&quot;</span><span class="p">)):</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
     <span class="k">if</span> <span class="n">polarization</span> <span class="o">==</span> <span class="s2">&quot;horizontal&quot;</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datadir</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span> <span class="o">+</span> <span class="n">date</span> <span class="o">+</span> <span class="s2">&quot;*.??&quot;</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">idx_f</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
             <span class="n">radar</span> <span class="o">=</span> <span class="n">file_to_radar_object</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">extension</span><span class="p">)</span>
             <span class="n">var_dict</span> <span class="o">=</span> <span class="n">get_var_arrays_from_radar_object</span><span class="p">(</span><span class="n">radar</span><span class="p">,</span> <span class="n">radar_config_file</span><span class="p">)</span>
@@ -275,16 +307,48 @@
                     <span class="n">clutter_map_mask_h</span><span class="p">,</span>
                     <span class="n">clutter_mask_v</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="p">)</span>
-            <span class="n">date_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+            <span class="n">date_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dt</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">19</span><span class="p">])</span>
             <span class="n">dbz95_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_h</span><span class="p">[</span><span class="s2">&quot;reflectivity_95&quot;</span><span class="p">])</span>
-            <span class="n">num_pts_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_h</span><span class="p">[</span><span class="s2">&quot;num_pts&quot;</span><span class="p">])</span>
+            <span class="n">num_pts_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_h</span><span class="p">[</span><span class="s2">&quot;num_points&quot;</span><span class="p">])</span>
 
-            <span class="k">if</span> <span class="n">radar_band</span> <span class="o">==</span> <span class="s2">&quot;ka&quot;</span><span class="p">:</span>
-                <span class="n">pass_filter</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_h</span><span class="p">[</span><span class="s2">&quot;pass_filter&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">filters</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+                <span class="c1"># Read in filters array</span>
+                <span class="n">pass_filter</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">total_filter</span><span class="p">[</span><span class="n">idx_f</span><span class="p">])</span>
+            
+            <span class="c1"># Calculate RCA for the file</span>
+            <span class="n">rca_h_file</span> <span class="o">=</span> <span class="n">baseline_dbz95_h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">s_h</span><span class="p">[</span><span class="s2">&quot;reflectivity_95&quot;</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">dt</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">19</span><span class="p">],</span><span class="n">rca_h_file</span><span class="p">)</span>
+
+            <span class="c1"># Create dictionary and dataframe for hourly CSV</span>
+            <span class="n">csv_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">hourly_csv_fullpath</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">filters</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+                <span class="n">rca_dict</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;DATE&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">19</span><span class="p">],</span>
+                    <span class="s2">&quot;RCA_H&quot;</span><span class="p">:</span> <span class="n">rca_h_file</span><span class="p">,</span>
+                    <span class="s2">&quot;RCA_V&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> 
+                    <span class="s2">&quot;NUM_PTS&quot;</span><span class="p">:</span> <span class="n">s_h</span><span class="p">[</span><span class="s1">&#39;num_points&#39;</span><span class="p">],</span> 
+                    <span class="s2">&quot;NUM_PTS_V&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+                    <span class="s2">&quot;PASS_FILTER&quot;</span><span class="p">:</span> <span class="n">total_filter</span><span class="p">[</span><span class="n">idx_f</span><span class="p">],</span>
+                    <span class="s2">&quot;RH&quot;</span><span class="p">:</span> <span class="n">rh_value</span><span class="p">[</span><span class="n">idx_f</span><span class="p">]</span>
+                <span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rca_dict</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;DATE&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">19</span><span class="p">],</span>
+                    <span class="s2">&quot;RCA_H&quot;</span><span class="p">:</span> <span class="n">rca_h_file</span><span class="p">,</span>
+                    <span class="s2">&quot;RCA_V&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> 
+                    <span class="s2">&quot;NUM_PTS&quot;</span><span class="p">:</span> <span class="n">s_h</span><span class="p">[</span><span class="s1">&#39;num_points&#39;</span><span class="p">],</span>
+                    <span class="s2">&quot;NUM_PTS_V&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                <span class="p">}</span>
+            <span class="n">csv_frame</span> <span class="o">=</span> <span class="n">csv_frame</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rca_dict</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">csv_frame</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;DATE&quot;</span><span class="p">)</span>
+            <span class="n">csv_frame</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">hourly_csv_fullpath</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># Calculate median 95th percentile clutter area reflecitivty from all times in day</span>
         <span class="c1"># and total the number of points from files</span>
-        <span class="k">if</span> <span class="n">radar_band</span> <span class="o">==</span> <span class="s2">&quot;ka&quot;</span><span class="p">:</span>
+        <span class="n">dbz95_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dbz95_h</span><span class="p">)</span>
+        <span class="n">num_pts_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">num_pts_h</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filters</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+            <span class="n">pass_filter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pass_filter</span><span class="p">)</span>
             <span class="n">dbz95_h_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">dbz95_h</span><span class="p">[</span><span class="n">pass_filter</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
             <span class="n">total_num_pts_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">num_pts_h</span><span class="p">[</span><span class="n">pass_filter</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
@@ -298,21 +362,21 @@
         <span class="n">day</span> <span class="o">=</span> <span class="n">date</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span>
         <span class="n">date</span> <span class="o">=</span> <span class="n">yr</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">mon</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">day</span>
 
-        <span class="c1"># Create dictionary and dataframe</span>
+        <span class="c1"># Create dictionary and dataframe for daily CSV</span>
         <span class="n">csv_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">daily_csv_fullpath</span><span class="p">)</span>
         <span class="n">rca_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;DATE&quot;</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span>
             <span class="s2">&quot;RCA_H&quot;</span><span class="p">:</span> <span class="n">rca_h</span><span class="p">,</span>
             <span class="s2">&quot;RCA_V&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
             <span class="s2">&quot;NUM_PTS_H&quot;</span><span class="p">:</span> <span class="n">total_num_pts_h</span><span class="p">,</span>
-            <span class="s2">&quot;NUM_PTS_V&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+            <span class="s2">&quot;NUM_PTS_V&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
         <span class="p">}</span>
         <span class="n">csv_frame</span> <span class="o">=</span> <span class="n">csv_frame</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rca_dict</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">csv_frame</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;DATE&quot;</span><span class="p">)</span>
         <span class="n">csv_frame</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">daily_csv_fullpath</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">polarization</span> <span class="o">==</span> <span class="s2">&quot;dual&quot;</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datadir</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span> <span class="o">+</span> <span class="n">date</span> <span class="o">+</span> <span class="s2">&quot;*.??&quot;</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">idx_f</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
             <span class="n">radar</span> <span class="o">=</span> <span class="n">file_to_radar_object</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">extension</span><span class="p">)</span>
             <span class="n">var_dict</span> <span class="o">=</span> <span class="n">get_var_arrays_from_radar_object</span><span class="p">(</span><span class="n">radar</span><span class="p">,</span> <span class="n">radar_config_file</span><span class="p">)</span>
@@ -321,6 +385,7 @@
                     <span class="n">var_dict</span><span class="p">,</span>
                     <span class="n">polarization</span><span class="p">,</span>
                     <span class="n">range_limit</span><span class="p">,</span>
+                    <span class="n">radar_band</span><span class="p">,</span>
                     <span class="n">clutter_map_mask_h</span><span class="p">,</span>
                     <span class="n">clutter_mask_v</span><span class="o">=</span><span class="n">clutter_map_mask_v</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -329,22 +394,66 @@
                     <span class="n">var_dict</span><span class="p">,</span>
                     <span class="n">polarization</span><span class="p">,</span>
                     <span class="n">range_limit</span><span class="p">,</span>
+                    <span class="n">radar_band</span><span class="p">,</span>
                     <span class="n">clutter_map_mask_h</span><span class="p">,</span>
                     <span class="n">clutter_mask_v</span><span class="o">=</span><span class="n">clutter_map_mask_v</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="n">date_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
             <span class="n">dbz95_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_h</span><span class="p">[</span><span class="s2">&quot;reflectivity_95&quot;</span><span class="p">])</span>
-            <span class="n">num_pts_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_h</span><span class="p">[</span><span class="s2">&quot;num_pts&quot;</span><span class="p">])</span>
+            <span class="n">num_pts_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_h</span><span class="p">[</span><span class="s2">&quot;num_points&quot;</span><span class="p">])</span>
             <span class="n">dbz95_v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_v</span><span class="p">[</span><span class="s2">&quot;reflectivity_95&quot;</span><span class="p">])</span>
-            <span class="n">num_pts_v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_v</span><span class="p">[</span><span class="s2">&quot;num_pts&quot;</span><span class="p">])</span>
+            <span class="n">num_pts_v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_v</span><span class="p">[</span><span class="s2">&quot;num_points&quot;</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">filters</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+                <span class="c1"># Read in filters array</span>
+                <span class="n">pass_filter</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">total_filter</span><span class="p">[</span><span class="n">idx_f</span><span class="p">])</span>
+                <span class="n">rh</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rh_values</span><span class="p">[</span><span class="n">idx_f</span><span class="p">])</span>
+
+            <span class="c1"># Calculate RCA for the file</span>
+            <span class="n">rca_h_file</span> <span class="o">=</span> <span class="n">baseline_dbz95_h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">s_h</span><span class="p">[</span><span class="s2">&quot;reflectivity_95&quot;</span><span class="p">]</span>
+            <span class="n">rca_v_file</span> <span class="o">=</span> <span class="n">baseline_dbz95_v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">s_v</span><span class="p">[</span><span class="s2">&quot;reflectivity_95&quot;</span><span class="p">]</span>
+
+            <span class="c1"># Create dictionary and dataframe for hourly CSV</span>
+            <span class="n">csv_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">hourly_csv_fullpath</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">filters</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+                <span class="n">rca_dict</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;DATE&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">19</span><span class="p">],</span>
+                    <span class="s2">&quot;RCA_H&quot;</span><span class="p">:</span> <span class="n">rca_h_file</span><span class="p">,</span>
+                    <span class="s2">&quot;RCA_V&quot;</span><span class="p">:</span> <span class="n">rca_v_file</span><span class="p">,</span> 
+                    <span class="s2">&quot;NUM_PTS&quot;</span><span class="p">:</span> <span class="n">s_h</span><span class="p">[</span><span class="s1">&#39;num_points&#39;</span><span class="p">],</span> 
+                    <span class="s2">&quot;NUM_PTS_V&quot;</span><span class="p">:</span> <span class="n">s_v</span><span class="p">[</span><span class="s1">&#39;num_points&#39;</span><span class="p">],</span>
+                    <span class="s2">&quot;PASS_FILTER&quot;</span><span class="p">:</span> <span class="n">total_filter</span><span class="p">[</span><span class="n">idx_f</span><span class="p">],</span>
+                    <span class="s2">&quot;RH&quot;</span><span class="p">:</span> <span class="n">rh_values</span><span class="p">[</span><span class="n">idx_f</span><span class="p">]</span>
+                <span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rca_dict</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;DATE&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">19</span><span class="p">],</span>
+                    <span class="s2">&quot;RCA_H&quot;</span><span class="p">:</span> <span class="n">rca_h_file</span><span class="p">,</span>
+                    <span class="s2">&quot;RCA_V&quot;</span><span class="p">:</span> <span class="n">rca_v_file</span><span class="p">,</span> 
+                    <span class="s2">&quot;NUM_PTS&quot;</span><span class="p">:</span> <span class="n">s_h</span><span class="p">[</span><span class="s1">&#39;num_points&#39;</span><span class="p">],</span>
+                    <span class="s2">&quot;NUM_PTS_V&quot;</span><span class="p">:</span> <span class="n">s_h</span><span class="p">[</span><span class="s1">&#39;num_points&#39;</span><span class="p">]</span>
+                <span class="p">}</span>
+            <span class="n">csv_frame</span> <span class="o">=</span> <span class="n">csv_frame</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rca_dict</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">csv_frame</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;DATE&quot;</span><span class="p">)</span>
 
         <span class="c1"># Calculate median 95th percentile clutter area reflecitivty from all times in day</span>
-        <span class="n">dbz95_h_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">dbz95_h</span><span class="p">)</span>
-        <span class="n">dbz95_v_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">dbz95_v</span><span class="p">)</span>
-
-        <span class="c1"># Total up the number of points from all files</span>
-        <span class="n">total_num_pts_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">num_pts_h</span><span class="p">)</span>
-        <span class="n">total_num_pts_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">num_pts_v</span><span class="p">)</span>
+        <span class="n">dbz95_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dbz95_h</span><span class="p">)</span>
+        <span class="n">dbz95_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dbz95_v</span><span class="p">)</span>
+        <span class="n">num_pts_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">num_pts_h</span><span class="p">)</span>
+        <span class="n">num_pts_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">num_pts_v</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filters</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+            <span class="n">pass_filter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pass_filter</span><span class="p">)</span>
+            <span class="n">dbz95_h_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">dbz95_h</span><span class="p">[</span><span class="n">pass_filter</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">dbz95_v_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">dbz95_v</span><span class="p">[</span><span class="n">pass_filter</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="c1"># Total up the number of points from all files</span>
+            <span class="n">total_num_pts_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">num_pts_h</span><span class="p">[</span><span class="n">pass_filter</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">total_num_pts_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">num_pts_v</span><span class="p">[</span><span class="n">pass_filter</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dbz95_h_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">dbz95_h</span><span class="p">)</span>
+            <span class="n">dbz95_v_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">dbz95_v</span><span class="p">)</span>
+            <span class="c1"># Total up the number of points from all files</span>
+            <span class="n">total_num_pts_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">num_pts_h</span><span class="p">)</span>
+            <span class="n">total_num_pts_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">num_pts_v</span><span class="p">)</span>
 
         <span class="c1"># Calculate RCA</span>
         <span class="n">rca_h</span> <span class="o">=</span> <span class="n">baseline_dbz95_h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">dbz95_h_mean</span>

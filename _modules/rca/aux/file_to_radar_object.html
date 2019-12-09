@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rca.aux.file_to_radar_object &mdash; eRCA for Weather Radar 0.0.post0.dev68+g33357ac documentation</title>
+  <title>rca.aux.file_to_radar_object &mdash; eRCA for Weather Radar 0.0.post0.dev68+g4709ebf documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.0.post0.dev68+g33357ac
+                0.0.post0.dev68+g4709ebf
               </div>
             
           
@@ -152,6 +152,7 @@
             
   <h1>Source code for rca.aux.file_to_radar_object</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">pyart</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="c1"># Plans to add more options for reading (09-19-2019)</span>
 <span class="c1"># User may modify to include new reader</span>
@@ -174,12 +175,18 @@
 <span class="sd">        radar object derived from PyART readers</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;.nc&quot;</span> <span class="ow">or</span> <span class="s2">&quot;.v0&quot;</span><span class="p">:</span>
-        <span class="n">radar</span> <span class="o">=</span> <span class="n">pyart</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">cfradial</span><span class="o">.</span><span class="n">read_cfradial</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">delay_field_loading</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;.h5&quot;</span><span class="p">:</span>
-        <span class="n">radar</span> <span class="o">=</span> <span class="n">pyart</span><span class="o">.</span><span class="n">aux_io</span><span class="o">.</span><span class="n">read_gamic</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">file_field_names</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;.nc&quot;</span><span class="p">:</span>
+            <span class="n">radar</span> <span class="o">=</span> <span class="n">pyart</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">cfradial</span><span class="o">.</span><span class="n">read_cfradial</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">delay_field_loading</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;.h5&quot;</span><span class="p">:</span>
+            <span class="n">radar</span> <span class="o">=</span> <span class="n">pyart</span><span class="o">.</span><span class="n">aux_io</span><span class="o">.</span><span class="n">read_gamic</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">file_field_names</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;.v0&quot;</span><span class="p">:</span>
+            <span class="n">radar</span> <span class="o">=</span> <span class="n">pyart</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">cfradial</span><span class="o">.</span><span class="n">read_cfradial</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">delay_field_loading</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Unable to read in file: &#39;</span><span class="p">,</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">radar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        
     <span class="k">return</span> <span class="n">radar</span></div>
 </pre></div>
 

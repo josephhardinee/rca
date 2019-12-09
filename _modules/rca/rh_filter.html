@@ -1,0 +1,260 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rca.rh_filter &mdash; eRCA for Weather Radar 0.0.post0.dev68+g4709ebf documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> eRCA for Weather Radar
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.post0.dev68+g4709ebf
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rca.html">Package Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">eRCA for Weather Radar</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>rca.rh_filter</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rca.rh_filter</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">.get_closest_time</span> <span class="kn">import</span> <span class="n">get_closest_time</span>
+
+<span class="c1"># Relative humidity filter function </span>
+<span class="c1"># See plot_hourly routine</span>
+
+<span class="c1"># def function(one file)</span>
+<span class="c1"># find the nearest RH time</span>
+<span class="c1"># within a certain number of minutes</span>
+<span class="c1"># determine if RH &gt; 90%</span>
+<span class="c1"># return 1 or 0, pass filter or not</span>
+
+<div class="viewcode-block" id="rh_filter"><a class="viewcode-back" href="../../api/rca.html#rca.rh_filter.rh_filter">[docs]</a><span class="k">def</span> <span class="nf">rh_filter</span><span class="p">(</span>
+    <span class="n">date</span><span class="p">,</span>
+    <span class="n">variable_dictionary</span><span class="p">,</span>
+    <span class="n">met_dataframe</span><span class="p">,</span>
+    <span class="n">rh_thresh</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    rh_filter uses a previously generated clutter map to 1) identify clutter gates;</span>
+<span class="sd">    2) blank out identified clutter gates; 3) calculate integrated attentuation along each ray;</span>
+<span class="sd">    4) threshold for integrated attentuation; 5) return a 1 or 0 for passing or not passing IAH filter</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    date: str</span>
+<span class="sd">        YYYYMMDD</span>
+<span class="sd">    variable_dictionary: dict</span>
+<span class="sd">        dictionary with values, strings, and arrays of relevant radar data</span>
+<span class="sd">        i.e. &#39;reflectivity_h&#39;, &#39;reflectivity_v&#39;, &#39;azimuth&#39;, &#39;range&#39;, &#39;date_time&#39;</span>
+<span class="sd">    met_path: str</span>
+<span class="sd">        path to met station files</span>
+<span class="sd">    rh_thresh: int</span>
+<span class="sd">        threshold of relative humidity (%) for passing the RH filter</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pass_filter: int</span>
+<span class="sd">        0 or 1 (0=no, 1=yes)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">date_time</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;date_time&quot;</span><span class="p">]</span>
+    <span class="n">date_time</span> <span class="o">=</span> <span class="n">date_time</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">19</span><span class="p">]</span> <span class="c1">#change this to be yyyy-mm-dd hh-mm-ss</span>
+    <span class="c1">#print(date_time)</span>
+    <span class="n">rca_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_time</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span> 
+    <span class="c1">#rca_time = date_time</span>
+    <span class="c1">#print(rca_time)</span>
+    <span class="n">met_time</span> <span class="o">=</span> <span class="n">met_dataframe</span><span class="p">[</span><span class="s1">&#39;time_offset&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Match RCA times to cormet times</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">get_closest_time</span><span class="p">(</span><span class="n">met_time</span><span class="p">,</span><span class="n">rca_time</span><span class="p">)</span>
+    <span class="n">rh_match</span> <span class="o">=</span> <span class="n">met_dataframe</span><span class="p">[</span><span class="s1">&#39;rh_mean&#39;</span><span class="p">][</span><span class="n">match</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">rh_match</span> <span class="o">&gt;</span> <span class="n">rh_thresh</span><span class="p">:</span>
+        <span class="n">pass_filter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pass_filter</span> <span class="o">=</span> <span class="mi">1</span>
+    
+    <span class="k">return</span> <span class="n">date_time</span><span class="p">,</span> <span class="n">rh_match</span><span class="p">,</span> <span class="n">pass_filter</span> </div>
+
+    
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Alexis Hunzinger
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

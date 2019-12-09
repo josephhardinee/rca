@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rca &mdash; eRCA for Weather Radar 0.0.post0.dev68+g33357ac documentation</title>
+  <title>rca &mdash; eRCA for Weather Radar 0.0.post0.dev68+g4709ebf documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.0.post0.dev68+g33357ac
+                0.0.post0.dev68+g4709ebf
               </div>
             
           
@@ -177,13 +177,16 @@
 <span id="rca-baseline"></span><h2>rca.baseline<a class="headerlink" href="#module-rca.baseline" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="rca.baseline.baseline">
-<code class="sig-prename descclassname">rca.baseline.</code><code class="sig-name descname">baseline</code><span class="sig-paren">(</span><em class="sig-param">radar_config_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/baseline.html#baseline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.baseline.baseline" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rca.baseline.</code><code class="sig-name descname">baseline</code><span class="sig-paren">(</span><em class="sig-param">radar_config_file</em>, <em class="sig-param">filters=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/baseline.html#baseline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.baseline.baseline" title="Permalink to this definition">¶</a></dt>
 <dd><p>baseline loops through a day’s worth of radar files (specify PPI or HSRHI),
 calculates the median daily 95th percentile clutter area reflectivity,
 and saves the value to a netCDF as the baseline 95th percentile clutter area reflectivity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>radar_config_file</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to JSON file containing specifications: data directory, file extension, clutter map directory, output directory for baseline netCDF, baseline date, scan type, polarization, site, instrument, range limit</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>radar_config_file</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to JSON file containing specifications: data directory, file extension, clutter map directory, output directory for baseline netCDF, baseline date, scan type, polarization, site, instrument, range limit</p></li>
+<li><p><strong>filters</strong> (<em>boolean</em>) – Include IAH and RH filters</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -194,8 +197,8 @@ and saves the value to a netCDF as the baseline 95th percentile clutter area ref
 <dl class="function">
 <dt id="rca.calculate_dbz95.calculate_dbz95_ppi">
 <code class="sig-prename descclassname">rca.calculate_dbz95.</code><code class="sig-name descname">calculate_dbz95_ppi</code><span class="sig-paren">(</span><em class="sig-param">variable_dictionary</em>, <em class="sig-param">polarization</em>, <em class="sig-param">range_limit</em>, <em class="sig-param">radar_band</em>, <em class="sig-param">clutter_mask_h</em>, <em class="sig-param">clutter_mask_v=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/calculate_dbz95.html#calculate_dbz95_ppi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.calculate_dbz95.calculate_dbz95_ppi" title="Permalink to this definition">¶</a></dt>
-<dd><p>calculate_dbz95_hsrhi calculates the 95th percentile reflectivity for a given radar HSRHI file
-using the input HSRHI cluter map masks (H and/or V). Returns the date and time of the file,
+<dd><p>calculate_dbz95_ppi calculates the 95th percentile reflectivity for a given radar PPI file
+using the input PPI cluter map masks (H and/or V). Returns the date and time of the file,
 95th percentile reflectivity value for Zh and/or Zv, and dictionaries of statistics,
 including number of points, histogram/PDF, bins, CDF.</p>
 <dl class="field-list simple">
@@ -398,7 +401,7 @@ no clutter present: 0</p></li>
 <span id="rca-daily-rca"></span><h2>rca.daily_rca<a class="headerlink" href="#module-rca.daily_rca" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="rca.daily_rca.daily_rca">
-<code class="sig-prename descclassname">rca.daily_rca.</code><code class="sig-name descname">daily_rca</code><span class="sig-paren">(</span><em class="sig-param">radar_config_file</em>, <em class="sig-param">date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/daily_rca.html#daily_rca"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.daily_rca.daily_rca" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rca.daily_rca.</code><code class="sig-name descname">daily_rca</code><span class="sig-paren">(</span><em class="sig-param">radar_config_file</em>, <em class="sig-param">date</em>, <em class="sig-param">filters=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/daily_rca.html#daily_rca"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.daily_rca.daily_rca" title="Permalink to this definition">¶</a></dt>
 <dd><p>daily_rca loops through a day’s worth of radar files (specify PPI or HSRHI, dual or horizontal polarization),
 calculates the median daily 95th percentile clutter area reflectivity,
 computes the RCA value using the established baseline 95h percentile clutter area reflectivity.</p>
@@ -408,6 +411,7 @@ computes the RCA value using the established baseline 95h percentile clutter are
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>radar_config_file</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to JSON file containing specifications: data directory, file extension, clutter map directory, baseline directory, baseline date, daily CSV directory, scan type, polarization, site, instrument, range limit</p></li>
 <li><p><strong>date</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – YYYYMMDD specifying date of interest</p></li>
+<li><p><strong>filters</strong> (<em>boolean</em>) – Include IAH and RH filters</p></li>
 </ul>
 </dd>
 </dl>

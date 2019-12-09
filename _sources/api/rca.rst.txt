@@ -52,10 +52,42 @@ rca.daily\_rca module
    :undoc-members:
    :show-inheritance:
 
+rca.filters module
+------------------
+
+.. automodule:: rca.filters
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rca.get\_closest\_time module
+-----------------------------
+
+.. automodule:: rca.get_closest_time
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 rca.get\_pct\_on\_clutter\_map module
 -------------------------------------
 
 .. automodule:: rca.get_pct_on_clutter_map
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rca.iah\_filter module
+----------------------
+
+.. automodule:: rca.iah_filter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rca.rh\_filter module
+---------------------
+
+.. automodule:: rca.rh_filter
    :members:
    :undoc-members:
    :show-inheritance:

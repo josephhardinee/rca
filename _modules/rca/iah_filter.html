@@ -1,0 +1,472 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rca.iah_filter &mdash; eRCA for Weather Radar 0.0.post0.dev68+g4709ebf documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> eRCA for Weather Radar
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.post0.dev68+g4709ebf
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rca.html">Package Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">eRCA for Weather Radar</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>rca.iah_filter</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rca.iah_filter</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">.aux.create_masks</span> <span class="kn">import</span> <span class="n">create_az_mask_ppi</span><span class="p">,</span> <span class="n">create_az_mask_rhi</span>
+
+<span class="c1"># Attenutation filter function for Ka band</span>
+<span class="c1"># Looks a lot like calculate dbz95 code</span>
+
+<span class="c1"># def function(one file)</span>
+<span class="c1"># iah filter like in calcdbz95</span>
+<span class="c1"># return a 1 or 0 for passing or not passing</span>
+
+<div class="viewcode-block" id="iah_filter_ppi"><a class="viewcode-back" href="../../api/rca.html#rca.iah_filter.iah_filter_ppi">[docs]</a><span class="k">def</span> <span class="nf">iah_filter_ppi</span><span class="p">(</span>
+    <span class="n">variable_dictionary</span><span class="p">,</span>
+    <span class="n">polarization</span><span class="p">,</span>
+    <span class="n">range_limit</span><span class="p">,</span>
+    <span class="n">radar_band</span><span class="p">,</span>
+    <span class="n">clutter_mask_h</span><span class="p">,</span>
+    <span class="n">clutter_mask_v</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    iah_filter_ppi uses a previously generated clutter map to 1) identify clutter gates;</span>
+<span class="sd">    2) blank out identified clutter gates; 3) calculate integrated attentuation along each ray;</span>
+<span class="sd">    4) threshold for integrated attentuation; 5) return a 1 or 0 for passing or not passing IAH filter</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    variable_dictionary: dict</span>
+<span class="sd">        dictionary with values, strings, and arrays of relevant radar data</span>
+<span class="sd">        i.e. &#39;reflectivity_h&#39;, &#39;reflectivity_v&#39;, &#39;azimuth&#39;, &#39;range&#39;, &#39;date_time&#39;</span>
+<span class="sd">    polarization: str</span>
+<span class="sd">        specifies for which polarization user wants to create clutter flag array</span>
+<span class="sd">        &#39;dual&#39;: calculate for both H and V</span>
+<span class="sd">        &#39;horizontal&#39;: calculate only for H</span>
+<span class="sd">    range_limit: int</span>
+<span class="sd">        value of desired radar gate range limit</span>
+<span class="sd">    radar_band: str</span>
+<span class="sd">        one or two letter code for radar band</span>
+<span class="sd">    clutter_mask_h: MaskedArray</span>
+<span class="sd">        masked array denotes which elements are considered clutter</span>
+<span class="sd">        used to extract reflectivity values from overlapping radar gates</span>
+<span class="sd">        for H polarization</span>
+<span class="sd">    clutter_mask_h: MaskedArray</span>
+<span class="sd">        masked array denotes which elements are considered clutter</span>
+<span class="sd">        used to extract reflectivity values from overlapping radar gates</span>
+<span class="sd">        for V polarization</span>
+<span class="sd">        default is None, array must be provided if calculating for V polarization</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    date_time: str</span>
+<span class="sd">        date and time of the file</span>
+<span class="sd">    pass_filter: int</span>
+<span class="sd">        0 or 1 (0=no, 1=yes)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">date_time</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;date_time&quot;</span><span class="p">]</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">]</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;azimuth&quot;</span><span class="p">]</span>
+    <span class="n">zh</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;reflectivity_h&quot;</span><span class="p">]</span>
+
+    <span class="c1">###########################</span>
+    <span class="c1"># Special case</span>
+    <span class="c1">#    KASACR calibration constant during CACTI</span>
+    <span class="c1">#    zh(corrected) = zh(in_file) + zh_offset</span>
+    <span class="c1">#    BEFORE 2019-03-18 16:42:33 UTC</span>
+    <span class="c1">#        dirt on waveguide, reflectivity low</span>
+    <span class="c1">#        zh_offset = 10.6 + difference of RCA going backward in time</span>
+    <span class="c1">#    AFTER 2019-03-18 16:42:33 UTC</span>
+    <span class="c1">#        waveguide cleaned</span>
+    <span class="c1">#        zh_offset = 10.6</span>
+    <span class="n">zh_offset</span> <span class="o">=</span> <span class="mf">10.6</span>
+    <span class="n">zh</span> <span class="o">=</span> <span class="n">zh</span> <span class="o">+</span> <span class="n">zh_offset</span>
+    <span class="c1">###########################</span>
+
+    <span class="c1">#######################################</span>
+    <span class="c1"># Attenutation filtering</span>
+    <span class="c1"># If a ray surpasses a certain threshold of integrated attenutation</span>
+    <span class="c1"># (based on an Ah-Z relationship)</span>
+    <span class="c1"># the whole file is ignored and move on to next file</span>
+    <span class="c1"># i.e. dump out NaN for dbz95</span>
+    <span class="c1"># FOR TESTING, OUTPUT TYPICAL DBZ95, JUST FLAG AS *WOULD BE TRASHED*</span>
+    <span class="c1"># Ah = az^b, where z is in mm6m-3</span>
+    <span class="c1"># Z = 10log10(z)  mm6m-3 =&gt; dBZ</span>
+    <span class="c1"># z = 10^(Z/10)   dBZ =&gt; mm6m-3</span>
+    <span class="c1"># ah = a * (10**(zh/10)) **b</span>
+    <span class="c1"># a = 0.000631967738</span>
+    <span class="c1"># b = 0.971513669</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="mf">0.00115481</span>  <span class="c1"># new from JCH Nov 14 2019</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="mf">0.95361079</span>
+    <span class="n">gate_width</span> <span class="o">=</span> <span class="mf">0.025</span>  <span class="c1"># km</span>
+    <span class="n">iah_thresh</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="c1">########################################</span>
+
+    <span class="n">range_shape</span> <span class="o">=</span> <span class="n">range_limit</span> <span class="o">/</span> <span class="mi">1000</span>
+    <span class="n">theta_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">360</span><span class="p">)</span>
+    <span class="n">r_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">range_shape</span><span class="p">)</span>
+
+    <span class="c1"># H POLARIZATION</span>
+    <span class="n">zh_from_mask</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">iah</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">idx_az</span><span class="p">,</span> <span class="n">az</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">theta_list</span><span class="p">):</span>
+        <span class="n">az_mask</span> <span class="o">=</span> <span class="n">create_az_mask_ppi</span><span class="p">(</span><span class="n">az</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">radar_band</span><span class="p">)</span>
+        <span class="n">zh_rays_blank_clutter</span> <span class="o">=</span> <span class="n">zh</span><span class="p">[</span><span class="n">az_mask</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">zh_rays_blank_clutter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">getdata</span><span class="p">(</span><span class="n">zh_rays_blank_clutter</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx_ra</span><span class="p">,</span> <span class="n">ra</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">r_list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">clutter_mask_h</span><span class="p">[</span><span class="n">idx_az</span><span class="p">,</span> <span class="n">idx_ra</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">ra</span> <span class="o">==</span> <span class="n">range_shape</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">rstart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="p">(</span><span class="n">ra</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">rstop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="p">(</span><span class="n">r_list</span><span class="p">[</span><span class="n">idx_ra</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">)[</span>
+                            <span class="mi">0</span>
+                        <span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                        <span class="n">rstop</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                    <span class="c1"># Blank out clutter range gates</span>
+                    <span class="n">zh_rays_blank_clutter</span><span class="p">[:,</span> <span class="n">rstart</span><span class="p">:</span><span class="n">rstop</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">40.0</span>
+        <span class="c1"># Attenuation filtering</span>
+        <span class="n">ah_rays</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="n">zh_rays_blank_clutter</span> <span class="o">/</span> <span class="mi">10</span><span class="p">))</span> <span class="o">**</span> <span class="n">b</span>
+        <span class="n">zh_rays</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">getdata</span><span class="p">(</span><span class="n">zh_rays</span><span class="p">)</span>
+        <span class="n">iah_rays</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">ah_rays</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx_ray</span><span class="p">,</span> <span class="n">ray</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ah_rays</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]):</span>
+            <span class="n">iah_rays</span><span class="p">[</span><span class="n">idx_ray</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">ah_rays</span><span class="p">[</span><span class="n">idx_ray</span><span class="p">,</span> <span class="p">:])</span> <span class="o">*</span> <span class="n">gate_width</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="n">iah_pass</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">ah_rays</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">iah_pass</span><span class="p">[</span><span class="n">iah_rays</span> <span class="o">&gt;</span> <span class="n">iah_thresh</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">iah</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">iah_pass</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">iah</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">pass_filter</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pass_filter</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">polarization</span> <span class="o">==</span> <span class="s2">&quot;horizontal&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">date_time</span><span class="p">,</span> <span class="n">pass_filter</span></div>
+
+<div class="viewcode-block" id="iah_filter_rhi"><a class="viewcode-back" href="../../api/rca.html#rca.iah_filter.iah_filter_rhi">[docs]</a><span class="k">def</span> <span class="nf">iah_filter_rhi</span><span class="p">(</span>
+    <span class="n">variable_dictionary</span><span class="p">,</span>
+    <span class="n">polarization</span><span class="p">,</span>
+    <span class="n">range_limit</span><span class="p">,</span>
+    <span class="n">radar_band</span><span class="p">,</span>
+    <span class="n">clutter_mask_h</span><span class="p">,</span>
+    <span class="n">clutter_mask_v</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    iah_filter_rhi uses a previously generated clutter map to 1) identify clutter gates;</span>
+<span class="sd">    2) blank out identified clutter gates; 3) calculate integrated attentuation along each ray;</span>
+<span class="sd">    4) threshold for integrated attentuation; 5) return a 1 or 0 for passing or not passing IAH filter</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    variable_dictionary: dict</span>
+<span class="sd">        dictionary with values, strings, and arrays of relevant radar data</span>
+<span class="sd">        i.e. &#39;reflectivity_h&#39;, &#39;reflectivity_v&#39;, &#39;azimuth&#39;, &#39;range&#39;, &#39;date_time&#39;</span>
+<span class="sd">    polarization: str</span>
+<span class="sd">        specifies for which polarization user wants to create clutter flag array</span>
+<span class="sd">        &#39;dual&#39;: calculate for both H and V</span>
+<span class="sd">        &#39;horizontal&#39;: calculate only for H</span>
+<span class="sd">    range_limit: int</span>
+<span class="sd">        value of desired radar gate range limit</span>
+<span class="sd">    radar_band: str</span>
+<span class="sd">        one or two letter code for radar band</span>
+<span class="sd">    clutter_mask_h: MaskedArray</span>
+<span class="sd">        masked array denotes which elements are considered clutter</span>
+<span class="sd">        used to extract reflectivity values from overlapping radar gates</span>
+<span class="sd">        for H polarization</span>
+<span class="sd">    clutter_mask_h: MaskedArray</span>
+<span class="sd">        masked array denotes which elements are considered clutter</span>
+<span class="sd">        used to extract reflectivity values from overlapping radar gates</span>
+<span class="sd">        for V polarization</span>
+<span class="sd">        default is None, array must be provided if calculating for V polarization</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    date_time: str</span>
+<span class="sd">        date and time of the file</span>
+<span class="sd">    pass_filter: int</span>
+<span class="sd">        0 or 1 (0=no, 1=yes)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">date_time</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;date_time&quot;</span><span class="p">]</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">]</span>
+    <span class="n">elev</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;elevation&quot;</span><span class="p">]</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;azimuth&quot;</span><span class="p">]</span>
+    <span class="n">zh</span> <span class="o">=</span> <span class="n">variable_dictionary</span><span class="p">[</span><span class="s2">&quot;reflectivity_h&quot;</span><span class="p">]</span>
+
+    <span class="c1">###########################</span>
+    <span class="c1"># Special case</span>
+    <span class="c1">#    KASACR calibration constant during CACTI</span>
+    <span class="c1">#    zh(corrected) = zh(in_file) + zh_offset</span>
+    <span class="c1">#    BEFORE 2019-03-18 16:42:33 UTC</span>
+    <span class="c1">#        dirt on waveguide, reflectivity low</span>
+    <span class="c1">#        zh_offset = 10.6 + difference of RCA going backward in time</span>
+    <span class="c1">#    AFTER 2019-03-18 16:42:33 UTC</span>
+    <span class="c1">#        waveguide cleaned</span>
+    <span class="c1">#        zh_offset = 10.6</span>
+    <span class="n">zh_offset</span> <span class="o">=</span> <span class="mf">10.6</span>
+    <span class="n">zh</span> <span class="o">=</span> <span class="n">zh</span> <span class="o">+</span> <span class="n">zh_offset</span>
+    <span class="c1">###########################</span>
+
+    <span class="c1">#######################################</span>
+    <span class="c1"># Attenutation filtering</span>
+    <span class="c1"># If a ray surpasses a certain threshold of integrated attenutation</span>
+    <span class="c1"># (based on an Ah-Z relationship)</span>
+    <span class="c1"># the whole file is ignored and move on to next file</span>
+    <span class="c1"># i.e. dump out NaN for dbz95</span>
+    <span class="c1"># FOR TESTING, OUTPUT TYPICAL DBZ95, JUST FLAG AS *WOULD BE TRASHED*</span>
+    <span class="c1"># Ah = az^b, where z is in mm6m-3</span>
+    <span class="c1"># Z = 10log10(z)  mm6m-3 =&gt; dBZ</span>
+    <span class="c1"># z = 10^(Z/10)   dBZ =&gt; mm6m-3</span>
+    <span class="c1"># ah = a * (10**(zh/10)) **b</span>
+    <span class="c1"># a = 0.000631967738</span>
+    <span class="c1"># b = 0.971513669</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="mf">0.00115481</span>  <span class="c1"># new from JCH Nov 14 2019</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="mf">0.95361079</span>
+    <span class="n">gate_width</span> <span class="o">=</span> <span class="mf">0.025</span>  <span class="c1"># km</span>
+    <span class="n">iah_thresh</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="c1">########################################</span>
+
+    <span class="n">range_shape</span> <span class="o">=</span> <span class="n">range_limit</span> <span class="o">/</span> <span class="mi">1000</span>
+    <span class="n">elev_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">175</span><span class="p">,</span> <span class="mi">176</span><span class="p">,</span> <span class="mi">177</span><span class="p">,</span> <span class="mi">178</span><span class="p">,</span> <span class="mi">179</span><span class="p">]</span>
+    <span class="n">theta_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">150</span><span class="p">]</span>
+    <span class="n">r_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">range_shape</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># H POLARIZATION</span>
+    <span class="n">zh_from_mask</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">iah</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">idx_az</span><span class="p">,</span> <span class="n">az</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">theta_list</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">az</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="n">az_mask</span> <span class="o">=</span> <span class="n">create_az_mask_rhi</span><span class="p">(</span><span class="n">az</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">radar_band</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx_el</span><span class="p">,</span> <span class="n">el</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">elev_list</span><span class="p">):</span>
+            <span class="n">el_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">elev</span> <span class="o">-</span> <span class="n">el</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.5</span>
+            <span class="n">zh_rays_blank_clutter</span> <span class="o">=</span> <span class="n">zh</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">az_mask</span><span class="p">,</span> <span class="n">el_mask</span><span class="p">),</span> <span class="p">:]</span>
+            <span class="n">zh_rays_blank_clutter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">getdata</span><span class="p">(</span><span class="n">zh_rays_blank_clutter</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">idx_ra</span><span class="p">,</span> <span class="n">ra</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">r_list</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">clutter_mask_h</span><span class="p">[</span><span class="n">idx_az</span><span class="p">,</span> <span class="n">idx_el</span><span class="p">,</span> <span class="n">idx_ra</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">ra</span> <span class="o">==</span> <span class="n">range_shape</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">rstart</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="p">(</span><span class="n">ra</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">rstop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                                <span class="n">r</span> <span class="o">-</span> <span class="p">(</span><span class="n">r_list</span><span class="p">[</span><span class="n">idx_ra</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mf">0.0</span>
+                            <span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                            <span class="n">rstop</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                        <span class="c1"># Blank out clutter range gates</span>
+                        <span class="n">zh_rays_blank_clutter</span><span class="p">[:,</span> <span class="n">rstart</span><span class="p">:</span><span class="n">rstop</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">40.0</span>
+            <span class="c1"># Attenuation filtering</span>
+            <span class="n">ah_rays</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="n">zh_rays_blank_clutter</span> <span class="o">/</span> <span class="mi">10</span><span class="p">))</span> <span class="o">**</span> <span class="n">b</span>
+            <span class="n">iah_rays</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">ah_rays</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">idx_ray</span><span class="p">,</span> <span class="n">ray</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ah_rays</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]):</span>
+                <span class="n">iah_rays</span><span class="p">[</span><span class="n">idx_ray</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">ah_rays</span><span class="p">[</span><span class="n">idx_ray</span><span class="p">,</span> <span class="p">:])</span> <span class="o">*</span> <span class="n">gate_width</span> <span class="o">*</span> <span class="mi">2</span>
+                <span class="p">)</span>
+            <span class="n">iah_pass</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">ah_rays</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="n">iah_pass</span><span class="p">[</span><span class="n">iah_rays</span> <span class="o">&gt;</span> <span class="n">iah_thresh</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">iah</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">iah_pass</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">iah</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">pass_filter</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pass_filter</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">polarization</span> <span class="o">==</span> <span class="s2">&quot;horizontal&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">date_time</span><span class="p">,</span> <span class="n">pass_filter</span></div>
+
+
+
+
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Alexis Hunzinger
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
