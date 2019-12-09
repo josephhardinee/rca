@@ -11,8 +11,8 @@ def calculate_dbz95_ppi(
     clutter_mask_v=None,
 ):
     """
-    calculate_dbz95_hsrhi calculates the 95th percentile reflectivity for a given radar HSRHI file
-    using the input HSRHI cluter map masks (H and/or V). Returns the date and time of the file,
+    calculate_dbz95_ppi calculates the 95th percentile reflectivity for a given radar PPI file
+    using the input PPI cluter map masks (H and/or V). Returns the date and time of the file,
     95th percentile reflectivity value for Zh and/or Zv, and dictionaries of statistics,
     including number of points, histogram/PDF, bins, CDF.
     
@@ -80,27 +80,8 @@ def calculate_dbz95_ppi(
     #        waveguide cleaned
     #        zh_offset = 10.6
     zh_offset = 10.6
-    zh = zh + zh_offset
+    #zh = zh + zh_offset
     ###########################
-
-    #######################################
-    # Attenutation filtering
-    # If a ray surpasses a certain threshold of integrated attenutation
-    # (based on an Ah-Z relationship)
-    # the whole file is ignored and move on to next file
-    # i.e. dump out NaN for dbz95
-    # FOR TESTING, OUTPUT TYPICAL DBZ95, JUST FLAG AS *WOULD BE TRASHED*
-    # Ah = az^b, where z is in mm6m-3
-    # Z = 10log10(z)  mm6m-3 => dBZ
-    # z = 10^(Z/10)   dBZ => mm6m-3
-    # ah = a * (10**(zh/10)) **b
-    # a = 0.000631967738
-    # b = 0.971513669
-    a = 0.00115481  # new from JCH Nov 14 2019
-    b = 0.95361079
-    gate_width = 0.025  # km
-    iah_thresh = 0.1
-    ########################################
 
     range_shape = range_limit / 1000
     theta_list = np.arange(360)
@@ -110,13 +91,11 @@ def calculate_dbz95_ppi(
     zh_from_mask = []
 
     if radar_band == "ka":
-        iah = []
+        zh = zh + zh_offset
         for idx_az, az in enumerate(theta_list):
-            az_mask = create_az_mask_hsrhi(az, theta)
+            az_mask = create_az_mask_ppi(az, theta, radar_band)
             zh_rays = zh[az_mask, :]
             zh_rays = np.ma.getdata(zh_rays)
-            zh_rays_blank_clutter = zh_rays.copy()
-            zh_rays_blank_clutter = np.ma.getdata(zh_rays_blank_clutter)
             for idx_ra, ra in enumerate(r_list):
                 if clutter_mask_h[idx_az, idx_ra]:
                     if ra == range_shape:
@@ -131,25 +110,9 @@ def calculate_dbz95_ppi(
                             rstop = -1
                         zh_from_mask.append(zh_rays[:, rstart:rstop])
 
-                        # Blank out clutter range gates
-                        zh_rays_blank_clutter[:, rstart:rstop] = -40.0
-            # Attenuation filtering
-            ah_rays = a * (10 ** (zh_rays_blank_clutter / 10)) ** b
-            zh_rays = np.ma.getdata(zh_rays)
-            iah_rays = np.empty(ah_rays.shape)
-            for idx_ray, ray in enumerate(ah_rays[:, 0]):
-                iah_rays[idx_ray, :] = np.cumsum(ah_rays[idx_ray, :]) * gate_width * 2
-            iah_pass = np.ones(ah_rays.shape)
-            iah_pass[iah_rays > iah_thresh] = 0
-            iah.append(np.nanmean(iah_pass))
-        if np.nanmean(iah) == 1:
-            pass_filter = 1
-        else:
-            pass_filter = 0
-
     else:
         for idx_az, az in enumerate(theta_list):
-            az_mask = create_az_mask_ppi(az, theta)
+            az_mask = create_az_mask_ppi(az, theta, radar_band)
             zh_rays = zh[az_mask, :]
             zh_rays = np.ma.getdata(zh_rays)
             for idx_ra, ra in enumerate(r_list):
@@ -185,23 +148,14 @@ def calculate_dbz95_ppi(
     idx95 = (np.abs(hp - 95.0)).argmin()
     dbz95_h = x[idx95]
 
-    if radar_band == "ka":
-        stats_h = {
-            "num_points": num_pts_h,
-            "histo_n": hn,
-            "histo_bins": hbins,
-            "cdf": hp,
-            "reflectivity_95": dbz95_h,
-            "pass_filter": pass_filter,
-        }
-    else:
-        stats_h = {
-            "num_points": num_pts_h,
-            "histo_n": hn,
-            "histo_bins": hbins,
-            "cdf": hp,
-            "reflectivity_95": dbz95_h,
-        }
+
+    stats_h = {
+        "num_points": num_pts_h,
+        "histo_n": hn,
+        "histo_bins": hbins,
+        "cdf": hp,
+        "reflectivity_95": dbz95_h,
+    }
 
     if polarization == "horizontal":
         return date_time, stats_h
@@ -212,7 +166,7 @@ def calculate_dbz95_ppi(
         # V POLARIZATION
         zv_from_mask = []
         for idx_az, az in enumerate(theta_list):
-            az_mask = create_az_mask_ppi(az, theta)
+            az_mask = create_az_mask_ppi(az, theta, radar_band)
             zv_rays = zv[az_mask, :]
             zv_rays = np.ma.getdata(zv_rays)
             for idx_ra, ra in enumerate(r_list):
@@ -327,6 +281,8 @@ def calculate_dbz95_rhi(
     theta = variable_dictionary["azimuth"]
     zh = variable_dictionary["reflectivity_h"]
 
+    date_int = int(date_time[0:4]+date_time[5:7]+date_time[8:10])
+
     ###########################
     # Special case
     #    KASACR calibration constant during CACTI
@@ -338,27 +294,9 @@ def calculate_dbz95_rhi(
     #        waveguide cleaned
     #        zh_offset = 10.6
     zh_offset = 10.6
-    zh = zh + zh_offset
+    if radar_band == 'ka' and date_int < 20190318:
+        zh = zh + zh_offset
     ###########################
-
-    #######################################
-    # Attenutation filtering
-    # If a ray surpasses a certain threshold of integrated attenutation
-    # (based on an Ah-Z relationship)
-    # the whole file is ignored and move on to next file
-    # i.e. dump out NaN for dbz95
-    # FOR TESTING, OUTPUT TYPICAL DBZ95, JUST FLAG AS *WOULD BE TRASHED*
-    # Ah = az^b, where z is in mm6m-3
-    # Z = 10log10(z)  mm6m-3 => dBZ
-    # z = 10^(Z/10)   dBZ => mm6m-3
-    # ah = a * (10**(zh/10)) **b
-    # a = 0.000631967738
-    # b = 0.971513669
-    a = 0.00115481  # new from JCH Nov 14 2019
-    b = 0.95361079
-    gate_width = 0.025  # km
-    iah_thresh = 0.1
-    ########################################
 
     range_shape = range_limit / 1000
     elev_list = [1, 2, 3, 4, 5, 175, 176, 177, 178, 179]
@@ -368,18 +306,15 @@ def calculate_dbz95_rhi(
     # H POLARIZATION
     zh_from_mask = []
     if radar_band == "ka":
-        iah = []
         for idx_az, az in enumerate(theta_list):
             if az == 0:
                 continue
             else:
                 pass
-            az_mask = create_az_mask_hsrhi(az, theta)
+            az_mask = create_az_mask_rhi(az, theta, radar_band)
             for idx_el, el in enumerate(elev_list):
                 el_mask = np.abs(elev - el) < 0.5
                 zh_rays = zh[np.logical_and(az_mask, el_mask), :]
-                zh_rays_blank_clutter = zh_rays.copy()
-                zh_rays_blank_clutter = np.ma.getdata(zh_rays_blank_clutter)
                 for idx_ra, ra in enumerate(r_list):
                     if clutter_mask_h[idx_az, idx_el, idx_ra]:
                         if ra == range_shape:
@@ -394,30 +329,10 @@ def calculate_dbz95_rhi(
                                 rstop = -1
                             zh_from_mask.append(zh_rays[:, rstart:rstop])
 
-                            # Blank out clutter range gates
-                            zh_rays_blank_clutter[:, rstart:rstop] = -40.0
-
-                # Attenuation filtering
-                ah_rays = a * (10 ** (zh_rays_blank_clutter / 10)) ** b
-                zh_rays = np.ma.getdata(zh_rays)
-                iah_rays = np.empty(ah_rays.shape)
-                for idx_ray, ray in enumerate(ah_rays[:, 0]):
-                    iah_rays[idx_ray, :] = (
-                        np.cumsum(ah_rays[idx_ray, :]) * gate_width * 2
-                    )
-                iah_pass = np.ones(ah_rays.shape)
-                iah_pass[iah_rays > iah_thresh] = 0
-                iah.append(np.nanmean(iah_pass))
-
-        if np.nanmean(iah) == 1:
-            pass_filter = 1
-        else:
-            pass_filter = 0
-
     # Now for any band that is not Ka (C, X)
     else:
         for idx_az, az in enumerate(theta_list):
-            az_mask = create_az_mask_hsrhi(az, theta)
+            az_mask = create_az_mask_rhi(az, theta, radar_band)
             for idx_el, el in enumerate(elev_list):
                 el_mask = np.abs(elev - el) < 0.5
                 zh_rays = zh[np.logical_and(az_mask, el_mask), :]
@@ -455,23 +370,13 @@ def calculate_dbz95_rhi(
     idx95 = (np.abs(hp - 95.0)).argmin()
     dbz95_h = x[idx95]
 
-    if radar_band == "ka":
-        stats_h = {
-            "num_points": num_pts_h,
-            "histo_n": hn,
-            "histo_bins": hbins,
-            "cdf": hp,
-            "reflectivity_95": dbz95_h,
-            "pass_filter": pass_filter,
-        }
-    else:
-        stats_h = {
-            "num_points": num_pts_h,
-            "histo_n": hn,
-            "histo_bins": hbins,
-            "cdf": hp,
-            "reflectivity_95": dbz95_h,
-        }
+    stats_h = {
+        "num_points": num_pts_h,
+        "histo_n": hn,
+        "histo_bins": hbins,
+        "cdf": hp,
+        "reflectivity_95": dbz95_h,
+    }
 
     if polarization == "horizontal":
         return date_time, stats_h
@@ -482,7 +387,7 @@ def calculate_dbz95_rhi(
         # V POLARIZATION
         zv_from_mask = []
         for idx_az, az in enumerate(theta_list):
-            az_mask = create_az_mask_hsrhi(az, theta)
+            az_mask = create_az_mask_rhi(az, theta, radar_band)
             for idx_el, el in enumerate(elev_list):
                 el_mask = np.abs(elev - el) < 0.5
                 zv_rays = zv[np.logical_and(az_mask, el_mask), :]

@@ -1,4 +1,5 @@
 import pyart
+import numpy as np
 
 # Plans to add more options for reading (09-19-2019)
 # User may modify to include new reader
@@ -21,10 +22,16 @@ def file_to_radar_object(filename, extension):
         radar object derived from PyART readers
     
     """
-
-    if extension == ".nc" or ".v0":
-        radar = pyart.io.cfradial.read_cfradial(filename, delay_field_loading=True)
-    elif extension == ".h5":
-        radar = pyart.aux_io.read_gamic(filename, file_field_names=True)
-
+    try:
+        if extension == ".nc":
+            radar = pyart.io.cfradial.read_cfradial(filename, delay_field_loading=True)
+        elif extension == ".h5":
+            radar = pyart.aux_io.read_gamic(filename, file_field_names=True)
+        elif extension == ".v0":
+            radar = pyart.io.cfradial.read_cfradial(filename, delay_field_loading=True)
+        
+    except OSError:
+        print('Unable to read in file: ',filename)
+        radar = np.nan
+        
     return radar
