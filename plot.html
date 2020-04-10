@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>rca.plot &mdash; eRCA for Weather Radar 0.0.post0.dev68+g4709ebf documentation</title>
+  <title>rca.plot &mdash; eRCA for Weather Radar 0.0.post0.dev70+ge6c5821 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.0.post0.dev68+g4709ebf
+                0.0.post0.dev70+ge6c5821
               </div>
             
           
@@ -170,9 +170,9 @@
 <p>Plotting routines for RCA</p>
 <div class="section" id="module-rca.plot.plot_clutter_map">
 <span id="rca-plot-plot-clutter-map"></span><h2>rca.plot.plot_clutter_map<a class="headerlink" href="#module-rca.plot.plot_clutter_map" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="rca.plot.plot_clutter_map.plot_clutter_map">
-<code class="sig-prename descclassname">rca.plot.plot_clutter_map.</code><code class="sig-name descname">plot_clutter_map</code><span class="sig-paren">(</span><em class="sig-param">clutter_map_netcdf</em>, <em class="sig-param">output_directory</em>, <em class="sig-param">scan_type</em>, <em class="sig-param">map_type</em>, <em class="sig-param">polarization</em>, <em class="sig-param">max_range</em>, <em class="sig-param">site</em>, <em class="sig-param">inst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/plot/plot_clutter_map.html#plot_clutter_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.plot.plot_clutter_map.plot_clutter_map" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rca.plot.plot_clutter_map.</code><code class="sig-name descname">plot_clutter_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">clutter_map_netcdf</span></em>, <em class="sig-param"><span class="n">output_directory</span></em>, <em class="sig-param"><span class="n">scan_type</span></em>, <em class="sig-param"><span class="n">map_type</span></em>, <em class="sig-param"><span class="n">polarization</span></em>, <em class="sig-param"><span class="n">max_range</span></em>, <em class="sig-param"><span class="n">site</span></em>, <em class="sig-param"><span class="n">inst</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/plot/plot_clutter_map.html#plot_clutter_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.plot.plot_clutter_map.plot_clutter_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot a clutter map of either PPI of RHI data. Must first calculate the clutter map using clutter_map module.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -202,9 +202,9 @@ i.e. ‘csapr2’, ‘kasacr’</p></li>
 </div>
 <div class="section" id="module-rca.plot.plot_rca_timeseries">
 <span id="rca-plot-plot-rca-timeseries"></span><h2>rca.plot.plot_rca_timeseries<a class="headerlink" href="#module-rca.plot.plot_rca_timeseries" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="rca.plot.plot_rca_timeseries.plot_rca_timeseries_oneradar">
-<code class="sig-prename descclassname">rca.plot.plot_rca_timeseries.</code><code class="sig-name descname">plot_rca_timeseries_oneradar</code><span class="sig-paren">(</span><em class="sig-param">rca_file</em>, <em class="sig-param">output_directory</em>, <em class="sig-param">baseline_date</em>, <em class="sig-param">polarization</em>, <em class="sig-param">scan_type</em>, <em class="sig-param">site</em>, <em class="sig-param">inst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/plot/plot_rca_timeseries.html#plot_rca_timeseries_oneradar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.plot.plot_rca_timeseries.plot_rca_timeseries_oneradar" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rca.plot.plot_rca_timeseries.</code><code class="sig-name descname">plot_rca_timeseries_oneradar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rca_file</span></em>, <em class="sig-param"><span class="n">output_directory</span></em>, <em class="sig-param"><span class="n">baseline_date</span></em>, <em class="sig-param"><span class="n">polarization</span></em>, <em class="sig-param"><span class="n">scan_type</span></em>, <em class="sig-param"><span class="n">site</span></em>, <em class="sig-param"><span class="n">inst</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/plot/plot_rca_timeseries.html#plot_rca_timeseries_oneradar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.plot.plot_rca_timeseries.plot_rca_timeseries_oneradar" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -224,9 +224,9 @@ i.e. ‘csapr2’, ‘kasacr’</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="rca.plot.plot_rca_timeseries.plot_rca_timeseries_threeradar">
-<code class="sig-prename descclassname">rca.plot.plot_rca_timeseries.</code><code class="sig-name descname">plot_rca_timeseries_threeradar</code><span class="sig-paren">(</span><em class="sig-param">rca_file1</em>, <em class="sig-param">rca_file2</em>, <em class="sig-param">rca_file3</em>, <em class="sig-param">output_directory</em>, <em class="sig-param">baseline_date</em>, <em class="sig-param">polarization</em>, <em class="sig-param">scan_type</em>, <em class="sig-param">site</em>, <em class="sig-param">inst1</em>, <em class="sig-param">inst2</em>, <em class="sig-param">inst3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/plot/plot_rca_timeseries.html#plot_rca_timeseries_threeradar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.plot.plot_rca_timeseries.plot_rca_timeseries_threeradar" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rca.plot.plot_rca_timeseries.</code><code class="sig-name descname">plot_rca_timeseries_threeradar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rca_file1</span></em>, <em class="sig-param"><span class="n">rca_file2</span></em>, <em class="sig-param"><span class="n">rca_file3</span></em>, <em class="sig-param"><span class="n">output_directory</span></em>, <em class="sig-param"><span class="n">baseline_date</span></em>, <em class="sig-param"><span class="n">polarization</span></em>, <em class="sig-param"><span class="n">scan_type</span></em>, <em class="sig-param"><span class="n">site</span></em>, <em class="sig-param"><span class="n">inst1</span></em>, <em class="sig-param"><span class="n">inst2</span></em>, <em class="sig-param"><span class="n">inst3</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/plot/plot_rca_timeseries.html#plot_rca_timeseries_threeradar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.plot.plot_rca_timeseries.plot_rca_timeseries_threeradar" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -251,9 +251,9 @@ i.e. ‘csapr2’, ‘kasacr’</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="rca.plot.plot_rca_timeseries.plot_rca_timeseries_tworadar">
-<code class="sig-prename descclassname">rca.plot.plot_rca_timeseries.</code><code class="sig-name descname">plot_rca_timeseries_tworadar</code><span class="sig-paren">(</span><em class="sig-param">rca_file1</em>, <em class="sig-param">rca_file2</em>, <em class="sig-param">output_directory</em>, <em class="sig-param">baseline_date</em>, <em class="sig-param">polarization</em>, <em class="sig-param">scan_type</em>, <em class="sig-param">site</em>, <em class="sig-param">inst1</em>, <em class="sig-param">inst2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/plot/plot_rca_timeseries.html#plot_rca_timeseries_tworadar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.plot.plot_rca_timeseries.plot_rca_timeseries_tworadar" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rca.plot.plot_rca_timeseries.</code><code class="sig-name descname">plot_rca_timeseries_tworadar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rca_file1</span></em>, <em class="sig-param"><span class="n">rca_file2</span></em>, <em class="sig-param"><span class="n">output_directory</span></em>, <em class="sig-param"><span class="n">baseline_date</span></em>, <em class="sig-param"><span class="n">polarization</span></em>, <em class="sig-param"><span class="n">scan_type</span></em>, <em class="sig-param"><span class="n">site</span></em>, <em class="sig-param"><span class="n">inst1</span></em>, <em class="sig-param"><span class="n">inst2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rca/plot/plot_rca_timeseries.html#plot_rca_timeseries_tworadar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rca.plot.plot_rca_timeseries.plot_rca_timeseries_tworadar" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
