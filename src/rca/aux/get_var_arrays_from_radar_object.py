@@ -45,12 +45,20 @@ def get_var_arrays_from_radar_object(radar, radar_config_file):
     elif inst == "xsacr" or inst == "kasacr":
         ref_h = "reflectivity"
         diff_ref = "differential_reflectivity"
+<<<<<<< HEAD
     #*******Add your instrument name here with variables names from file********
+=======
+    # *******Add your instrument name here with variables names from file********
+>>>>>>> 4709ebfff9c7788e7ab7e4f2d1be45e84d18eb96
     # example:
     # elif inst == "your_inst":
     #     ref_h = "your_variable_name"
     #     diff_ref = "your_variable_name"
+<<<<<<< HEAD
     #***************************************************************************
+=======
+    # ***************************************************************************
+>>>>>>> 4709ebfff9c7788e7ab7e4f2d1be45e84d18eb96
 
     if scantype == "ppi":
         date_time = radar.time["units"].replace("seconds since ", "")

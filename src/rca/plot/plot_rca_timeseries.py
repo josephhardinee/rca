@@ -1,7 +1,10 @@
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+import matplotlib.dates as mdates
 import numpy as np
 import pandas as pd
 import string
+from matplotlib.dates import MonthLocator, DayLocator, WeekdayLocator, MO, TU, WE, TH, FR, SA, SU
 
 
 def plot_rca_timeseries_oneradar(
@@ -32,21 +35,47 @@ def plot_rca_timeseries_oneradar(
         instrument name
                         
     """
-
-    ylim = -3.0, 3.0
-    pw = 0.2
-    lw = 1.0
-    base_lw = 1.5
+    
+    ###############################################################
+    # Plotting rc parameters
+    # xtick
+    plt.rc('xtick', color='k', labelsize=10, direction='out')
+    plt.rc('xtick.major', size=4, pad=4)
+    plt.rc('xtick.minor', size=2, pad=4)
+    # ytick
+    plt.rc('ytick', color='k', labelsize=10, direction='in')
+    plt.rc('ytick.major', size=4, pad=4)
+    plt.rc('ytick.minor', size=2, pad=4)
+    # figure
+    plt.rc('figure', titlesize=12, figsize=[8,4], dpi=500, autolayout=False)
+    # legend
+    plt.rc('legend', loc='best')
+    # lines
+    plt.rc('lines', linewidth=0.5, linestyle='-', marker='o', markersize=3.0)
+    # font
+    plt.rc('font', family='sans', style='normal')
+    # text
+    plt.rc('mathtext', fontset='dejavusans')
+    # axes
+    plt.rc('axes', facecolor='white', linewidth=0.8, grid=True, titlesize=14, labelsize=12)
+    plt.rc('axes.grid', axis='both', which='both')
+    # dates
+    #plt.rc('date.autoformatter', day='%Y-%m-%d')
+    
+    ###############################################################
+    
+    xlim = '2018-11-01', '2019-04-01'
+    ylim = -4.0, 4.0
+    
+    base_lw = 2.5
     ytext = 2.0
     xtext = 8.0
     xtext0 = 2.0
-
-    params = {"mathtext.default": "regular"}  # ,
-    #'family': 'sans',
-    #'size': 11}
-    plt.rcParams.update(params)
+    
+    c1 = 'k'
 
     df = pd.read_csv(rca_file)
+    df['DATE'] = pd.to_datetime(df['DATE'], format='%Y-%m-%d')
     df = df.sort_values(by="DATE")
 
     h_mean = str(np.nanmean(df["RCA_H"]))[0:4]  # slice only first 3 digits
@@ -65,25 +94,32 @@ def plot_rca_timeseries_oneradar(
         + ""
     )
 
-    fig, ax = plt.subplots(figsize=[8, 4])
+    fig, ax = plt.subplots()
     ax.axhline(0.0, linestyle="--", color="grey")
-    ax.scatter(df["DATE"], df["RCA_H"], color="k", linewidth=pw)
-    ax.plot(df["DATE"], df["RCA_H"], color="k", linewidth=lw)
-    ax.scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b")
+    ax.plot(df["DATE"], df["RCA_H"], color=c1)
+    ax.scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b", zorder=100)
     ax.set_ylabel("RCA value (dB)")
     ax.set_title(
-        "Daily RCA values ($Z_H$) at "
+        "Daily RCA values (Z$_H$) at "
         + site.upper()
         + " "
         + inst.upper()
         + " \n "
         + scan_type.upper()
     )
+    
     ax.set_ylim(ylim)
+    ax.set_xlim(xlim)
     ax.text(xtext, ytext, h_text)
-    locs, labs = plt.xticks()
-    plt.xticks(locs[::1])
-    plt.xticks
+    
+    biweek = WeekdayLocator(byweekday=MO, interval=2)
+    week = WeekdayLocator(byweekday=MO, interval=1)
+    days_format = mpl.dates.DateFormatter('%Y-%m-%d')
+    
+    ax.xaxis.set_major_locator(biweek)
+    ax.xaxis.set_major_formatter(days_format)
+    ax.xaxis.set_minor_locator(week)
+    
     plt.gcf().autofmt_xdate()
     plt.savefig(output_directory + "rca_h_" + scan_type + "_" + site + inst + ".png")
 
@@ -104,25 +140,32 @@ def plot_rca_timeseries_oneradar(
             + ""
         )
 
-        fig, ax = plt.subplots(figsize=[8, 4])
+        fig, ax = plt.subplots()
         ax.axhline(0.0, linestyle="--", color="grey")
-        ax.scatter(df["DATE"], df["RCA_V"], color="k", linewidth=pw)
-        ax.plot(df["DATE"], df["RCA_V"], color="k", linewidth=lw)
-        ax.scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b")
+        ax.plot(df["DATE"], df["RCA_V"], color=c1)
+        ax.scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b", zorder=100)
         ax.set_ylabel("RCA value (dB)")
         ax.set_title(
-            "Daily RCA values ($Z_V$) at "
+            "Daily RCA values (Z$_V$) at "
             + site.upper()
             + " "
             + inst.upper()
             + " \n "
             + scan_type.upper()
         )
+        
         ax.set_ylim(ylim)
+        ax.set_xlim(xlim)
         ax.text(xtext, ytext, v_text)
-        locs, labs = plt.xticks()
-        plt.xticks(locs[::14])
-        plt.xticks
+        
+        biweek = WeekdayLocator(byweekday=MO, interval=2)
+        week = WeekdayLocator(byweekday=MO, interval=1)
+        days_format = mpl.dates.DateFormatter('%Y-%m-%d')
+    
+        ax.xaxis.set_major_locator(biweek)
+        ax.xaxis.set_major_formatter(days_format)
+        ax.xaxis.set_minor_locator(week)
+
         plt.gcf().autofmt_xdate()
         plt.savefig(
             output_directory + "rca_v_" + scan_type + "_" + site + inst + ".png"
@@ -131,11 +174,10 @@ def plot_rca_timeseries_oneradar(
         # Plot H and V together (one plot or dual plot?)
         fig, axes = plt.subplots(nrows=2, ncols=1, sharex=True, figsize=[8, 5])
         axes[0].axhline(0.0, linestyle="--", color="grey")
-        axes[0].scatter(df["DATE"], df["RCA_H"], color="k", linewidth=lw)
-        axes[0].plot(df["DATE"], df["RCA_H"], color="k", linewidth=lw)
+        axes[0].plot(df["DATE"], df["RCA_H"], color=c1)
         axes[0].set_ylabel("RCA value (dB)")
         axes[0].set_title(
-            "Daily RCA values ($Z_H$) at "
+            "Daily RCA values (Z$_H$) at "
             + site.upper()
             + " "
             + inst.upper()
@@ -144,7 +186,7 @@ def plot_rca_timeseries_oneradar(
             + " \n Clutter map and Baseline: 2018-03-13"
         )
         axes[0].set_ylim(ylim)
-        axes[0].scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b")
+        axes[0].scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b", zorder=100)
         axes[0].text(xtext, ytext, h_text)
         axes[0].text(
             0.03,
@@ -154,17 +196,24 @@ def plot_rca_timeseries_oneradar(
             size=20,
             weight="regular",
         )
-        locs, labs = plt.xticks()
-        plt.xticks(locs[::1])
-        plt.xticks
+        axes[0].set_ylim(ylim)
+        axes[0].set_xlim(xlim)
+        #axes[0].text(xtext, ytext, v_text)
+        
+        biweek = WeekdayLocator(byweekday=MO, interval=2)
+        week = WeekdayLocator(byweekday=MO, interval=1)
+        days_format = mpl.dates.DateFormatter('%Y-%m-%d')
+    
+        axes[0].xaxis.set_major_locator(biweek)
+        axes[0].xaxis.set_major_formatter(days_format)
+        axes[0].xaxis.set_minor_locator(week)
         plt.gcf().autofmt_xdate()
 
         axes[1].axhline(0.0, linestyle="--", color="grey")
-        axes[1].scatter(df["DATE"], df["RCA_V"], color="k", linewidth=lw)
-        axes[1].plot(df["DATE"], df["RCA_V"], color="k", linewidth=lw)
+        axes[1].plot(df["DATE"], df["RCA_V"], color=c1)
         axes[1].set_ylabel("RCA value (dB)")
         axes[1].set_title(
-            "Daily RCA values ($Z_V$) at "
+            "Daily RCA values (Z$_V$) at "
             + site.upper()
             + " "
             + inst.upper()
@@ -173,7 +222,7 @@ def plot_rca_timeseries_oneradar(
             + ""
         )
         axes[1].set_ylim(ylim)
-        axes[1].scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b")
+        axes[1].scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b", zorder=100)
         axes[1].text(xtext, ytext - 1, v_text)
         axes[1].text(
             0.03,
@@ -183,9 +232,19 @@ def plot_rca_timeseries_oneradar(
             size=20,
             weight="regular",
         )
-        locs, labs = plt.xticks()
-        plt.xticks(locs[::14])
-        plt.xticks
+        
+        axes[1].set_ylim(ylim)
+        axes[1].set_xlim(xlim)
+        #axes[1].text(xtext, ytext, v_text)
+        
+        biweek = WeekdayLocator(byweekday=MO, interval=2)
+        week = WeekdayLocator(byweekday=MO, interval=1)
+        days_format = mpl.dates.DateFormatter('%Y-%m-%d')
+    
+        axes[1].xaxis.set_major_locator(biweek)
+        axes[1].xaxis.set_major_formatter(days_format)
+        axes[1].xaxis.set_minor_locator(week)
+        
         plt.gcf().autofmt_xdate()
         plt.savefig(
             output_directory + "rca_hv_" + scan_type + "_" + site + inst + ".png"
@@ -233,22 +292,50 @@ def plot_rca_timeseries_tworadar(
         instrument name for radar 2
                 
     """
+    
+    ###############################################################
+    # Plotting rc parameters
+    # xtick
+    plt.rc('xtick', color='k', labelsize=10, direction='out')
+    plt.rc('xtick.major', size=4, pad=4)
+    plt.rc('xtick.minor', size=2, pad=4)
+    # ytick
+    plt.rc('ytick', color='k', labelsize=10, direction='out')
+    plt.rc('ytick.major', size=4, pad=4)
+    plt.rc('ytick.minor', size=2, pad=4)
+    # figure
+    plt.rc('figure', titlesize=16, figsize=[8,4], dpi=500, autolayout=False)
+    # legend
+    plt.rc('legend', loc='best')
+    # lines
+    plt.rc('lines', linewidth=0.5, linestyle='-', marker='o', markersize=3.0)
+    # font
+    plt.rc('font', family='sans', style='normal')
+    # text
+    plt.rc('mathtext', fontset='dejavusans')
+    # axes
+    plt.rc('axes', facecolor='white', linewidth=0.8, grid=True, titlesize=14, labelsize=12)
+    plt.rc('axes.grid', axis='both', which='both')
+    # dates
+    #plt.rc('date.autoformatter', day='%Y-%m-%d')
+    
+    ###############################################################
 
-    ylim = -1.0, 1.0
-    pw = 0.01
-    lw = 0.2
-    base_lw = 1.5
+    xlim = '2018-11-01', '2019-04-01'
+    ylim = -4.0, 4.0
+    
+    base_lw = 2.5
     ytext = 2.0
     xtext = 8.0
     xtext0 = 2.0
-
-    params = {"mathtext.default": "regular"}  # ,
-    #        'family': 'sans',
-    #       'size': 11}
-    plt.rcParams.update(params)
+    
+    c1 = 'k'
+    c2 = 'grey'
 
     df1 = pd.read_csv(rca_file1)
     df2 = pd.read_csv(rca_file2)
+    df1['DATE'] = pd.to_datetime(df1['DATE'], format='%Y-%m-%d')
+    df2['DATE'] = pd.to_datetime(df2['DATE'], format='%Y-%m-%d')
     df1 = df1.sort_values(by="DATE")
     df2 = df2.sort_values(by="DATE")
 
@@ -284,16 +371,14 @@ def plot_rca_timeseries_tworadar(
         + ""
     )
 
-    fig, ax = plt.subplots(figsize=[8, 4])
+    fig, ax = plt.subplots()
     ax.axhline(0.0, linestyle="--", color="grey")
-    ax.scatter(df1["DATE"], df1["RCA_H"], color="k", linewidth=pw, label=inst1.upper())
-    ax.plot(df1["DATE"], df1["RCA_H"], color="k", linewidth=lw, label="")
-    ax.scatter(df2["DATE"], df2["RCA_H"], color="r", linewidth=pw, label=inst2.upper())
-    ax.plot(df2["DATE"], df2["RCA_H"], color="r", linewidth=lw, label="")
-    ax.scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b")
+    ax.plot(df1["DATE"], df1["RCA_H"], color=c1, label=inst1.upper())
+    ax.plot(df2["DATE"], df2["RCA_H"], color=c2, label=inst2.upper())
+    ax.scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b", zorder=100)
     ax.set_ylabel("RCA value (dB)")
     ax.set_title(
-        "Daily RCA values ($Z_H$) at "
+        "Daily RCA values (Z$_H$) at "
         + site.upper()
         + " "
         + inst1.upper()
@@ -302,11 +387,19 @@ def plot_rca_timeseries_tworadar(
         + " \n "
         + scan_type.upper()
     )
+    
     ax.set_ylim(ylim)
-    # ax.text(xtext,ytext,h_text1)
-    locs, labs = plt.xticks()
-    plt.xticks(locs[::14])
-    plt.xticks
+    ax.set_xlim(xlim)
+    #ax.text(xtext, ytext, h_text)
+    
+    biweek = WeekdayLocator(byweekday=MO, interval=2)
+    week = WeekdayLocator(byweekday=MO, interval=1)
+    days_format = mpl.dates.DateFormatter('%Y-%m-%d')
+    
+    ax.xaxis.set_major_locator(biweek)
+    ax.xaxis.set_major_formatter(days_format)
+    ax.xaxis.set_minor_locator(week)
+    
     plt.gcf().autofmt_xdate()
     plt.legend()
     plt.savefig(
@@ -355,17 +448,11 @@ def plot_rca_timeseries_tworadar(
             + ""
         )
 
-        fig, ax = plt.subplots(figsize=[8, 4])
+        fig, ax = plt.subplots()
         ax.axhline(0.0, linestyle="--", color="grey")
-        ax.scatter(
-            df1["DATE"], df1["RCA_V"], color="k", linewidth=pw, label=inst1.upper()
-        )
-        ax.plot(df1["DATE"], df1["RCA_V"], color="k", linewidth=lw, label="")
-        ax.scatter(
-            df2["DATE"], df2["RCA_V"], color="r", linewidth=pw, label=inst2.upper()
-        )
-        ax.plot(df2["DATE"], df2["RCA_V"], color="r", linewidth=lw, label="")
-        ax.scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b")
+        ax.plot(df1["DATE"], df1["RCA_V"], color=c1, label=inst1.upper())
+        ax.plot(df2["DATE"], df2["RCA_V"], color=c2, label=inst2.upper())
+        ax.scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b", zorder=100)
         ax.set_ylabel("RCA value (dB)")
         ax.set_title(
             "Daily RCA values ($Z_V$) at "
@@ -377,11 +464,19 @@ def plot_rca_timeseries_tworadar(
             + " \n "
             + scan_type.upper()
         )
+        
         ax.set_ylim(ylim)
-        # ax.text(xtext,ytext,v_text1)
-        locs, labs = plt.xticks()
-        plt.xticks(locs[::14])
-        plt.xticks
+        ax.set_xlim(xlim)
+        #ax.text(xtext, ytext, h_text)
+    
+        biweek = WeekdayLocator(byweekday=MO, interval=2)
+        week = WeekdayLocator(byweekday=MO, interval=1)
+        days_format = mpl.dates.DateFormatter('%Y-%m-%d')
+    
+        ax.xaxis.set_major_locator(biweek)
+        ax.xaxis.set_major_formatter(days_format)
+        ax.xaxis.set_minor_locator(week)
+        
         plt.gcf().autofmt_xdate()
         plt.legend()
         plt.savefig(
@@ -400,17 +495,11 @@ def plot_rca_timeseries_tworadar(
         # Plot H and V together (one plot or dual plot?)
         fig, axes = plt.subplots(nrows=2, ncols=1, sharex=True, figsize=[8, 5])
         axes[0].axhline(0.0, linestyle="--", color="grey")
-        axes[0].scatter(
-            df1["DATE"], df1["RCA_H"], color="k", linewidth=pw, label=inst1.upper()
-        )
-        axes[0].plot(df1["DATE"], df1["RCA_H"], color="k", linewidth=lw, label="")
-        axes[0].scatter(
-            df2["DATE"], df2["RCA_H"], color="r", linewidth=pw, label=inst2.upper()
-        )
-        axes[0].plot(df2["DATE"], df2["RCA_H"], color="r", linewidth=lw, label="")
+        axes[0].plot(df1["DATE"], df1["RCA_H"], color=c1, label=inst1.upper())
+        axes[0].plot(df2["DATE"], df2["RCA_H"], color=c2, label=inst2.upper())
         axes[0].set_ylabel("RCA value (dB)")
         axes[0].set_title(
-            "Daily RCA values ($Z_H$) at "
+            "Daily RCA values (Z$_H$) at "
             + site.upper()
             + " "
             + inst1.upper()
@@ -420,8 +509,7 @@ def plot_rca_timeseries_tworadar(
             + scan_type.upper()
         )
         axes[0].set_ylim(ylim)
-        axes[0].scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b")
-        # axes[0].text(xtext,ytext,h_text)
+        axes[0].scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b", zorder=100)
         axes[0].text(
             0.03,
             0.87,
@@ -430,23 +518,25 @@ def plot_rca_timeseries_tworadar(
             size=20,
             weight="regular",
         )
-        locs, labs = plt.xticks()
-        plt.xticks(locs[::14])
-        plt.xticks
+        axes[0].set_ylim(ylim)
+        axes[0].set_xlim(xlim)
+        #axes[0].text(xtext, ytext, v_text)
+        
+        biweek = WeekdayLocator(byweekday=MO, interval=2)
+        week = WeekdayLocator(byweekday=MO, interval=1)
+        days_format = mpl.dates.DateFormatter('%Y-%m-%d')
+    
+        axes[0].xaxis.set_major_locator(biweek)
+        axes[0].xaxis.set_major_formatter(days_format)
+        axes[0].xaxis.set_minor_locator(week)
         plt.gcf().autofmt_xdate()
 
         axes[1].axhline(0.0, linestyle="--", color="grey")
-        axes[1].scatter(
-            df1["DATE"], df1["RCA_V"], color="k", linewidth=pw, label=inst1.upper()
-        )
-        axes[1].plot(df1["DATE"], df1["RCA_V"], color="k", linewidth=lw, label="")
-        axes[1].scatter(
-            df2["DATE"], df2["RCA_V"], color="r", linewidth=pw, label=inst2.upper()
-        )
-        axes[1].plot(df2["DATE"], df2["RCA_V"], color="r", linewidth=lw, label="")
+        axes[1].plot(df1["DATE"], df1["RCA_V"], color=c1, label=inst1.upper())
+        axes[1].plot(df2["DATE"], df2["RCA_V"], color=c2, label=inst2.upper())
         axes[1].set_ylabel("RCA value (dB)")
         axes[1].set_title(
-            "Daily RCA values ($Z_V$) at "
+            "Daily RCA values (Z$_V$) at "
             + site.upper()
             + " "
             + inst1.upper()
@@ -457,8 +547,7 @@ def plot_rca_timeseries_tworadar(
             + ""
         )
         axes[1].set_ylim(ylim)
-        axes[1].scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b")
-        # axes[1].text(xtext,ytext-1,v_text)
+        axes[1].scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b", zorder=100)
         axes[1].text(
             0.03,
             0.87,
@@ -467,9 +556,17 @@ def plot_rca_timeseries_tworadar(
             size=20,
             weight="regular",
         )
-        locs, labs = plt.xticks()
-        plt.xticks(locs[::14])
-        plt.xticks
+        axes[1].set_ylim(ylim)
+        axes[1].set_xlim(xlim)
+        #axes[1].text(xtext, ytext, v_text)
+        
+        biweek = WeekdayLocator(byweekday=MO, interval=2)
+        week = WeekdayLocator(byweekday=MO, interval=1)
+        days_format = mpl.dates.DateFormatter('%Y-%m-%d')
+    
+        axes[1].xaxis.set_major_locator(biweek)
+        axes[1].xaxis.set_major_formatter(days_format)
+        axes[1].xaxis.set_minor_locator(week)
         plt.gcf().autofmt_xdate()
         plt.legend()
         plt.savefig(
@@ -535,22 +632,52 @@ def plot_rca_timeseries_threeradar(
                         
     """
 
-    ylim = -2.0, 10.0
-    pw = 0.05
-    lw = 0.2
-    base_lw = 1.5
+    ###############################################################
+    # Plotting rc parameters
+    # xtick
+    plt.rc('xtick', color='k', labelsize=10, direction='out')
+    plt.rc('xtick.major', size=4, pad=4)
+    plt.rc('xtick.minor', size=2, pad=4)
+    # ytick
+    plt.rc('ytick', color='k', labelsize=10, direction='out')
+    plt.rc('ytick.major', size=4, pad=4)
+    plt.rc('ytick.minor', size=2, pad=4)
+    # figure
+    plt.rc('figure', titlesize=16, figsize=[8,4], dpi=500, autolayout=False)
+    # legend
+    plt.rc('legend', loc='best')
+    # lines
+    plt.rc('lines', linewidth=0.5, linestyle='-', marker='o', markersize=3.0)
+    # font
+    plt.rc('font', family='sans', style='normal')
+    # text
+    plt.rc('mathtext', fontset='dejavusans')
+    # axes
+    plt.rc('axes', facecolor='white', linewidth=0.8, grid=True, titlesize=14, labelsize=12)
+    plt.rc('axes.grid', axis='both', which='both')
+    # dates
+    #plt.rc('date.autoformatter', day='%Y-%m-%d')
+    
+    ###############################################################
+    
+    xlim = '2018-11-01', '2019-04-01'
+    ylim = -10.0, 20.0
+    
+    base_lw = 2.5
     ytext = 2.0
     xtext = 8.0
     xtext0 = 2.0
 
-    params = {"mathtext.default": "regular"}  # ,
-    #        'family': 'sans',
-    #       'size': 11}
-    plt.rcParams.update(params)
-
+    c1 = 'k'
+    c2 = 'grey'
+    c3 = 'r'
+    
     df1 = pd.read_csv(rca_file1)
     df2 = pd.read_csv(rca_file2)
     df3 = pd.read_csv(rca_file3)
+    df1['DATE'] = pd.to_datetime(df1['DATE'], format='%Y-%m-%d')
+    df2['DATE'] = pd.to_datetime(df2['DATE'], format='%Y-%m-%d')
+    df3['DATE'] = pd.to_datetime(df3['DATE'], format='%Y-%m-%d')
     df1 = df1.sort_values(by="DATE")
     df2 = df2.sort_values(by="DATE")
     df3 = df3.sort_values(by="DATE")
@@ -603,22 +730,15 @@ def plot_rca_timeseries_threeradar(
         + ""
     )
 
-    fig, ax = plt.subplots(figsize=[8, 4])
+    fig, ax = plt.subplots()
     ax.axhline(0.0, linestyle="--", color="grey")
-    ax.scatter(df1["DATE"], df1["RCA_H"], color="k", linewidth=pw, label=inst1.upper())
-    ax.plot(df1["DATE"], df1["RCA_H"], color="k", linewidth=lw, label="")
-    ax.scatter(
-        df2["DATE"], df2["RCA_H"], color="grey", linewidth=pw, label=inst2.upper()
-    )
-    ax.plot(df2["DATE"], df2["RCA_H"], color="grey", linewidth=lw, label="")
-    ax.scatter(
-        df3["DATE"], df3["RCA_H"], color="red", linewidth=pw, label=inst3.upper()
-    )
-    ax.plot(df3["DATE"], df3["RCA_H"], color="red", linewidth=lw, label="")
-    ax.scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b")
+    ax.plot(df1["DATE"], df1["RCA_H"], color=c1, label=inst1.upper())
+    ax.plot(df2["DATE"], df2["RCA_H"], color=c2, label=inst2.upper())
+    ax.plot(df3["DATE"], df3["RCA_H"], color=c3, label=inst3.upper())
+    ax.scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b", zorder=100)
     ax.set_ylabel("RCA value (dB)")
     ax.set_title(
-        "Daily RCA values ($Z_H$) at "
+        "Daily RCA values (Z$_H$) at "
         + site.upper()
         + " "
         + inst1.upper()
@@ -629,11 +749,19 @@ def plot_rca_timeseries_threeradar(
         + " \n "
         + scan_type.upper()
     )
+    
     ax.set_ylim(ylim)
-    # ax.text(xtext,ytext,h_text1)
-    locs, labs = plt.xticks()
-    plt.xticks(locs[::14])
-    plt.xticks
+    ax.set_xlim(xlim)
+    #ax.text(xtext, ytext, h_text)
+    
+    biweek = WeekdayLocator(byweekday=MO, interval=2)
+    week = WeekdayLocator(byweekday=MO, interval=1)
+    days_format = mpl.dates.DateFormatter('%Y-%m-%d')
+    
+    ax.xaxis.set_major_locator(biweek)
+    ax.xaxis.set_major_formatter(days_format)
+    ax.xaxis.set_minor_locator(week)
+    
     plt.gcf().autofmt_xdate()
     plt.legend()
     plt.savefig(
@@ -703,22 +831,13 @@ def plot_rca_timeseries_threeradar(
 
         fig, ax = plt.subplots(figsize=[8, 4])
         ax.axhline(0.0, linestyle="--", color="grey")
-        ax.scatter(
-            df1["DATE"], df1["RCA_V"], color="k", linewidth=pw, label=inst1.upper()
-        )
-        ax.plot(df1["DATE"], df1["RCA_V"], color="k", linewidth=lw, label="")
-        ax.scatter(
-            df2["DATE"], df2["RCA_V"], color="grey", linewidth=pw, label=inst2.upper()
-        )
-        ax.plot(df2["DATE"], df2["RCA_V"], color="grey", linewidth=lw, label="")
-        ax.scatter(
-            df3["DATE"], df3["RCA_V"], color="red", linewidth=pw, label=inst3.upper()
-        )
-        ax.plot(df3["DATE"], df3["RCA_V"], color="red", linewidth=lw, label="")
-        ax.scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b")
+        ax.plot(df1["DATE"], df1["RCA_V"], color=c1, label=inst1.upper())
+        ax.plot(df2["DATE"], df2["RCA_V"], color=c2, label=inst2.upper())
+        ax.plot(df3["DATE"], df3["RCA_V"], color=c3, label=inst3.upper())
+        ax.scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b", zorder=100)
         ax.set_ylabel("RCA value (dB)")
         ax.set_title(
-            "Daily RCA values ($Z_V$) at "
+            "Daily RCA values (Z$_V$) at "
             + site.upper()
             + " "
             + inst1.upper()
@@ -729,11 +848,19 @@ def plot_rca_timeseries_threeradar(
             + " \n "
             + scan_type.upper()
         )
+        
         ax.set_ylim(ylim)
-        # ax.text(xtext,ytext,v_text1)
-        locs, labs = plt.xticks()
-        plt.xticks(locs[::14])
-        plt.xticks
+        ax.set_xlim(xlim)
+        #ax.text(xtext, ytext, v_text)
+        
+        biweek = WeekdayLocator(byweekday=MO, interval=2)
+        week = WeekdayLocator(byweekday=MO, interval=1)
+        days_format = mdates.DateFormatter('%Y-%m-%d')
+    
+        ax.xaxis.set_major_locator(biweek)
+        ax.xaxis.set_major_formatter(days_format)
+        ax.xaxis.set_minor_locator(week)
+        
         plt.gcf().autofmt_xdate()
         plt.legend()
         plt.savefig(
@@ -755,21 +882,12 @@ def plot_rca_timeseries_threeradar(
         # Plot H and V together (one plot or dual plot?)
         fig, axes = plt.subplots(nrows=2, ncols=1, sharex=True, figsize=[8, 5])
         axes[0].axhline(0.0, linestyle="--", color="grey")
-        axes[0].scatter(
-            df1["DATE"], df1["RCA_H"], color="k", linewidth=pw, label=inst1.upper()
-        )
-        axes[0].plot(df1["DATE"], df1["RCA_H"], color="k", linewidth=lw, label="")
-        axes[0].scatter(
-            df2["DATE"], df2["RCA_H"], color="grey", linewidth=pw, label=inst2.upper()
-        )
-        axes[0].plot(df2["DATE"], df2["RCA_H"], color="grey", linewidth=lw, label="")
-        axes[0].scatter(
-            df3["DATE"], df3["RCA_H"], color="red", linewidth=pw, label=inst3.upper()
-        )
-        axes[0].plot(df3["DATE"], df3["RCA_H"], color="red", linewidth=lw, label="")
+        axes[0].plot(df1["DATE"], df1["RCA_H"], color=c1, label=inst1.upper())
+        axes[0].plot(df2["DATE"], df2["RCA_H"], color=c2, label=inst2.upper())
+        axes[0].plot(df3["DATE"], df3["RCA_H"], color=c3, label=inst3.upper())
         axes[0].set_ylabel("RCA value (dB)")
         axes[0].set_title(
-            "Daily RCA values ($Z_H$) at "
+            "Daily RCA values (Z$_H$) at "
             + site.upper()
             + " "
             + inst1.upper()
@@ -781,8 +899,7 @@ def plot_rca_timeseries_threeradar(
             + scan_type.upper()
         )
         axes[0].set_ylim(ylim)
-        axes[0].scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b")
-        # axes[0].text(xtext,ytext,h_text)
+        axes[0].scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b", zorder=100)
         axes[0].text(
             0.03,
             0.87,
@@ -791,28 +908,27 @@ def plot_rca_timeseries_threeradar(
             size=20,
             weight="regular",
         )
-        locs, labs = plt.xticks()
-        plt.xticks(locs[::1])
-        plt.xticks
+        axes[0].set_ylim(ylim)
+        axes[0].set_xlim(xlim)
+        #axes[0].text(xtext, ytext, v_text)
+        
+        biweek = WeekdayLocator(byweekday=MO, interval=2)
+        week = WeekdayLocator(byweekday=MO, interval=1)
+        days_format = mpl.dates.DateFormatter('%Y-%m-%d')
+    
+        axes[0].xaxis.set_major_locator(biweek)
+        axes[0].xaxis.set_major_formatter(days_format)
+        axes[0].xaxis.set_minor_locator(week)
         plt.gcf().autofmt_xdate()
         plt.legend()
 
         axes[1].axhline(0.0, linestyle="--", color="grey")
-        axes[1].scatter(
-            df1["DATE"], df1["RCA_V"], color="k", linewidth=pw, label=inst1.upper()
-        )
-        axes[1].plot(df1["DATE"], df1["RCA_V"], color="k", linewidth=lw, label="")
-        axes[1].scatter(
-            df2["DATE"], df2["RCA_V"], color="grey", linewidth=pw, label=inst2.upper()
-        )
-        axes[1].plot(df2["DATE"], df2["RCA_V"], color="grey", linewidth=lw, label="")
-        axes[1].scatter(
-            df3["DATE"], df3["RCA_V"], color="red", linewidth=pw, label=inst3.upper()
-        )
-        axes[1].plot(df3["DATE"], df3["RCA_V"], color="red", linewidth=lw, label="")
+        axes[1].plot(df1["DATE"], df1["RCA_V"], color=c1, label=inst1.upper())
+        axes[1].plot(df2["DATE"], df2["RCA_V"], color=c2, label=inst2.upper())
+        axes[1].plot(df3["DATE"], df3["RCA_V"], color=c3, label=inst3.upper())
         axes[1].set_ylabel("RCA value (dB)")
         axes[1].set_title(
-            "Daily RCA values ($Z_V$) at "
+            "Daily RCA values (Z$_V$) at "
             + site.upper()
             + " "
             + inst1.upper()
@@ -824,8 +940,7 @@ def plot_rca_timeseries_threeradar(
             + scan_type.upper()
         )
         axes[1].set_ylim(ylim)
-        axes[1].scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b")
-        # axes[1].text(xtext,ytext-1,v_text)
+        axes[1].scatter(baseline_date, 0.0, marker="D", linewidth=base_lw, color="b", zorder=100)
         axes[1].text(
             0.03,
             0.87,
@@ -834,9 +949,17 @@ def plot_rca_timeseries_threeradar(
             size=20,
             weight="regular",
         )
-        locs, labs = plt.xticks()
-        plt.xticks(locs[::14])
-        plt.xticks
+        axes[1].set_ylim(ylim)
+        axes[1].set_xlim(xlim)
+        #axes[1].text(xtext, ytext, v_text)
+        
+        biweek = WeekdayLocator(byweekday=MO, interval=2)
+        week = WeekdayLocator(byweekday=MO, interval=1)
+        days_format = mpl.dates.DateFormatter('%Y-%m-%d')
+    
+        axes[1].xaxis.set_major_locator(biweek)
+        axes[1].xaxis.set_major_formatter(days_format)
+        axes[1].xaxis.set_minor_locator(week)
         plt.gcf().autofmt_xdate()
         plt.legend()
         plt.savefig(

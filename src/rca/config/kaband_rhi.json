@@ -2,7 +2,7 @@
     "config": "kaband_rhi",
     "scan_type": "rhi",
     "polarization": "horizontal",
-    "data_directory": "/home/alexishunzinger/data/proj-shared/data_transfer/cor/corkasacrcfrhsrhiM1.a1/",
+    "data_directory": "/home/alexishunzinger/data/proj-shared/data_transfer_radar/cor/corkasacrcfrhsrhiM1.a1/",
     "file_extension": ".nc",
     "cluttermap_directory": "/home/alexishunzinger/projects/rca_aux/clutter_maps/",
     "cluttermap_date": "20181110",

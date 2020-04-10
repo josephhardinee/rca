@@ -25,6 +25,7 @@ def create_az_mask_ppi(azimuth_value, azimuth_array, radar_band):
         array of same shape as azimuth_array, masked to highlight the desried azimuth value
     
     """
+<<<<<<< HEAD
     
     if radar_band == 'c':
         threshold = 0.5
@@ -37,12 +38,32 @@ def create_az_mask_ppi(azimuth_value, azimuth_array, radar_band):
         az_mask = np.logical_or(
             np.logical_and(
                 azimuth_array > azimuth_value - threshold, azimuth_array < azimuth_value + threshold
+=======
+
+    if radar_band == "c":
+        threshold = 0.5
+    elif radar_band == "x":
+        threshold = 0.5
+    elif radar_band == "ka":
+        threshold = 0.1
+
+    if azimuth_value == 0.0:
+        az_mask = np.logical_or(
+            np.logical_and(
+                azimuth_array > azimuth_value - threshold,
+                azimuth_array < azimuth_value + threshold,
+>>>>>>> 4709ebfff9c7788e7ab7e4f2d1be45e84d18eb96
             ),
             azimuth_array > 360 - threshold,
         )
     else:
         az_mask = np.logical_and(
+<<<<<<< HEAD
             azimuth_array > azimuth_value - threshold, azimuth_array < azimuth_value + threshold
+=======
+            azimuth_array > azimuth_value - threshold,
+            azimuth_array < azimuth_value + threshold,
+>>>>>>> 4709ebfff9c7788e7ab7e4f2d1be45e84d18eb96
         )
     return az_mask
 
@@ -67,6 +88,7 @@ def create_az_mask_rhi(azimuth_value, azimuth_array, radar_band):
         array of same shape as azimuth_array, masked to highlight the desried azimuth value
     
     """
+<<<<<<< HEAD
     
     if radar_band == 'c':
         threshold = 0.4
@@ -79,11 +101,31 @@ def create_az_mask_rhi(azimuth_value, azimuth_array, radar_band):
         az_mask = np.logical_or(
             np.logical_and(
                 azimuth_array > azimuth_value - threshold, azimuth_array < azimuth_value + threshold
+=======
+
+    if radar_band == "c":
+        threshold = 0.4
+    elif radar_band == "x":
+        threshold = 0.4
+    elif radar_band == "ka":
+        threshold = 0.1
+
+    if azimuth_value == 0.0:
+        az_mask = np.logical_or(
+            np.logical_and(
+                azimuth_array > azimuth_value - threshold,
+                azimuth_array < azimuth_value + threshold,
+>>>>>>> 4709ebfff9c7788e7ab7e4f2d1be45e84d18eb96
             ),
             azimuth_array > 360 - threshold,
         )
     else:
         az_mask = np.logical_and(
+<<<<<<< HEAD
             azimuth_array > azimuth_value - threshold, azimuth_array < azimuth_value + threshold
+=======
+            azimuth_array > azimuth_value - threshold,
+            azimuth_array < azimuth_value + threshold,
+>>>>>>> 4709ebfff9c7788e7ab7e4f2d1be45e84d18eb96
         )
     return az_mask

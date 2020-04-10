@@ -48,7 +48,7 @@ def plot_clutter_map(
         i.e. 'csapr2', 'kasacr'
                        
     """
-    
+
     # Formatting specifications
     params = {"mathtext.default": "regular"}
     plt.rcParams.update(params)
